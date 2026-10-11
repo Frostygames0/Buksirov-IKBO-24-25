@@ -1,7 +1,7 @@
 #ifndef ENVEXPANDER_H
 #define ENVEXPANDER_H
 
-class QString;
+#include <QString>
 
 namespace EmulatorMirea
 {

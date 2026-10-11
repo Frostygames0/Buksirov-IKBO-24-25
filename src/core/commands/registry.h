@@ -1,0 +1,24 @@
+#ifndef REGISTRY_H
+#define REGISTRY_H
+
+#include <memory>
+#include <unordered_map>
+
+#include <QString>
+
+#include "core/commands/command.h"
+
+namespace EmulatorMirea::Commands
+{
+
+class Registry
+{
+public:
+    void registerCommand(std::unique_ptr<Command> command);
+    Command* getCommand(const QString& name) const;
+private:
+    std::unordered_map<QString, std::unique_ptr<Command>> m_commands;
+};
+
+}
+#endif // REGISTRY_H

@@ -58,7 +58,7 @@ void MainWindow::setupTerminal()
                 m_session.addHistory(line);   // skips blank lines and consecutive duplicates
 
                 if (!line.trimmed().isEmpty())
-                    m_terminalBox->print(m_interpreter.Execute(line, m_session));
+                    m_terminalBox->print(m_interpreter.execute(line, m_session));
 
                 m_terminalBox->showPrompt();
             });

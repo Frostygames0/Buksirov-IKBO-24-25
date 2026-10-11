@@ -9,7 +9,7 @@
 namespace EmulatorMirea
 {
 
-QString Interpreter::Execute(QStringView cmd, Session& session) const
+QString Interpreter::execute(QStringView cmd, Session& session) const
 {
     QStringList tokens = m_tokenizer.Tokenize(cmd);
 
@@ -18,7 +18,7 @@ QString Interpreter::Execute(QStringView cmd, Session& session) const
 
     tokens.removeAll({});
 
-    return m_commandExecutor.Execute(tokens, session);
+    return m_commandExecutor.execute(tokens, session);
 }
 
 }
