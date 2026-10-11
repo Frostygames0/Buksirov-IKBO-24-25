@@ -102,7 +102,8 @@ void TerminalWidget::keyPressEvent(QKeyEvent* event)
         case Qt::Key_Home:
         {
             QTextCursor home = c;
-            home.setPosition(m_promptPos, (event->modifiers() & Qt::ShiftModifier) ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor); // NOLINT
+            const bool extend = event->modifiers() & Qt::ShiftModifier; // NOLINT
+            home.setPosition(m_promptPos, extend ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
             setTextCursor(home);
             return;
         }
