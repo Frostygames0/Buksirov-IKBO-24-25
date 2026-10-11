@@ -11,9 +11,9 @@ class Session;
 class EnvExpander
 {
 public:
-    QString expand(const QString& line, const Session& session) const;
+    [[nodiscard]] QString expand(const QString& line, const Session& session) const;
 };
 
-}
+} // namespace EmulatorMirea
 
 #endif // ENVEXPANDER_H

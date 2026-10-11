@@ -2,11 +2,12 @@
 #define APPINFO_H
 
 #include <QString>
+#include <QStringLiteral>
 
 namespace EmulatorMirea::AppInfo
 {
 
-inline const QString kAppName = "MIREA Emulator";
+inline constexpr QStringView AppName = u"MIREA Emulator";
 
 }
 

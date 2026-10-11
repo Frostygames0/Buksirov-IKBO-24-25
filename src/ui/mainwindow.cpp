@@ -1,18 +1,17 @@
 #include "ui/mainwindow.h"
 #include "ui/terminalwidget.h"
 
-#include <QString>
-#include <QIcon>
-#include <QFrame>
 #include <QFont>
+#include <QFrame>
+#include <QIcon>
+#include <QString>
 
 #include "appinfo.h"
 
 namespace EmulatorMirea
 {
 
-MainWindow::MainWindow()
-    : QMainWindow(nullptr)
+MainWindow::MainWindow() : QMainWindow(nullptr)
 {
     setupUi();
 }
@@ -20,7 +19,7 @@ MainWindow::MainWindow()
 void MainWindow::setupUi()
 {
     setObjectName("MainWindow");
-    setWindowTitle(tr("%1 — %2").arg(m_shell.title(), AppInfo::kAppName));
+    setWindowTitle(tr("%1 — %2").arg(m_shell.title(), AppInfo::AppName));
 
     setWindowIcon(QIcon(":/icon.png"));
 
@@ -41,19 +40,20 @@ void MainWindow::setupTerminal()
     font.setStyleHint(QFont::Monospace);
     m_terminalBox->setFont(font);
 
-    m_terminalBox->setStyleSheet(
-        "QPlainTextEdit {"
-        "    border: none;"
-        "    border-radius: 0px;"
-        "    background-color: #000000;"
-        "    color: #dcdcdc;"
-        "}");
+    m_terminalBox->setStyleSheet("QPlainTextEdit {"
+                                 "    border: none;"
+                                 "    border-radius: 0px;"
+                                 "    background-color: #000000;"
+                                 "    color: #dcdcdc;"
+                                 "}");
 
     m_terminalBox->setFrameShape(QFrame::NoFrame);
     m_terminalBox->setBackgroundVisible(false);
 
     // Enter pressed: run through the shell, show output, new prompt
-    connect(m_terminalBox, &TerminalWidget::commandEntered, this,
+    connect(m_terminalBox,
+            &TerminalWidget::commandEntered,
+            this,
             [this](const QString& line)
             {
                 m_terminalBox->print(m_shell.submit(line));
@@ -62,15 +62,12 @@ void MainWindow::setupTerminal()
                 m_terminalBox->showPrompt();
             });
 
-    connect(m_terminalBox, &TerminalWidget::historyUpRequested, this,
-            [this] { m_terminalBox->setInput(m_shell.previousHistory()); });
+    connect(m_terminalBox, &TerminalWidget::historyUpRequested, this, [this] { m_terminalBox->setInput(m_shell.previousHistory()); });
 
-    connect(m_terminalBox, &TerminalWidget::historyDownRequested, this,
-            [this] { m_terminalBox->setInput(m_shell.nextHistory()); });
+    connect(m_terminalBox, &TerminalWidget::historyDownRequested, this, [this] { m_terminalBox->setInput(m_shell.nextHistory()); });
 
     m_terminalBox->setPrompt(m_shell.prompt());
     m_terminalBox->showPrompt();
 }
 
-}
-
+} // namespace EmulatorMirea

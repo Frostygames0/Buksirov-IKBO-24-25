@@ -7,8 +7,7 @@
 namespace EmulatorMirea
 {
 
-TerminalWidget::TerminalWidget(QWidget* parent)
-    : QPlainTextEdit(parent)
+TerminalWidget::TerminalWidget(QWidget* parent) : QPlainTextEdit(parent)
 {
     setUndoRedoEnabled(false);
     setLineWrapMode(QPlainTextEdit::NoWrap);
@@ -69,50 +68,46 @@ void TerminalWidget::moveCursorToEnd()
 void TerminalWidget::keyPressEvent(QKeyEvent* event)
 {
     const QTextCursor c = textCursor();
-    const bool touchesOutput = c.position() < m_promptPos
-                            || (c.hasSelection() && c.selectionStart() < m_promptPos);
+    const bool touchesOutput = c.position() < m_promptPos || (c.hasSelection() && c.selectionStart() < m_promptPos);
 
     switch (event->key())
     {
-    case Qt::Key_Return:
-    case Qt::Key_Enter:
-    {
-        const QString line = currentInput();
-        moveCursorToEnd();
-        insertPlainText("\n");
-        emit commandEntered(line);
-        return;
-    }
-    case Qt::Key_Up:
-        emit historyUpRequested();
-        return;
-    case Qt::Key_Down:
-        emit historyDownRequested();
-        return;
-    case Qt::Key_Backspace:
-        if (touchesOutput || (!c.hasSelection() && c.position() <= m_promptPos))
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+        {
+            const QString line = currentInput();
+            moveCursorToEnd();
+            insertPlainText("\n");
+            emit commandEntered(line);
             return;
-        break;
-    case Qt::Key_Delete:
-        if (touchesOutput)
+        }
+        case Qt::Key_Up:
+            emit historyUpRequested();
             return;
-        break;
-    case Qt::Key_Left:
-        if (!c.hasSelection() && c.position() <= m_promptPos)
+        case Qt::Key_Down:
+            emit historyDownRequested();
             return;
-        break;
-    case Qt::Key_Home:
-    {
-        QTextCursor home = c;
-        home.setPosition(m_promptPos,
-                         (event->modifiers() & Qt::ShiftModifier)
-                             ? QTextCursor::KeepAnchor
-                             : QTextCursor::MoveAnchor);
-        setTextCursor(home);
-        return;
-    }
-    default:
-        break;
+        case Qt::Key_Backspace:
+            if (touchesOutput || (!c.hasSelection() && c.position() <= m_promptPos))
+                return;
+            break;
+        case Qt::Key_Delete:
+            if (touchesOutput)
+                return;
+            break;
+        case Qt::Key_Left:
+            if (!c.hasSelection() && c.position() <= m_promptPos)
+                return;
+            break;
+        case Qt::Key_Home:
+        {
+            QTextCursor home = c;
+            home.setPosition(m_promptPos, (event->modifiers() & Qt::ShiftModifier) ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor); // NOLINT
+            setTextCursor(home);
+            return;
+        }
+        default:
+            break;
     }
 
     if (event->matches(QKeySequence::Cut) && touchesOutput)
@@ -131,8 +126,7 @@ void TerminalWidget::insertFromMimeData(const QMimeData* source)
         return;
 
     const QTextCursor c = textCursor();
-    if (c.position() < m_promptPos
-        || (c.hasSelection() && c.selectionStart() < m_promptPos))
+    if (c.position() < m_promptPos || (c.hasSelection() && c.selectionStart() < m_promptPos))
         moveCursorToEnd();
 
     QString text = source->text();
@@ -140,4 +134,4 @@ void TerminalWidget::insertFromMimeData(const QMimeData* source)
     insertPlainText(text);
 }
 
-}
+} // namespace EmulatorMirea

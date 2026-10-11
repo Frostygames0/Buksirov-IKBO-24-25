@@ -1,15 +1,14 @@
 #include "core/session.h"
 
-#include <QtEnvironmentVariables>
 #include <QSysInfo>
+#include <QtEnvironmentVariables>
 
 #include "utils/user.h"
 
 namespace EmulatorMirea
 {
 
-Session::Session() : m_currentUserName(UserUtils::getCurrentUsername()), m_currentMachineName(QSysInfo::machineHostName())
-{}
+Session::Session() : m_currentUserName(UserUtils::getCurrentUsername()), m_currentMachineName(QSysInfo::machineHostName()) {}
 
 QString Session::userName() const
 {
@@ -26,14 +25,13 @@ QString Session::fancyName() const
     return m_currentUserName + "@" + m_currentMachineName;
 }
 
-void Session::addHistory(const QString &line)
+void Session::addHistory(const QString& line)
 {
-    if (line.trimmed().isEmpty()) return;
+    if (line.trimmed().isEmpty())
+        return;
 
     if (m_history.isEmpty() || m_history.last() != line)
-    {
         m_history.append(line);
-    }
 
     resetHistoryIndex();
 }
@@ -49,9 +47,7 @@ QString Session::previousHistoryItem()
         return {};
 
     if (m_historyIndex > 0)
-    {
         --m_historyIndex;
-    }
 
     return m_history[m_historyIndex];
 }
@@ -66,12 +62,12 @@ QString Session::nextHistoryItem()
         ++m_historyIndex;
         return m_history[m_historyIndex];
     }
-    else
-    {
-        // Reached past the latest item, return empty for current input line
-        m_historyIndex = m_history.size();
-        return {};
-    }
+
+
+    // Reached past the latest item, return empty for current input line
+    m_historyIndex = m_history.size();
+    return {};
+
 }
 
 QString Session::getEnv(const QString& name, const QString& defaultValue) const
@@ -81,10 +77,12 @@ QString Session::getEnv(const QString& name, const QString& defaultValue) const
     if (name == "HOSTNAME")
         return machineName();
     if (name == "PWD")
+    {
         // TODO: Implement VFS
         return "/";
+    }
 
     return qEnvironmentVariable(name.toUtf8().constData(), defaultValue);
 }
 
-}
+} // namespace EmulatorMirea

@@ -8,30 +8,30 @@ qt_standard_project_setup()
 set(CMAKE_AUTORCC ON)
 
 qt_add_executable(EmulatorMirea
-    WIN32 MACOSX_BUNDLE
+    WIN32
 
     src/main.cpp
     src/appinfo.h
 
     # core: shell logic, no widgets
 
-    src/core/envexpander.h     src/core/envexpander.cpp
-    src/core/interpreter.h     src/core/interpreter.cpp
-    src/core/session.h         src/core/session.cpp
-    src/core/tokenizer.h       src/core/tokenizer.cpp
-    src/core/shell.h src/core/shell.cpp
+    src/core/envexpander.h       src/core/envexpander.cpp
+    src/core/interpreter.h       src/core/interpreter.cpp
+    src/core/session.h           src/core/session.cpp
+    src/core/tokenizer.h         src/core/tokenizer.cpp
+    src/core/shell.h             src/core/shell.cpp
 
     # core/commands: well, commands
     src/core/commands/executor.h src/core/commands/executor.cpp
     src/core/commands/registry.h src/core/commands/registry.cpp
-    src/core/commands/command.h src/core/commands/command.cpp
+    src/core/commands/command.h  src/core/commands/command.cpp
 
     # ui: widgets
-    src/ui/mainwindow.h        src/ui/mainwindow.cpp
-    src/ui/terminalwidget.h    src/ui/terminalwidget.cpp
+    src/ui/mainwindow.h          src/ui/mainwindow.cpp
+    src/ui/terminalwidget.h      src/ui/terminalwidget.cpp
 
     # utils
-    src/utils/user.h      src/utils/user.cpp
+    src/utils/user.h             src/utils/user.cpp
 
     resources/resources.qrc
 )

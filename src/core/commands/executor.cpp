@@ -2,8 +2,10 @@
 
 #include <QCoreApplication>
 #include <QString>
+#include <QStringList>
 
 #include "core/commands/command.h"
+#include "core/session.h"
 
 namespace EmulatorMirea::Commands
 {
@@ -22,11 +24,11 @@ QString Executor::execute(const QStringList& tokens, Session& session) const
 
     const QString& name = tokens.first();
 
-    Command* cmd = m_registry.getCommand(name);
-    if (!cmd)
+    const Command* cmd = m_registry.getCommand(name);
+    if (cmd == nullptr)
         return name + ": command not found";
 
     return cmd->execute(tokens.mid(1), session);
 }
 
-}
+} // namespace EmulatorMirea::Commands

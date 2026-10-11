@@ -2,11 +2,16 @@
 
 #include <QCoreApplication>
 #include <QStringLiteral>
+#include <QString>
+
+#include <utility>
+
+#include "core/session.h"
 
 namespace EmulatorMirea::Commands
 {
 
-StubCommand::StubCommand(const QString& name) : m_name(name) {}
+StubCommand::StubCommand(QString name) : m_name(std::move(name)) {}
 
 QString StubCommand::name() const
 {
@@ -38,4 +43,4 @@ QString ExitCommand::execute(const QStringList& args, Session&) const
     return {};
 }
 
-}
+} // namespace EmulatorMirea::Commands
