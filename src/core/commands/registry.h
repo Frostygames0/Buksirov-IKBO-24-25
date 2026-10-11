@@ -16,9 +16,10 @@ class Registry
 public:
     void registerCommand(std::unique_ptr<Command> command);
     Command* getCommand(const QString& name) const;
+
 private:
     std::unordered_map<QString, std::unique_ptr<Command>> m_commands;
 };
 
-}
+} // namespace EmulatorMirea::Commands
 #endif // REGISTRY_H

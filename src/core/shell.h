@@ -1,10 +1,10 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#include <QString>
-
-#include <core/session.h>
 #include <core/interpreter.h>
+#include <core/session.h>
+
+class QString;
 
 namespace EmulatorMirea
 {
@@ -17,11 +17,12 @@ public:
     QString nextHistory();
     QString prompt() const;
     QString title() const;
+
 private:
     Session m_session;
     Interpreter m_interpreter;
 };
 
-}
+} // namespace EmulatorMirea
 
 #endif // SHELL_H

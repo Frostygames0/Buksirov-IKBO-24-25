@@ -2,27 +2,34 @@
 #define COMMAND_H
 
 #include <QStringList>
-#include "core/session.h"
 
-namespace EmulatorMirea::Commands
+class QString;
+
+namespace EmulatorMirea
+{
+
+class Session;
+
+namespace Commands
 {
 
 class Command
 {
 public:
-    ~Command() noexcept = default;
+    virtual ~Command() noexcept = default;
 
-    virtual QString name() const = 0;
+    [[nodiscard]] virtual QString name() const = 0;
     virtual QString execute(const QStringList& args, Session& session) const = 0;
 };
 
 class StubCommand : public Command
 {
 public:
-    explicit StubCommand(const QString& name);
+    explicit StubCommand(QString name);
 
-    QString name() const override;
+    [[nodiscard]] QString name() const override;
     QString execute(const QStringList& args, Session& session) const override;
+
 private:
     QString m_name;
 };
@@ -30,10 +37,11 @@ private:
 class ExitCommand : public Command
 {
 public:
-    QString name() const override;
+    [[nodiscard]] QString name() const override;
     QString execute(const QStringList& args, Session& session) const override;
 };
 
-}
+} // namespace Commands
+} // namespace EmulatorMirea
 
 #endif // COMMAND_H

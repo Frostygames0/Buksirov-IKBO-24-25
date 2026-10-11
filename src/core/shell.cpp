@@ -1,11 +1,14 @@
 #include "core/shell.h"
 
+#include <QString>
+#include <QStringLiteral>
+
 namespace EmulatorMirea
 {
 
 QString Shell::submit(const QString& line)
 {
-    m_session.addHistory(line);   // skips blank lines and consecutive duplicates
+    m_session.addHistory(line); // skips blank lines and consecutive duplicates
 
     if (line.trimmed().isEmpty())
         return {};
@@ -33,4 +36,4 @@ QString Shell::title() const
     return m_session.fancyName();
 }
 
-}
+} // namespace EmulatorMirea

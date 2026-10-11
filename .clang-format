@@ -1,0 +1,30 @@
+---
+BasedOnStyle: Microsoft
+# Breaks & Braces
+ColumnLimit: 140
+BreakBeforeBraces: Allman
+InsertBraces: false
+RemoveBracesLLVM: true
+AccessModifierOffset: -4
+PenaltyBreakAssignment: 1000
+PenaltyBreakScopeResolution: 1000
+BreakTemplateDeclarations: Yes
+SeparateDefinitionBlocks: Leave
+# Single Line Short
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortLambdasOnASingleLine: Inline
+# Bin Packing
+BinPackArguments: false
+BinPackParameters: OnePerLine
+# Indentation
+IndentCaseLabels: true
+NamespaceIndentation: None
+# Alignment
+PointerAlignment: Left
+QualifierAlignment: Left
+AlignArrayOfStructures: Left
+AlignEscapedNewlines: DontAlign
+# Literal separator
+IntegerLiteralSeparator:
+  Decimal: 3
+  DecimalMinDigits: 5

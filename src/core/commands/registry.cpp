@@ -1,5 +1,11 @@
 #include "registry.h"
 
+#include <memory>
+
+#include <QString>
+
+#include "core/commands/command.h"
+
 namespace EmulatorMirea::Commands
 {
 
@@ -14,4 +20,4 @@ Command* Registry::getCommand(const QString& name) const
     return it == m_commands.end() ? nullptr : it->second.get();
 }
 
-}
+} // namespace EmulatorMirea::Commands

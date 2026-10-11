@@ -28,13 +28,13 @@ protected:
     void insertFromMimeData(const QMimeData* source) override;
 
 private:
-    QString currentInput() const;
+    [[nodiscard]] QString currentInput() const;
     void moveCursorToEnd();
 
     QString m_prompt = "$ ";
     int m_promptPos = 0;
 };
 
-}
+} // namespace EmulatorMirea
 
 #endif // TERMINALWIDGET_H

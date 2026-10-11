@@ -1,5 +1,8 @@
 #include "core/envexpander.h"
 
+#include <QString>
+#include <QtTypes>
+
 #include "core/session.h"
 
 namespace EmulatorMirea
@@ -7,9 +10,15 @@ namespace EmulatorMirea
 
 namespace
 {
-bool isNameStart(QChar c) { return c.isLetter() || c == '_'; }
-bool isNameChar(QChar c)  { return c.isLetterOrNumber() || c == '_'; }
+bool isNameStart(QChar c)
+{
+    return c.isLetter() || c == '_';
 }
+bool isNameChar(QChar c)
+{
+    return c.isLetterOrNumber() || c == '_';
+}
+} // namespace
 
 QString EnvExpander::expand(const QString& token, const Session& session) const
 {
@@ -17,9 +26,9 @@ QString EnvExpander::expand(const QString& token, const Session& session) const
         return token;
 
     QString result;
-    const int n = token.size();
+    const qsizetype n = token.size();
 
-    for (int i = 0; i < n; ++i)
+    for (qsizetype i = 0; i < n; ++i)
     {
         const QChar c = token[i];
 
@@ -32,10 +41,10 @@ QString EnvExpander::expand(const QString& token, const Session& session) const
         // ${NAME}
         if (token[i + 1] == '{')
         {
-            const int end = token.indexOf('}', i + 2);
+            const qsizetype end = token.indexOf('}', i + 2);
             if (end == -1)
             {
-                result += c;   // unterminated, keep literally
+                result += c; // unterminated, keep literally
                 continue;
             }
             result += session.getEnv(token.mid(i + 2, end - i - 2));
@@ -44,7 +53,7 @@ QString EnvExpander::expand(const QString& token, const Session& session) const
         // $NAME
         else if (isNameStart(token[i + 1]))
         {
-            int j = i + 1;
+            qsizetype j = i + 1;
             while (j < n && isNameChar(token[j]))
                 ++j;
             result += session.getEnv(token.mid(i + 1, j - i - 1));
@@ -60,4 +69,4 @@ QString EnvExpander::expand(const QString& token, const Session& session) const
     return result;
 }
 
-}
+} // namespace EmulatorMirea

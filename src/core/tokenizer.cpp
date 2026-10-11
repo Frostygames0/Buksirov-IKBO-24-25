@@ -1,7 +1,8 @@
 #include "core/tokenizer.h"
 
-#include <QStringView>
 #include <QString>
+#include <QStringView>
+#include <QStringList>
 
 namespace EmulatorMirea
 {
@@ -11,11 +12,13 @@ QStringList Tokenizer::tokenize(QStringView input, const Session& session) const
     QStringList tokens;
     QString current;
     bool inToken = false;
-    bool literal = false;   // token contained '...', so don't expand it
+    bool literal = false; // token contained '...', so don't expand it
     QChar quote;
 
-    auto finishToken = [&] {
-        QString toPush = (literal ? current : m_envExpander.expand(current, session));
+    auto finishToken = [&]
+    {
+        const QString toPush = (literal ? current : m_envExpander.expand(current, session));
+
         if (!toPush.isEmpty())
             tokens << toPush;
 
@@ -67,4 +70,4 @@ QStringList Tokenizer::tokenize(QStringView input, const Session& session) const
     return tokens;
 }
 
-}
+} // namespace EmulatorMirea
