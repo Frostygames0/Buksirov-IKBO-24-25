@@ -43,7 +43,7 @@ void MainWindow::setupTerminal()
     m_terminalBox->setStyleSheet("QPlainTextEdit {"
                                  "    border: none;"
                                  "    border-radius: 0px;"
-                                 "    background-color: #000000;"
+                                 "    background-color: #121212;"
                                  "    color: #dcdcdc;"
                                  "}");
 
@@ -62,9 +62,15 @@ void MainWindow::setupTerminal()
                 m_terminalBox->showPrompt();
             });
 
-    connect(m_terminalBox, &TerminalWidget::historyUpRequested, this, [this] { m_terminalBox->setInput(m_shell.previousHistory()); });
+    connect(m_terminalBox,
+            &TerminalWidget::historyUpRequested,
+            this,
+            [this] { m_terminalBox->setInput(m_shell.previousHistory()); });
 
-    connect(m_terminalBox, &TerminalWidget::historyDownRequested, this, [this] { m_terminalBox->setInput(m_shell.nextHistory()); });
+    connect(m_terminalBox,
+            &TerminalWidget::historyDownRequested,
+            this,
+            [this] { m_terminalBox->setInput(m_shell.nextHistory()); });
 
     m_terminalBox->setPrompt(m_shell.prompt());
     m_terminalBox->showPrompt();
