@@ -2,8 +2,11 @@
 
 #include <QSysInfo>
 #include <QtEnvironmentVariables>
+<<<<<<< HEAD
 #include <QString>
 #include <QStringList>
+=======
+>>>>>>> 23863db427f3cf9dd7473738be7dd43f66dd8e16
 
 #include "utils/user.h"
 
