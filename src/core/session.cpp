@@ -1,19 +1,19 @@
 #include "core/session.h"
 
-#include <QSysInfo>
-#include <QtEnvironmentVariables>
-<<<<<<< HEAD
 #include <QString>
 #include <QStringList>
-=======
->>>>>>> 23863db427f3cf9dd7473738be7dd43f66dd8e16
+#include <QSysInfo>
+#include <QtEnvironmentVariables>
 
 #include "utils/user.h"
 
 namespace EmulatorMirea
 {
 
-Session::Session() : m_currentUserName(UserUtils::getCurrentUsername()), m_currentMachineName(QSysInfo::machineHostName()) {}
+Session::Session()
+    : m_currentUserName(UserUtils::getCurrentUsername()), m_currentMachineName(QSysInfo::machineHostName())
+{
+}
 
 QString Session::userName() const
 {
@@ -68,11 +68,9 @@ QString Session::nextHistoryItem()
         return m_history[m_historyIndex];
     }
 
-
     // Reached past the latest item, return empty for current input line
     m_historyIndex = m_history.size();
     return {};
-
 }
 
 QString Session::getEnv(const QString& name, const QString& defaultValue) const
@@ -86,6 +84,9 @@ QString Session::getEnv(const QString& name, const QString& defaultValue) const
         // TODO: Implement VFS
         return "/";
     }
+
+    if (name == "HOME")
+        return qEnvironmentVariable("USERPROFILE", "");
 
     return qEnvironmentVariable(name.toUtf8().constData(), defaultValue);
 }
