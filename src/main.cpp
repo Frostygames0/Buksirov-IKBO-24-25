@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 
     QFontDatabase::addApplicationFont(":/fonts/JetBrainsMono-Regular.ttf");
 
-    EmulatorMirea::MainWindow w;
+    EmulatorMirea::Ui::MainWindow w;
     w.show();
 
     return QApplication::exec();

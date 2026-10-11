@@ -4,7 +4,7 @@
 #include <QMimeData>
 #include <QTextCursor>
 
-namespace EmulatorMirea
+namespace EmulatorMirea::Ui
 {
 
 TerminalWidget::TerminalWidget(QWidget* parent) : QPlainTextEdit(parent)
@@ -135,4 +135,4 @@ void TerminalWidget::insertFromMimeData(const QMimeData* source)
     insertPlainText(text);
 }
 
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Ui

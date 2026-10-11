@@ -6,33 +6,48 @@
 #include <QSysInfo>
 #include <QtTypes>
 
-namespace EmulatorMirea
+#include "core/envprovider.h"
+
+namespace EmulatorMirea::Core
 {
 
-class Session
+class ISession : public IEnvProvider
+{
+public:
+    [[nodiscard]] virtual QString userName() const = 0;
+    [[nodiscard]] virtual QString machineName() const = 0;
+    [[nodiscard]] virtual QString fancyName() const = 0;
+
+    virtual void addHistory(const QString& line) = 0;
+    virtual QString previousHistoryItem() = 0;
+    virtual QString nextHistoryItem() = 0;
+    virtual void resetHistoryIndex() = 0;
+};
+
+class Session : public ISession
 {
 public:
     explicit Session();
 
-    [[nodiscard]] QString userName() const;
-    [[nodiscard]] QString machineName() const;
-    [[nodiscard]] QString fancyName() const;
+    [[nodiscard]] QString userName() const override;
+    [[nodiscard]] QString machineName() const override;
+    [[nodiscard]] QString fancyName() const override;
 
-    void addHistory(const QString& line);
-    QString previousHistoryItem();
-    QString nextHistoryItem();
-    void resetHistoryIndex();
+    void addHistory(const QString& line) override;
+    QString previousHistoryItem() override;
+    QString nextHistoryItem() override;
+    void resetHistoryIndex() override;
 
-    [[nodiscard]] QString getEnv(const QString& name, const QString& defaultValue = {}) const;
+    [[nodiscard]] QString getEnv(const QString& name, const QString& defaultValue = {}) const override;
 
 private:
     QString m_currentUserName;
     QString m_currentMachineName;
 
     QStringList m_history;
-    qsizetype m_historyIndex;
+    qsizetype m_historyIndex = 0;
 };
 
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Core
 
 #endif // SESSION_H

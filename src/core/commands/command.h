@@ -5,13 +5,10 @@
 
 class QString;
 
-namespace EmulatorMirea
+namespace EmulatorMirea::Core
 {
 
-class Session;
-
-namespace Commands
-{
+class ISession;
 
 class Command
 {
@@ -19,7 +16,7 @@ public:
     virtual ~Command() noexcept = default;
 
     [[nodiscard]] virtual QString name() const = 0;
-    virtual QString execute(const QStringList& args, Session& session) const = 0;
+    virtual QString execute(const QStringList& args, ISession& session) const = 0;
 };
 
 class StubCommand : public Command
@@ -28,7 +25,7 @@ public:
     explicit StubCommand(QString name);
 
     [[nodiscard]] QString name() const override;
-    QString execute(const QStringList& args, Session& session) const override;
+    QString execute(const QStringList& args, ISession& session) const override;
 
 private:
     QString m_name;
@@ -38,10 +35,9 @@ class ExitCommand : public Command
 {
 public:
     [[nodiscard]] QString name() const override;
-    QString execute(const QStringList& args, Session& session) const override;
+    QString execute(const QStringList& args, ISession& session) const override;
 };
 
-} // namespace Commands
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Core
 
 #endif // COMMAND_H

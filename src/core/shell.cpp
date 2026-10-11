@@ -3,7 +3,7 @@
 #include <QString>
 #include <QStringLiteral>
 
-namespace EmulatorMirea
+namespace EmulatorMirea::Core
 {
 
 QString Shell::submit(const QString& line)
@@ -36,4 +36,4 @@ QString Shell::title() const
     return m_session.fancyName();
 }
 
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Core

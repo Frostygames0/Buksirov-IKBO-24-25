@@ -5,7 +5,7 @@
 
 #include "core/shell.h"
 
-namespace EmulatorMirea
+namespace EmulatorMirea::Ui
 {
 
 class TerminalWidget;
@@ -18,7 +18,7 @@ public:
     explicit MainWindow();
 
 private:
-    Shell m_shell;
+    Core::Shell m_shell;
 
     void setupUi();
 

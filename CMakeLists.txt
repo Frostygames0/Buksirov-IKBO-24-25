@@ -5,6 +5,10 @@ find_package(Qt6 6.12 REQUIRED COMPONENTS Core Widgets)
 
 qt_standard_project_setup()
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 set(CMAKE_AUTORCC ON)
 
 qt_add_executable(EmulatorMirea
@@ -14,14 +18,13 @@ qt_add_executable(EmulatorMirea
     src/appinfo.h
 
     # core: shell logic, no widgets
-
-    src/core/envexpander.h       src/core/envexpander.cpp
     src/core/interpreter.h       src/core/interpreter.cpp
+    src/core/envprovider.h
     src/core/session.h           src/core/session.cpp
-    src/core/tokenizer.h         src/core/tokenizer.cpp
+    src/core/lineparser.h        src/core/lineparser.cpp
     src/core/shell.h             src/core/shell.cpp
 
-    # core/commands: well, commands
+    # core/commands
     src/core/commands/executor.h src/core/commands/executor.cpp
     src/core/commands/registry.h src/core/commands/registry.cpp
     src/core/commands/command.h  src/core/commands/command.cpp

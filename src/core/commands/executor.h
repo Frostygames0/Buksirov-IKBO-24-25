@@ -6,25 +6,21 @@
 
 #include "core/commands/registry.h"
 
-namespace EmulatorMirea
+namespace EmulatorMirea::Core
 {
 
 class Session;
 
-namespace Commands
-{
-
-class Executor
+class CommandExecutor
 {
 public:
-    explicit Executor();
-    QString execute(const QStringList& tokens, Session& session) const;
+    explicit CommandExecutor();
+    QString execute(const QStringList& tokens, ISession& session) const;
 
 private:
-    Registry m_registry;
+    CommandRegistry m_registry;
 };
 
-} // namespace Commands
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Core
 
 #endif // COMMANDEXECUTOR_H

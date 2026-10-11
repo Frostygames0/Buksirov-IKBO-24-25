@@ -1,12 +1,12 @@
 #ifndef SHELL_H
 #define SHELL_H
 
+#include <QString>
+
 #include <core/interpreter.h>
 #include <core/session.h>
 
-class QString;
-
-namespace EmulatorMirea
+namespace EmulatorMirea::Core
 {
 
 class Shell
@@ -23,6 +23,6 @@ private:
     Interpreter m_interpreter;
 };
 
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Core
 
 #endif // SHELL_H

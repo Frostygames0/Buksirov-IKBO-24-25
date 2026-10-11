@@ -1,14 +1,14 @@
 #include "core/commands/command.h"
 
 #include <QCoreApplication>
-#include <QStringLiteral>
 #include <QString>
+#include <QStringLiteral>
 
 #include <utility>
 
 #include "core/session.h"
 
-namespace EmulatorMirea::Commands
+namespace EmulatorMirea::Core
 {
 
 StubCommand::StubCommand(QString name) : m_name(std::move(name)) {}
@@ -18,7 +18,7 @@ QString StubCommand::name() const
     return m_name;
 }
 
-QString StubCommand::execute(const QStringList& args, Session&) const
+QString StubCommand::execute(const QStringList& args, ISession&) const
 {
     return m_name + " " + args.join(' ');
 }
@@ -28,7 +28,7 @@ QString ExitCommand::name() const
     return QStringLiteral("exit");
 }
 
-QString ExitCommand::execute(const QStringList& args, Session&) const
+QString ExitCommand::execute(const QStringList& args, ISession&) const
 {
     if (args.size() > 1)
         return name() + ": too many arguments";
@@ -43,4 +43,4 @@ QString ExitCommand::execute(const QStringList& args, Session&) const
     return {};
 }
 
-} // namespace EmulatorMirea::Commands
+} // namespace EmulatorMirea::Core

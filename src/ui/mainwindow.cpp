@@ -8,7 +8,7 @@
 
 #include "appinfo.h"
 
-namespace EmulatorMirea
+namespace EmulatorMirea::Ui
 {
 
 MainWindow::MainWindow() : QMainWindow(nullptr)
@@ -76,4 +76,4 @@ void MainWindow::setupTerminal()
     m_terminalBox->showPrompt();
 }
 
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Ui

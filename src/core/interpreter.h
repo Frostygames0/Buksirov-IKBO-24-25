@@ -5,10 +5,9 @@
 #include <QStringView>
 
 #include "core/commands/executor.h"
-#include "core/session.h"
-#include "core/tokenizer.h"
+#include "core/lineparser.h"
 
-namespace EmulatorMirea
+namespace EmulatorMirea::Core
 {
 
 class Session;
@@ -16,13 +15,13 @@ class Session;
 class Interpreter
 {
 public:
-    [[nodiscard]] QString execute(QStringView cmd, Session& session) const;
+    [[nodiscard]] QString execute(QStringView cmd, ISession& session) const;
 
 private:
-    Tokenizer m_tokenizer;
-    Commands::Executor m_commandExecutor;
+    LineParser m_lineParser;
+    CommandExecutor m_commandExecutor;
 };
 
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Core
 
 #endif // INTERPRETER_H

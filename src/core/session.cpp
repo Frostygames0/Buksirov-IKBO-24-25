@@ -7,7 +7,7 @@
 
 #include "utils/user.h"
 
-namespace EmulatorMirea
+namespace EmulatorMirea::Core
 {
 
 Session::Session()
@@ -85,10 +85,12 @@ QString Session::getEnv(const QString& name, const QString& defaultValue) const
         return "/";
     }
 
+#ifdef Q_OS_WIN
     if (name == "HOME")
         return qEnvironmentVariable("USERPROFILE", "");
+#endif
 
     return qEnvironmentVariable(name.toUtf8().constData(), defaultValue);
 }
 
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Core

@@ -8,10 +8,10 @@
 
 #include "core/commands/command.h"
 
-namespace EmulatorMirea::Commands
+namespace EmulatorMirea::Core
 {
 
-class Registry
+class CommandRegistry
 {
 public:
     void registerCommand(std::unique_ptr<Command> command);
@@ -21,5 +21,5 @@ private:
     std::unordered_map<QString, std::unique_ptr<Command>> m_commands;
 };
 
-} // namespace EmulatorMirea::Commands
+} // namespace EmulatorMirea::Core
 #endif // REGISTRY_H

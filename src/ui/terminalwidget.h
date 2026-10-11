@@ -3,7 +3,7 @@
 
 #include <QPlainTextEdit>
 
-namespace EmulatorMirea
+namespace EmulatorMirea::Ui
 {
 
 class TerminalWidget : public QPlainTextEdit
@@ -35,6 +35,6 @@ private:
     int m_promptPos = 0;
 };
 
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Ui
 
 #endif // TERMINALWIDGET_H

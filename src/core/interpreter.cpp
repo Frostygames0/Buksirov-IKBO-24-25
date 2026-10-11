@@ -6,13 +6,13 @@
 
 #include "core/session.h"
 
-namespace EmulatorMirea
+namespace EmulatorMirea::Core
 {
 
-QString Interpreter::execute(QStringView cmd, Session& session) const
+QString Interpreter::execute(QStringView cmd, ISession& session) const
 {
-    const QStringList tokens = m_tokenizer.tokenize(cmd, session);
-    return m_commandExecutor.execute(tokens, session);
+    const QStringList args = m_lineParser.parse(cmd, session);
+    return m_commandExecutor.execute(args, session);
 }
 
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Core

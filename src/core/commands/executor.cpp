@@ -7,17 +7,17 @@
 #include "core/commands/command.h"
 #include "core/session.h"
 
-namespace EmulatorMirea::Commands
+namespace EmulatorMirea::Core
 {
 
-Executor::Executor()
+CommandExecutor::CommandExecutor()
 {
     m_registry.registerCommand(std::make_unique<StubCommand>("ls"));
     m_registry.registerCommand(std::make_unique<StubCommand>("cd"));
     m_registry.registerCommand(std::make_unique<ExitCommand>());
 }
 
-QString Executor::execute(const QStringList& tokens, Session& session) const
+QString CommandExecutor::execute(const QStringList& tokens, ISession& session) const
 {
     if (tokens.isEmpty())
         return {};
@@ -31,4 +31,4 @@ QString Executor::execute(const QStringList& tokens, Session& session) const
     return cmd->execute(tokens.mid(1), session);
 }
 
-} // namespace EmulatorMirea::Commands
+} // namespace EmulatorMirea::Core
