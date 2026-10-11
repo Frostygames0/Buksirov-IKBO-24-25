@@ -6,12 +6,23 @@
 namespace EmulatorMirea
 {
 
-QStringList Tokenizer::Tokenize(QStringView input) const
+QStringList Tokenizer::tokenize(QStringView input, const Session& session) const
 {
     QStringList tokens;
     QString current;
     bool inToken = false;
+    bool literal = false;   // token contained '...', so don't expand it
     QChar quote;
+
+    auto finishToken = [&] {
+        QString toPush = (literal ? current : m_envExpander.expand(current, session));
+        if (!toPush.isEmpty())
+            tokens << toPush;
+
+        current.clear();
+        inToken = false;
+        literal = false;
+    };
 
     for (int i = 0; i < input.size(); ++i)
     {
@@ -30,6 +41,8 @@ QStringList Tokenizer::Tokenize(QStringView input) const
         {
             quote = c;
             inToken = true;
+            if (c == '\'')
+                literal = true;
         }
         else if (c == '\\' && i + 1 < input.size())
         {
@@ -39,11 +52,7 @@ QStringList Tokenizer::Tokenize(QStringView input) const
         else if (c.isSpace())
         {
             if (inToken)
-            {
-                tokens << current;
-                current.clear();
-                inToken = false;
-            }
+                finishToken();
         }
         else
         {
@@ -53,7 +62,7 @@ QStringList Tokenizer::Tokenize(QStringView input) const
     }
 
     if (inToken)
-        tokens << current;
+        finishToken();
 
     return tokens;
 }

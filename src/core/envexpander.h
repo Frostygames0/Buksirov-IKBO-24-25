@@ -11,7 +11,7 @@ class Session;
 class EnvExpander
 {
 public:
-    QString Expand(const QString& line, Session& session) const;
+    QString expand(const QString& line, const Session& session) const;
 };
 
 }

@@ -1,6 +1,7 @@
 #include "core/commands/command.h"
 
 #include <QCoreApplication>
+#include <QStringLiteral>
 
 namespace EmulatorMirea::Commands
 {
@@ -19,7 +20,7 @@ QString StubCommand::execute(const QStringList& args, Session&) const
 
 QString ExitCommand::name() const
 {
-    return "exit";
+    return QStringLiteral("exit");
 }
 
 QString ExitCommand::execute(const QStringList& args, Session&) const

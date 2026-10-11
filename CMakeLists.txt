@@ -33,6 +33,7 @@ qt_add_executable(EmulatorMirea
     resources/resources.qrc
     src/core/commands/registry.h src/core/commands/registry.cpp
     src/core/commands/command.h src/core/commands/command.cpp
+    src/core/shell.h src/core/shell.cpp
 )
 
 target_include_directories(EmulatorMirea PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

@@ -2,8 +2,9 @@
 #define TOKENIZER_H
 
 #include <QStringList>
+#include <QStringView>
 
-class QStringView;
+#include "core/envexpander.h"
 
 namespace EmulatorMirea
 {
@@ -11,7 +12,9 @@ namespace EmulatorMirea
 class Tokenizer
 {
 public:
-    QStringList Tokenize(QStringView line) const;
+    QStringList tokenize(QStringView line, const Session& session) const;
+private:
+    EnvExpander m_envExpander;
 };
 
 }

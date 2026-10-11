@@ -3,11 +3,7 @@
 
 #include <QMainWindow>
 
-#include "core/session.h"
-#include "core/interpreter.h"
-
-class QAction;
-class QMenu;
+#include "core/shell.h"
 
 namespace EmulatorMirea
 {
@@ -22,15 +18,11 @@ public:
     explicit MainWindow();
 
 private:
-    Session m_session;
-    Interpreter m_interpreter;
+    Shell m_shell;
 
     void setupUi();
 
     TerminalWidget* m_terminalBox = nullptr;
-    QMenu* m_menuHelp = nullptr;
-    QAction *m_actionAbout = nullptr;
-
     void setupTerminal();
 };
 #endif // MAINWINDOW_H

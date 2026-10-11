@@ -1,10 +1,10 @@
 #include "ui/mainwindow.h"
 #include "ui/terminalwidget.h"
 
-#include <QMessageBox>
 #include <QString>
-#include <QMenu>
-#include <QMenuBar>
+#include <QIcon>
+#include <QFrame>
+#include <QFont>
 
 #include "appinfo.h"
 
@@ -20,7 +20,8 @@ MainWindow::MainWindow()
 void MainWindow::setupUi()
 {
     setObjectName("MainWindow");
-    setWindowTitle(tr("%1 — %2").arg(m_session.fancyName(), AppInfo::kAppName));
+    setWindowTitle(tr("%1 — %2").arg(m_shell.title(), AppInfo::kAppName));
+
     setWindowIcon(QIcon(":/icon.png"));
 
     setMinimumSize(400, 300);
@@ -51,29 +52,23 @@ void MainWindow::setupTerminal()
     m_terminalBox->setFrameShape(QFrame::NoFrame);
     m_terminalBox->setBackgroundVisible(false);
 
-    // Enter pressed: save to history, run, show output, new prompt
+    // Enter pressed: run through the shell, show output, new prompt
     connect(m_terminalBox, &TerminalWidget::commandEntered, this,
             [this](const QString& line)
             {
-                m_session.addHistory(line);   // skips blank lines and consecutive duplicates
+                m_terminalBox->print(m_shell.submit(line));
 
-                if (!line.trimmed().isEmpty())
-                    m_terminalBox->print(m_interpreter.execute(line, m_session));
-
+                m_terminalBox->setPrompt(m_shell.prompt());
                 m_terminalBox->showPrompt();
             });
 
-    // Up arrow: older history item
-    connect(m_terminalBox, &TerminalWidget::historyUpRequested, this, [this] {
-        m_terminalBox->setInput(m_session.previousHistoryItem());
-    });
+    connect(m_terminalBox, &TerminalWidget::historyUpRequested, this,
+            [this] { m_terminalBox->setInput(m_shell.previousHistory()); });
 
-    // Down arrow: newer item, or empty input past the newest
-    connect(m_terminalBox, &TerminalWidget::historyDownRequested, this, [this] {
-        m_terminalBox->setInput(m_session.nextHistoryItem());
-    });
+    connect(m_terminalBox, &TerminalWidget::historyDownRequested, this,
+            [this] { m_terminalBox->setInput(m_shell.nextHistory()); });
 
-    m_terminalBox->setPrompt(tr("[%1]$ ").arg(m_session.fancyName()));
+    m_terminalBox->setPrompt(m_shell.prompt());
     m_terminalBox->showPrompt();
 }
 

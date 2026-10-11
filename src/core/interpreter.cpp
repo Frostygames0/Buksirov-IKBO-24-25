@@ -11,13 +11,7 @@ namespace EmulatorMirea
 
 QString Interpreter::execute(QStringView cmd, Session& session) const
 {
-    QStringList tokens = m_tokenizer.Tokenize(cmd);
-
-    for (int i = 0; i < tokens.size(); ++i)
-        tokens[i] = m_envExpander.Expand(tokens[i], session);
-
-    tokens.removeAll({});
-
+    QStringList tokens = m_tokenizer.tokenize(cmd, session);
     return m_commandExecutor.execute(tokens, session);
 }
 

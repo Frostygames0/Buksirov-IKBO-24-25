@@ -7,11 +7,11 @@ namespace EmulatorMirea
 
 namespace
 {
-bool IsNameStart(QChar c) { return c.isLetter() || c == '_'; }
-bool IsNameChar(QChar c)  { return c.isLetterOrNumber() || c == '_'; }
+bool isNameStart(QChar c) { return c.isLetter() || c == '_'; }
+bool isNameChar(QChar c)  { return c.isLetterOrNumber() || c == '_'; }
 }
 
-QString EnvExpander::Expand(const QString& token, Session& session) const
+QString EnvExpander::expand(const QString& token, const Session& session) const
 {
     if (!token.contains('$'))
         return token;
@@ -42,10 +42,10 @@ QString EnvExpander::Expand(const QString& token, Session& session) const
             i = end;
         }
         // $NAME
-        else if (IsNameStart(token[i + 1]))
+        else if (isNameStart(token[i + 1]))
         {
             int j = i + 1;
-            while (j < n && IsNameChar(token[j]))
+            while (j < n && isNameChar(token[j]))
                 ++j;
             result += session.getEnv(token.mid(i + 1, j - i - 1));
             i = j - 1;

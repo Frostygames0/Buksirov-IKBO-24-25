@@ -76,11 +76,12 @@ QString Session::nextHistoryItem()
 
 QString Session::getEnv(const QString& name, const QString& defaultValue) const
 {
-    if (name == "USER")
+    if (name == "USER" || name == "USERNAME")
         return userName();
     if (name == "HOSTNAME")
         return machineName();
     if (name == "PWD")
+        // TODO: Implement VFS
         return "/";
 
     return qEnvironmentVariable(name.toUtf8().constData(), defaultValue);
