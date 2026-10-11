@@ -19,9 +19,12 @@ qt_add_executable(EmulatorMirea
     src/core/interpreter.h     src/core/interpreter.cpp
     src/core/session.h         src/core/session.cpp
     src/core/tokenizer.h       src/core/tokenizer.cpp
+    src/core/shell.h src/core/shell.cpp
 
     # core/commands: well, commands
     src/core/commands/executor.h src/core/commands/executor.cpp
+    src/core/commands/registry.h src/core/commands/registry.cpp
+    src/core/commands/command.h src/core/commands/command.cpp
 
     # ui: widgets
     src/ui/mainwindow.h        src/ui/mainwindow.cpp
@@ -31,9 +34,6 @@ qt_add_executable(EmulatorMirea
     src/utils/user.h      src/utils/user.cpp
 
     resources/resources.qrc
-    src/core/commands/registry.h src/core/commands/registry.cpp
-    src/core/commands/command.h src/core/commands/command.cpp
-    src/core/shell.h src/core/shell.cpp
 )
 
 target_include_directories(EmulatorMirea PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
