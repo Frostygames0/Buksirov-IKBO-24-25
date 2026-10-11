@@ -3,6 +3,11 @@
 
 #include <QString>
 
+namespace EmulatorMirea::AppInfo
+{
+
 inline const QString kAppName = "MIREA Emulator";
+
+}
 
 #endif // APPINFO_H

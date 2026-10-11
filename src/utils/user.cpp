@@ -1,9 +1,8 @@
-#ifndef OS_HELPER_H
-#define OS_HELPER_H
+#include "utils/user.h"
 
-#include <QString>
 #include <QSysInfo>
-#include <QtGlobal>
+#include <QString>
+#include <QtEnvironmentVariables>
 
 #ifdef Q_OS_WIN
 #ifndef NOMINMAX
@@ -16,8 +15,10 @@
 #include <pwd.h>
 #endif
 
-inline QString getCurrentUsername()
+namespace EmulatorMirea::UserUtils
 {
+
+QString getCurrentUsername() {
 #ifdef Q_OS_WIN
     wchar_t buf[UNLEN + 1];
     DWORD size = UNLEN + 1;
@@ -30,9 +31,4 @@ inline QString getCurrentUsername()
     return qEnvironmentVariable("USER", qEnvironmentVariable("USERNAME"));
 }
 
-inline QString getUserPlusMachineName()
-{
-    return getCurrentUsername() + "@" + QSysInfo::machineHostName();
 }
-
-#endif // OS_HELPER_H

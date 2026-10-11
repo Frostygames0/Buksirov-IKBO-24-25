@@ -1,29 +1,41 @@
 cmake_minimum_required(VERSION 3.19)
 project(EmulatorMirea LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Svg)
+find_package(Qt6 6.12 REQUIRED COMPONENTS Core Widgets)
 
 qt_standard_project_setup()
 
+set(CMAKE_AUTORCC ON)
+
 qt_add_executable(EmulatorMirea
     WIN32 MACOSX_BUNDLE
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    os_helper.h
-    appinfo.h
-    terminalwidget.h terminalwidget.cpp
-    resources.qrc
+
+    src/main.cpp
+    src/appinfo.h
+
+    # core: shell logic, no widgets
+    src/core/commandexecutor.h src/core/commandexecutor.cpp
+    src/core/envexpander.h     src/core/envexpander.cpp
+    src/core/interpreter.h     src/core/interpreter.cpp
+    src/core/session.h         src/core/session.cpp
+    src/core/tokenizer.h       src/core/tokenizer.cpp
+
+    # ui: widgets
+    src/ui/mainwindow.h        src/ui/mainwindow.cpp
+    src/ui/terminalwidget.h    src/ui/terminalwidget.cpp
+
+    # utils
+    src/utils/user.h      src/utils/user.cpp
+
+    resources/resources.qrc
 )
 
-target_include_directories(EmulatorMirea PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(EmulatorMirea PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_link_libraries(EmulatorMirea
     PRIVATE
         Qt::Core
         Qt::Widgets
-        Qt::Svg
 )
 
 install(TARGETS EmulatorMirea
@@ -36,5 +48,8 @@ qt_generate_deploy_app_script(
     TARGET EmulatorMirea
     OUTPUT_SCRIPT deploy_script
     NO_UNSUPPORTED_PLATFORM_ERROR
+    NO_TRANSLATIONS
+    DEPLOY_TOOL_OPTIONS --no-opengl-sw --no-system-d3d-compiler
 )
+
 install(SCRIPT ${deploy_script})

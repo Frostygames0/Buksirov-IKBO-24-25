@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>terminal-icon.svg</file>
-    </qresource>
-</RCC>
