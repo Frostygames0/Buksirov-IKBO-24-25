@@ -15,7 +15,7 @@ qt_add_executable(EmulatorMirea
     WIN32
 
     src/main.cpp
-    src/appinfo.h
+
 
     # core: shell logic, no widgets
     src/core/interpreter.h       src/core/interpreter.cpp

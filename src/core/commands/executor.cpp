@@ -1,4 +1,6 @@
-#include "core/commands/executor.h"
+#include "executor.h"
+
+#include <memory>
 
 #include <QCoreApplication>
 #include <QString>

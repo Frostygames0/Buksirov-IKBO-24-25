@@ -11,7 +11,6 @@ Checks:
   - -misc-use-anonymous-namespace
   - -misc-use-internal-linkage
   - -misc-non-private-member-variables-in-classes
-  - -misc-include-cleaner
   - readability-*
   - -readability-function-cognitive-complexity
   - -readability-named-parameter
@@ -65,6 +64,7 @@ CheckOptions:
   - { key: readability-identifier-naming.StaticVariablePrefix,                            value: s_ }
   - { key: readability-identifier-naming.GlobalConstantCase,                              value: CamelCase }
   - { key: cppcoreguidelines-avoid-non-const-global-variables.AllowInternalLinkage,       value: true }
+  - { key: misc-include-cleaner.IgnoreHeaders,                                            value: 'Q.*;qt.*/.*;moc_.*;ui_.*' }
 
 WarningsAsErrors:   ''
 FormatStyle:        file

@@ -1,7 +1,7 @@
 #ifndef USERUTILS_H
 #define USERUTILS_H
 
-class QString;
+#include <QString>
 
 namespace EmulatorMirea::UserUtils
 {

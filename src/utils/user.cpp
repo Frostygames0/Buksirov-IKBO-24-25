@@ -1,8 +1,4 @@
-#include "utils/user.h"
-
-#include <QString>
-#include <QSysInfo>
-#include <QtEnvironmentVariables>
+#include "user.h"
 
 #ifdef Q_OS_WIN
 #ifndef NOMINMAX
@@ -14,6 +10,10 @@
 #include <pwd.h>
 #include <unistd.h>
 #endif
+
+#include <QString>
+#include <QSysInfo>
+#include <QtEnvironmentVariables>
 
 namespace EmulatorMirea::UserUtils
 {

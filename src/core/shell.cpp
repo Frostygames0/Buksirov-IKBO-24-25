@@ -1,4 +1,4 @@
-#include "core/shell.h"
+#include "shell.h"
 
 #include <QString>
 #include <QStringLiteral>

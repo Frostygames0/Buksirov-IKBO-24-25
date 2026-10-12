@@ -1,12 +1,12 @@
-#include "ui/mainwindow.h"
-#include "ui/terminalwidget.h"
+#include "mainwindow.h"
 
+#include <QApplication>
 #include <QFont>
 #include <QFrame>
 #include <QIcon>
 #include <QString>
 
-#include "appinfo.h"
+#include "ui/terminalwidget.h"
 
 namespace EmulatorMirea::Ui
 {
@@ -19,7 +19,7 @@ MainWindow::MainWindow() : QMainWindow(nullptr)
 void MainWindow::setupUi()
 {
     setObjectName("MainWindow");
-    setWindowTitle(tr("%1 — %2").arg(m_shell.title(), AppInfo::AppName));
+    setWindowTitle(tr("%1 — %2").arg(m_shell.title(), QApplication::applicationName()));
 
     setWindowIcon(QIcon(":/icon.png"));
 

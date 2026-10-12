@@ -1,4 +1,4 @@
-#include "ui/terminalwidget.h"
+#include "terminalwidget.h"
 
 #include <QKeyEvent>
 #include <QMimeData>

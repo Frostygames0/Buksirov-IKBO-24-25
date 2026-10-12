@@ -1,10 +1,10 @@
-#include "core/commands/command.h"
+#include "command.h"
+
+#include <utility>
 
 #include <QCoreApplication>
 #include <QString>
 #include <QStringLiteral>
-
-#include <utility>
 
 #include "core/session.h"
 

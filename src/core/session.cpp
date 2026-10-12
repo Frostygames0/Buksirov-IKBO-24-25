@@ -1,4 +1,4 @@
-#include "core/session.h"
+#include "session.h"
 
 #include <QString>
 #include <QStringList>

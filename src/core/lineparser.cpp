@@ -1,4 +1,4 @@
-#include "core/lineparser.h"
+#include "lineparser.h"
 
 #include <QChar>
 #include <QString>

@@ -1,4 +1,4 @@
-#include "core/interpreter.h"
+#include "interpreter.h"
 
 #include <QString>
 #include <QStringList>
