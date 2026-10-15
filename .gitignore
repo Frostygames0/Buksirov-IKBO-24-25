@@ -82,3 +82,5 @@ CMakeLists.txt.user*
 /build*/
 /.qtcreator/
 install/
+
+compile_commands.json
