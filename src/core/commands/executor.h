@@ -9,13 +9,11 @@
 namespace EmulatorMirea::Core
 {
 
-class Session;
-
 class CommandExecutor
 {
 public:
     explicit CommandExecutor();
-    QString execute(const QStringList& tokens, ISession& session) const;
+    int execute(const QStringList& tokens, const CommandContext& ctx) const;
 
 private:
     CommandRegistry m_registry;

@@ -16,11 +16,12 @@ qt_add_executable(EmulatorMirea
 
     src/main.cpp
 
-
     # core: shell logic, no widgets
+    src/core/stream.h
+    src/ui/terminalostream.h
     src/core/interpreter.h       src/core/interpreter.cpp
     src/core/envprovider.h
-    src/core/session.h           src/core/session.cpp
+    src/core/systemenvprovider.h src/core/systemenvprovider.cpp
     src/core/lineparser.h        src/core/lineparser.cpp
     src/core/shell.h             src/core/shell.cpp
 

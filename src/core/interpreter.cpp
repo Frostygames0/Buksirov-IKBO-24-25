@@ -1,18 +1,17 @@
 #include "interpreter.h"
 
-#include <QString>
 #include <QStringList>
 #include <QStringView>
 
-#include "core/session.h"
+#include "core/commands/command.h"
 
 namespace EmulatorMirea::Core
 {
 
-QString Interpreter::execute(QStringView cmd, ISession& session) const
+int Interpreter::execute(QStringView cmd, const CommandContext& ctx) const
 {
-    const QStringList args = m_lineParser.parse(cmd, session);
-    return m_commandExecutor.execute(args, session);
+    const QStringList args = m_lineParser.parse(cmd, ctx.envProvider);
+    return m_commandExecutor.execute(args, ctx);
 }
 
 } // namespace EmulatorMirea::Core

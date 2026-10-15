@@ -1,5 +1,5 @@
-#ifndef TOKENIZER_H
-#define TOKENIZER_H
+#ifndef LINEPARSER_H
+#define LINEPARSER_H
 
 #include <QStringList>
 #include <QStringView>
@@ -12,9 +12,9 @@ class IEnvProvider;
 class LineParser
 {
 public:
-    [[nodiscard]] QStringList parse(QStringView line, const IEnvProvider& session) const;
+    [[nodiscard]] QStringList parse(QStringView in, const IEnvProvider& env) const;
 };
 
 } // namespace EmulatorMirea::Core
 
-#endif // TOKENIZER_H
+#endif // LINEPARSER_H

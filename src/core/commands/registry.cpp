@@ -17,7 +17,7 @@ void CommandRegistry::registerCommand(std::unique_ptr<Command> command)
 
 Command* CommandRegistry::getCommand(const QString& name) const
 {
-    auto it = m_commands.find(name);
+    const auto it = m_commands.find(name);
     return it == m_commands.end() ? nullptr : it->second.get();
 }
 

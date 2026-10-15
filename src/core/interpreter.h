@@ -10,12 +10,12 @@
 namespace EmulatorMirea::Core
 {
 
-class Session;
+struct CommandContext;
 
 class Interpreter
 {
 public:
-    [[nodiscard]] QString execute(QStringView cmd, ISession& session) const;
+    [[nodiscard]] int execute(QStringView cmd, const CommandContext& ctx) const;
 
 private:
     LineParser m_lineParser;

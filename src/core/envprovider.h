@@ -1,5 +1,5 @@
-#ifndef IENVPROVIDER_H
-#define IENVPROVIDER_H
+#ifndef ENVPROVIDER_H
+#define ENVPROVIDER_H
 
 #include <QString>
 
@@ -11,9 +11,9 @@ class IEnvProvider
 public:
     virtual ~IEnvProvider() = default;
 
-    [[nodiscard]] virtual QString getEnv(const QString& name, const QString& defaultValue) const = 0;
+    [[nodiscard]] virtual QString getEnv(const QString& name, const QString& defaultValue = {}) const = 0;
 };
 
 } // namespace EmulatorMirea::Core
 
-#endif // IENVPROVIDER_H
+#endif // ENVPROVIDER_H

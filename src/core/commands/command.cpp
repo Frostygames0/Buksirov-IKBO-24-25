@@ -2,11 +2,10 @@
 
 #include <utility>
 
-#include <QCoreApplication>
 #include <QString>
 #include <QStringLiteral>
 
-#include "core/session.h"
+#include "core/stream.h"
 
 namespace EmulatorMirea::Core
 {
@@ -18,9 +17,10 @@ QString StubCommand::name() const
     return m_name;
 }
 
-QString StubCommand::execute(const QStringList& args, ISession&) const
+int StubCommand::execute(const QStringList& args, const CommandContext& ctx) const
 {
-    return m_name + " " + args.join(' ');
+    ctx.out.write(m_name + " " + args.join(' '));
+    return ExitCode::Success;
 }
 
 QString ExitCommand::name() const
@@ -28,19 +28,27 @@ QString ExitCommand::name() const
     return QStringLiteral("exit");
 }
 
-QString ExitCommand::execute(const QStringList& args, ISession&) const
+int ExitCommand::execute(const QStringList& args, const CommandContext& ctx) const
 {
     if (args.size() > 1)
-        return name() + ": too many arguments";
+    {
+        ctx.out.write(name() + ": too many arguments");
+        return ExitCode::Misuse;
+    }
 
     bool ok = false;
     const int exitCode = args.value(0, "0").toInt(&ok);
 
     if (!ok)
-        return name() + ": " + args.value(0) + ": numeric argument required";
+    {
+        ctx.out.write(name() + ": " + args.value(0) + ": numeric argument required");
+        return ExitCode::Misuse;
+    }
 
-    QCoreApplication::exit(exitCode & 0xFF);
-    return {};
+    if (ctx.requestExit)
+        ctx.requestExit(exitCode);
+
+    return exitCode;
 }
 
 } // namespace EmulatorMirea::Core

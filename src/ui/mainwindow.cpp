@@ -6,12 +6,13 @@
 #include <QIcon>
 #include <QString>
 
+#include "ui/terminalostream.h"
 #include "ui/terminalwidget.h"
 
 namespace EmulatorMirea::Ui
 {
 
-MainWindow::MainWindow() : QMainWindow(nullptr)
+MainWindow::MainWindow() : QMainWindow(nullptr), m_shell([](int code) { QApplication::exit(code); })
 {
     setupUi();
 }
@@ -56,7 +57,9 @@ void MainWindow::setupTerminal()
             this,
             [this](const QString& line)
             {
-                m_terminalBox->print(m_shell.submit(line));
+                TerminalOStream out(*m_terminalBox);
+                m_shell.submit(line, out);
+                m_historyIndex = m_shell.historySize();
 
                 m_terminalBox->setPrompt(m_shell.prompt());
                 m_terminalBox->showPrompt();
@@ -65,12 +68,37 @@ void MainWindow::setupTerminal()
     connect(m_terminalBox,
             &TerminalWidget::historyUpRequested,
             this,
-            [this] { m_terminalBox->setInput(m_shell.previousHistory()); });
+            [this]
+            {
+                if (m_shell.historySize() == 0)
+                    return;
+
+                if (m_historyIndex > 0)
+                    --m_historyIndex;
+
+                m_terminalBox->setInput(m_shell.historyAt(m_historyIndex));
+            });
 
     connect(m_terminalBox,
             &TerminalWidget::historyDownRequested,
             this,
-            [this] { m_terminalBox->setInput(m_shell.nextHistory()); });
+            [this]
+            {
+                const qsizetype size = m_shell.historySize();
+                if (size == 0)
+                    return;
+
+                if (m_historyIndex < size - 1)
+                {
+                    ++m_historyIndex;
+                    m_terminalBox->setInput(m_shell.historyAt(m_historyIndex));
+                }
+                else
+                {
+                    m_historyIndex = size;
+                    m_terminalBox->setInput({});
+                }
+            });
 
     m_terminalBox->setPrompt(m_shell.prompt());
     m_terminalBox->showPrompt();

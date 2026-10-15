@@ -2,12 +2,11 @@
 
 #include <memory>
 
-#include <QCoreApplication>
 #include <QString>
 #include <QStringList>
 
 #include "core/commands/command.h"
-#include "core/session.h"
+#include "core/stream.h"
 
 namespace EmulatorMirea::Core
 {
@@ -19,18 +18,21 @@ CommandExecutor::CommandExecutor()
     m_registry.registerCommand(std::make_unique<ExitCommand>());
 }
 
-QString CommandExecutor::execute(const QStringList& tokens, ISession& session) const
+int CommandExecutor::execute(const QStringList& tokens, const CommandContext& ctx) const
 {
     if (tokens.isEmpty())
-        return {};
+        return 0;
 
     const QString& name = tokens.first();
 
     const Command* cmd = m_registry.getCommand(name);
     if (cmd == nullptr)
-        return name + ": command not found";
+    {
+        ctx.out.write(name + ": Command not found.");
+        return 1;
+    }
 
-    return cmd->execute(tokens.mid(1), session);
+    return cmd->execute(tokens.mid(1), ctx);
 }
 
 } // namespace EmulatorMirea::Core
