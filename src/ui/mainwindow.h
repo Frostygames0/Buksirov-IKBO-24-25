@@ -26,6 +26,10 @@ private:
 
     TerminalWidget* m_terminalBox = nullptr;
     void setupTerminal();
+
+    void onTerminalCommandEntered(const QString& line);
+    void onTerminalHistoryUpRequested();
+    void onTerminalHistoryDownRequested();
 };
 
 } // namespace EmulatorMirea::Ui

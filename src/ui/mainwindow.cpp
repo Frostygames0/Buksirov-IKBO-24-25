@@ -51,57 +51,51 @@ void MainWindow::setupTerminal()
     m_terminalBox->setFrameShape(QFrame::NoFrame);
     m_terminalBox->setBackgroundVisible(false);
 
-    // Enter pressed: run through the shell, show output, new prompt
-    connect(m_terminalBox,
-            &TerminalWidget::commandEntered,
-            this,
-            [this](const QString& line)
-            {
-                TerminalOStream out(*m_terminalBox);
-                m_shell.submit(line, out);
-                m_historyIndex = m_shell.historySize();
-
-                m_terminalBox->setPrompt(m_shell.prompt());
-                m_terminalBox->showPrompt();
-            });
-
-    connect(m_terminalBox,
-            &TerminalWidget::historyUpRequested,
-            this,
-            [this]
-            {
-                if (m_shell.historySize() == 0)
-                    return;
-
-                if (m_historyIndex > 0)
-                    --m_historyIndex;
-
-                m_terminalBox->setInput(m_shell.historyAt(m_historyIndex));
-            });
-
-    connect(m_terminalBox,
-            &TerminalWidget::historyDownRequested,
-            this,
-            [this]
-            {
-                const qsizetype size = m_shell.historySize();
-                if (size == 0)
-                    return;
-
-                if (m_historyIndex < size - 1)
-                {
-                    ++m_historyIndex;
-                    m_terminalBox->setInput(m_shell.historyAt(m_historyIndex));
-                }
-                else
-                {
-                    m_historyIndex = size;
-                    m_terminalBox->setInput({});
-                }
-            });
+    connect(m_terminalBox, &TerminalWidget::commandEntered, this, &MainWindow::onTerminalCommandEntered);
+    connect(m_terminalBox, &TerminalWidget::historyUpRequested, this, &MainWindow::onTerminalHistoryUpRequested);
+    connect(m_terminalBox, &TerminalWidget::historyDownRequested, this, &MainWindow::onTerminalHistoryDownRequested);
 
     m_terminalBox->setPrompt(m_shell.prompt());
     m_terminalBox->showPrompt();
+}
+
+void MainWindow::onTerminalCommandEntered(const QString& line)
+{
+    TerminalOStream out(*m_terminalBox);
+    m_shell.submit(line, out);
+    m_historyIndex = m_shell.historySize();
+
+    m_terminalBox->setPrompt(m_shell.prompt());
+    m_terminalBox->showPrompt();
+}
+
+void MainWindow::onTerminalHistoryUpRequested()
+{
+    if (m_shell.historySize() == 0)
+        return;
+
+    if (m_historyIndex > 0)
+        --m_historyIndex;
+
+    m_terminalBox->setInput(m_shell.historyAt(m_historyIndex));
+}
+
+void MainWindow::onTerminalHistoryDownRequested()
+{
+    const qsizetype size = m_shell.historySize();
+    if (size == 0)
+        return;
+
+    if (m_historyIndex < size - 1)
+    {
+        ++m_historyIndex;
+        m_terminalBox->setInput(m_shell.historyAt(m_historyIndex));
+    }
+    else
+    {
+        m_historyIndex = size;
+        m_terminalBox->setInput({});
+    }
 }
 
 } // namespace EmulatorMirea::Ui
