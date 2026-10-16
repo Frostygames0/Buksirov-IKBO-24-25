@@ -23,9 +23,9 @@ ExecutionResult Shell::submit(const QString& line, IOutputStream& out)
     addHistory(line);
 
     if (line.trimmed().isEmpty())
-        return ExecutionResult::exit(0);
+        return ExecutionResult::withStatus(0);
 
-    ExecutionContext ctx{
+    const ExecutionContext ctx{
         .envProvider = m_env,
         .out = out,
         .userName = m_userName,
