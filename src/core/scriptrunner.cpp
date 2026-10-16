@@ -18,7 +18,7 @@ ExecutionResult ScriptRunner::run(const QString& path)
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         m_view->print(QStringLiteral("[error] cannot open script: %1 (%2)").arg(path, file.errorString()));
-        return ExecutionResult::withStatus(ExitCode::CommandNotFound);
+        return ExecutionResult::withStatus(ExitCode::UnableToRun);
     }
 
     TerminalOStream out(*m_view);

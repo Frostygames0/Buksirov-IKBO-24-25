@@ -11,6 +11,7 @@ namespace ExitCode
 inline constexpr int Success = 0;
 inline constexpr int GeneralError = 1;
 inline constexpr int Misuse = 2;
+inline constexpr int UnableToRun = 126;
 inline constexpr int CommandNotFound = 127;
 } // namespace ExitCode
 
