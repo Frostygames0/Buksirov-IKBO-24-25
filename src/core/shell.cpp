@@ -1,37 +1,37 @@
 #include "shell.h"
 
-#include <functional>
-#include <utility>
-
+#include <QCoreApplication>
 #include <QString>
 #include <QStringLiteral>
 #include <QSysInfo>
 
 #include "core/commands/command.h"
+#include "core/executionresult.h"
 #include "utils/user.h"
 
 namespace EmulatorMirea::Core
 {
 
-Shell::Shell(std::function<void(int)> exitHandler)
+Shell::Shell()
     : m_userName(UserUtils::getCurrentUsername()), m_machineName(QSysInfo::machineHostName()),
-      m_env(m_userName, m_machineName), m_exitHandler(std::move(exitHandler))
+      m_env(m_userName, m_machineName)
 {
 }
 
-int Shell::submit(const QString& line, IOutputStream& out)
+ExecutionResult Shell::submit(const QString& line, IOutputStream& out)
 {
     addHistory(line);
 
-    if (line.trimmed().isEmpty())
-        return 0;
+    ExecutionResult result;
 
-    const CommandContext ctx{
+    if (line.trimmed().isEmpty())
+        return ExecutionResult::exit(0);
+
+    ExecutionContext ctx{
         .envProvider = m_env,
         .out = out,
         .userName = m_userName,
         .machineName = m_machineName,
-        .requestExit = m_exitHandler,
     };
 
     return m_interpreter.execute(line, ctx);

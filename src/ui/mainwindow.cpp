@@ -1,20 +1,27 @@
 #include "mainwindow.h"
 
+#include <utility>
+
 #include <QApplication>
 #include <QFont>
 #include <QFrame>
 #include <QIcon>
 #include <QString>
+#include <QTimer>
 
-#include "ui/terminalostream.h"
+#include "core/scriptrunner.h"
+#include "core/terminalostream.h"
 #include "ui/terminalwidget.h"
+#include "core/executionresult.h"
 
 namespace EmulatorMirea::Ui
 {
 
-MainWindow::MainWindow() : QMainWindow(nullptr), m_shell([](int code) { QApplication::exit(code); })
+MainWindow::MainWindow(Core::LaunchConfig config) : QMainWindow(nullptr), m_config(std::move(config))
 {
     setupUi();
+
+    QTimer::singleShot(0, this, &MainWindow::startup);
 }
 
 void MainWindow::setupUi()
@@ -29,6 +36,24 @@ void MainWindow::setupUi()
 
     setupTerminal();
     setCentralWidget(m_terminalBox);
+}
+
+void MainWindow::startup()
+{
+    qDebug() << "vfs =" << (m_config.vfsPath.isEmpty() ? QStringLiteral("(not set)") : m_config.vfsPath);
+    qDebug() << "script =" << (m_config.scriptPath.isEmpty() ? QStringLiteral("(not set)") : m_config.scriptPath);
+
+    Core::ScriptRunner runner(m_shell, *m_terminalBox);
+    if (!m_config.scriptPath.isEmpty())
+    {
+        const Core::ExecutionResult result = runner.run(m_config.scriptPath);
+        if (result.exitRequested())
+            QCoreApplication::exit(*result.exitCode); // NOLINT
+    }
+
+    m_historyIndex = m_shell.historySize();
+    m_terminalBox->setPrompt(m_shell.prompt());
+    m_terminalBox->showPrompt();
 }
 
 void MainWindow::setupTerminal()
@@ -54,15 +79,16 @@ void MainWindow::setupTerminal()
     connect(m_terminalBox, &TerminalWidget::commandEntered, this, &MainWindow::onTerminalCommandEntered);
     connect(m_terminalBox, &TerminalWidget::historyUpRequested, this, &MainWindow::onTerminalHistoryUpRequested);
     connect(m_terminalBox, &TerminalWidget::historyDownRequested, this, &MainWindow::onTerminalHistoryDownRequested);
-
-    m_terminalBox->setPrompt(m_shell.prompt());
-    m_terminalBox->showPrompt();
 }
 
 void MainWindow::onTerminalCommandEntered(const QString& line)
 {
-    TerminalOStream out(*m_terminalBox);
-    m_shell.submit(line, out);
+    Core::TerminalOStream out(*m_terminalBox);
+
+    Core::ExecutionResult result = m_shell.submit(line, out);
+    if (result.exitRequested())
+        QCoreApplication::exit(*result.exitCode); // NOLINT
+
     m_historyIndex = m_shell.historySize();
 
     m_terminalBox->setPrompt(m_shell.prompt());

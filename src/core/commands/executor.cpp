@@ -6,6 +6,7 @@
 #include <QStringList>
 
 #include "core/commands/command.h"
+#include "core/executioncontext.h"
 #include "core/stream.h"
 
 namespace EmulatorMirea::Core
@@ -18,10 +19,11 @@ CommandExecutor::CommandExecutor()
     m_registry.registerCommand(std::make_unique<ExitCommand>());
 }
 
-int CommandExecutor::execute(const QStringList& tokens, const CommandContext& ctx) const
+ExecutionResult CommandExecutor::execute(const QStringList& tokens, const ExecutionContext& ctx) const
 {
     if (tokens.isEmpty())
-        return 0;
+        // TODO Handle it
+        return ExecutionResult::withStatus(0);
 
     const QString& name = tokens.first();
 
@@ -29,7 +31,7 @@ int CommandExecutor::execute(const QStringList& tokens, const CommandContext& ct
     if (cmd == nullptr)
     {
         ctx.out.write(name + ": Command not found.");
-        return 1;
+        return ExecutionResult::withStatus(ExitCode::CommandNotFound);
     }
 
     return cmd->execute(tokens.mid(1), ctx);

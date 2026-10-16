@@ -3,20 +3,23 @@
 
 #include <QPlainTextEdit>
 
+#include "core/iterminalview.h"
+
 namespace EmulatorMirea::Ui
 {
 
-class TerminalWidget : public QPlainTextEdit
+class TerminalWidget : public QPlainTextEdit, public Core::ITerminalView
 {
     Q_OBJECT
 public:
     explicit TerminalWidget(QWidget* parent = nullptr);
 
 public slots:
-    void setPrompt(const QString& prompt);
-    void print(const QString& text);
-    void showPrompt();
-    void setInput(const QString& text);
+    void setPrompt(const QString& prompt) override;
+    void print(const QString& text) override;
+    void showPrompt() override;
+    void setInput(const QString& text) override;
+    [[nodiscard]] QString currentInput() const override;
 
 signals:
     void commandEntered(const QString& line);
@@ -28,7 +31,6 @@ protected:
     void insertFromMimeData(const QMimeData* source) override;
 
 private:
-    [[nodiscard]] QString currentInput() const;
     void moveCursorToEnd();
 
     QString m_prompt = "$ ";

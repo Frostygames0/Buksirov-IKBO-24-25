@@ -13,12 +13,18 @@ set(CMAKE_AUTORCC ON)
 
 qt_add_executable(EmulatorMirea
     WIN32
+    MACOSX_BUNDLE
 
     src/main.cpp
 
     # core: shell logic, no widgets
+    src/core/executionresult.h
+    src/core/executioncontext.h
+    src/core/scriptrunner.h src/core/scriptrunner.cpp
+    src/core/launchconfig.h
+    src/core/iterminalview.h
+    src/core/terminalostream.h
     src/core/stream.h
-    src/ui/terminalostream.h
     src/core/interpreter.h       src/core/interpreter.cpp
     src/core/envprovider.h
     src/core/systemenvprovider.h src/core/systemenvprovider.cpp
@@ -38,6 +44,8 @@ qt_add_executable(EmulatorMirea
     src/utils/user.h             src/utils/user.cpp
 
     resources/resources.qrc
+    scripts/test.sh
+    README.md
 )
 
 target_include_directories(EmulatorMirea PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -46,6 +54,16 @@ target_link_libraries(EmulatorMirea
     PRIVATE
         Qt::Core
         Qt::Widgets
+)
+
+target_precompile_headers(EmulatorMirea PRIVATE
+    <QString>
+    <QStringList>
+    <QObject>
+    <QCoreApplication>
+    <memory>
+    <functional>
+    <optional>
 )
 
 install(TARGETS EmulatorMirea

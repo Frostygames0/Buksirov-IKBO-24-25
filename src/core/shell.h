@@ -1,8 +1,6 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#include <functional>
-
 #include <QString>
 #include <QStringList>
 #include <QtTypes>
@@ -18,9 +16,9 @@ class IOutputStream;
 class Shell
 {
 public:
-    explicit Shell(std::function<void(int)> exitHandler = {});
+    explicit Shell();
 
-    int submit(const QString& line, IOutputStream& out);
+    ExecutionResult submit(const QString& line, IOutputStream& out);
     [[nodiscard]] qsizetype historySize() const;
     [[nodiscard]] QString historyAt(qsizetype index) const;
     [[nodiscard]] QString prompt() const;
@@ -32,9 +30,9 @@ private:
 
     QString m_userName;
     QString m_machineName;
+
     SystemEnvProvider m_env;
     Interpreter m_interpreter;
-    std::function<void(int)> m_exitHandler;
 
     QStringList m_history;
 };

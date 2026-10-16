@@ -5,17 +5,18 @@
 #include <QStringView>
 
 #include "core/commands/executor.h"
+#include "core/executionresult.h"
 #include "core/lineparser.h"
 
 namespace EmulatorMirea::Core
 {
 
-struct CommandContext;
+struct ExecutionContext;
 
 class Interpreter
 {
 public:
-    [[nodiscard]] int execute(QStringView cmd, const CommandContext& ctx) const;
+    [[nodiscard]] ExecutionResult execute(QStringView cmd, const ExecutionContext& ctx) const;
 
 private:
     LineParser m_lineParser;
