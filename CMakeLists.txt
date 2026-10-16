@@ -44,8 +44,6 @@ qt_add_executable(EmulatorMirea
     src/utils/user.h             src/utils/user.cpp
 
     resources/resources.qrc
-    scripts/test.sh
-    README.md
 )
 
 target_include_directories(EmulatorMirea PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
