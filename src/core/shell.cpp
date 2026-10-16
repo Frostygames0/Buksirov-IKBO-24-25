@@ -22,8 +22,6 @@ ExecutionResult Shell::submit(const QString& line, IOutputStream& out)
 {
     addHistory(line);
 
-    ExecutionResult result;
-
     if (line.trimmed().isEmpty())
         return ExecutionResult::exit(0);
 
