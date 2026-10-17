@@ -1,0 +1,10 @@
+{
+    "cmake.debugConfig": {
+        "args": [
+            "--vfs",
+            "${workspaceFolder}/scripts/vfs.xml",
+            "--script",
+            "${workspaceFolder}/scripts/script.sh"
+        ]
+    }
+}

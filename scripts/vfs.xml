@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vfs>
+    <dir name="home">
+        <dir name="user">
+            <file name="notes.txt" encoding="utf8">First line
+                Second line
+                Second line
+                Third line
+            </file>
+            <dir name="projects">
+                <file name="main.cpp" encoding="utf8">
+                    #include &lt;iostream&gt;
+
+                    int main() {
+                    std::cout &lt;&lt; "Hello MIREA!\n";
+                    return 0;
+                    }
+                </file>
+            </dir>
+        </dir>
+    </dir>
+    <dir name="etc">
+        <file name="hosts" encoding="utf8">127.0.0.1 localhost
+            ::1 localhost
+        </file>
+    </dir>
+    <dir name="bin">
+        <file name="app.bin" encoding="base64">f0VMRgIBAQAAAAAAAAAAAAMAPgABAAAA</file>
+    </dir>
+    <file name="readme.txt" encoding="base64">V2VsY29tZSB0byBFbXVsYXRvck1pcmVhIFZGUyEK</file>
+</vfs>

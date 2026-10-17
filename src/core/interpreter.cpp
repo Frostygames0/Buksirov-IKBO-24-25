@@ -5,8 +5,8 @@
 
 #include "core/commands/command.h"
 #include "core/commands/executor.h"
-#include "core/executionresult.h"
 #include "core/executioncontext.h"
+#include "core/executionresult.h"
 
 namespace EmulatorMirea::Core
 {

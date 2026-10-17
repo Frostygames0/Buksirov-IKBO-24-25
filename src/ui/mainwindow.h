@@ -4,8 +4,8 @@
 #include <QMainWindow>
 #include <QtTypes>
 
-#include "core/shell.h"
 #include "core/launchconfig.h"
+#include "core/shell.h"
 
 namespace EmulatorMirea::Ui
 {

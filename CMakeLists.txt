@@ -31,6 +31,10 @@ qt_add_executable(EmulatorMirea
     src/core/lineparser.h        src/core/lineparser.cpp
     src/core/shell.h             src/core/shell.cpp
 
+    # core/vfs
+    src/core/vfs/vfs.h
+    src/core/vfs/memoryvfs.h     src/core/vfs/memoryvfs.cpp
+
     # core/commands
     src/core/commands/executor.h src/core/commands/executor.cpp
     src/core/commands/registry.h src/core/commands/registry.cpp

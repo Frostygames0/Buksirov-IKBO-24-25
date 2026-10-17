@@ -1,1 +1,0 @@
-EmulatorMirea --vfs "./test.vfs" --script "./script.sc

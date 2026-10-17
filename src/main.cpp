@@ -31,9 +31,9 @@ static int parseFromArgs(const QCoreApplication& app, EmulatorMirea::Core::Launc
     cfg.scriptPath = parser.value("script");
 
     QTextStream err(stderr);
-    if (!cfg.vfsPath.isEmpty() && !QFileInfo(cfg.vfsPath).isDir())
+    if (!cfg.vfsPath.isEmpty() && QFileInfo::exists(cfg.vfsPath) && !QFileInfo(cfg.vfsPath).isFile())
     {
-        err << "ошибка: путь к VFS не является директорией: " << cfg.vfsPath << "\n";
+        err << "ошибка: путь к VFS не является файлом: " << cfg.vfsPath << "\n";
         return 2;
     }
     if (!cfg.scriptPath.isEmpty() && !QFileInfo(cfg.scriptPath).isFile())
