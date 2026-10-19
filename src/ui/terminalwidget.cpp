@@ -21,13 +21,17 @@ void TerminalWidget::setPrompt(const QString& prompt)
 void TerminalWidget::print(const QString& text)
 {
     if (text.isEmpty())
+    {
         return;
+    }
 
     moveCursorToEnd();
     insertPlainText(text);
 
     if (!text.endsWith('\n'))
+    {
         insertPlainText("\n");
+    }
 
     ensureCursorVisible();
 }
@@ -73,8 +77,7 @@ void TerminalWidget::keyPressEvent(QKeyEvent* event)
     switch (event->key())
     {
         case Qt::Key_Return:
-        case Qt::Key_Enter:
-        {
+        case Qt::Key_Enter: {
             const QString line = currentInput();
             moveCursorToEnd();
             insertPlainText("\n");
@@ -89,18 +92,23 @@ void TerminalWidget::keyPressEvent(QKeyEvent* event)
             return;
         case Qt::Key_Backspace:
             if (touchesOutput || (!c.hasSelection() && c.position() <= m_promptPos))
+            {
                 return;
+            }
             break;
         case Qt::Key_Delete:
             if (touchesOutput)
+            {
                 return;
+            }
             break;
         case Qt::Key_Left:
             if (!c.hasSelection() && c.position() <= m_promptPos)
+            {
                 return;
+            }
             break;
-        case Qt::Key_Home:
-        {
+        case Qt::Key_Home: {
             QTextCursor home = c;
             const bool extend = event->modifiers() & Qt::ShiftModifier; // NOLINT
             home.setPosition(m_promptPos, extend ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor);
@@ -112,11 +120,15 @@ void TerminalWidget::keyPressEvent(QKeyEvent* event)
     }
 
     if (event->matches(QKeySequence::Cut) && touchesOutput)
+    {
         return;
+    }
 
     // Typing while the cursor sits in old output jumps back to the input line
     if (touchesOutput && !event->text().isEmpty() && event->text().at(0).isPrint())
+    {
         moveCursorToEnd();
+    }
 
     QPlainTextEdit::keyPressEvent(event);
 }
@@ -124,11 +136,15 @@ void TerminalWidget::keyPressEvent(QKeyEvent* event)
 void TerminalWidget::insertFromMimeData(const QMimeData* source)
 {
     if (!source->hasText())
+    {
         return;
+    }
 
     const QTextCursor c = textCursor();
     if (c.position() < m_promptPos || (c.hasSelection() && c.selectionStart() < m_promptPos))
+    {
         moveCursorToEnd();
+    }
 
     QString text = source->text();
     text.replace('\n', ' ').remove('\r');

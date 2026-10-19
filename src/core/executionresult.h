@@ -23,6 +23,7 @@ struct ExecutionResult
     [[nodiscard]] bool exitRequested() const { return exitCode.has_value(); }
 
     static ExecutionResult withStatus(int s) { return {.status = s, .exitCode = std::nullopt}; }
+
     static ExecutionResult exit(int code)
     {
         const int c = code & 0xFF;

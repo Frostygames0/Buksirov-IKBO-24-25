@@ -1,7 +1,5 @@
 #include "command.h"
 
-#include <utility>
-
 #include <QString>
 #include <QStringLiteral>
 
@@ -11,7 +9,7 @@
 namespace EmulatorMirea::Core
 {
 
-StubCommand::StubCommand(QString name) : m_name(std::move(name)) {}
+StubCommand::StubCommand(const QString& name) : m_name(name) {}
 
 QString StubCommand::name() const
 {
@@ -20,7 +18,7 @@ QString StubCommand::name() const
 
 ExecutionResult StubCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
 {
-    ctx.out.write(m_name + " " + args.join(' '));
+    ctx.out.write(m_name + u' ' + args.join(u' '));
     return ExecutionResult::withStatus(ExitCode::Success);
 }
 
@@ -33,16 +31,16 @@ ExecutionResult ExitCommand::execute(const QStringList& args, const ExecutionCon
 {
     if (args.size() > 1)
     {
-        ctx.out.write(name() + ": too many arguments");
+        ctx.out.write(name() + u": too many arguments");
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 
     bool ok = false;
-    const int exitCode = args.value(0, "0").toInt(&ok);
+    const int exitCode = args.value(0, QStringLiteral("0")).toInt(&ok);
 
     if (!ok)
     {
-        ctx.out.write(name() + ": " + args.value(0) + ": numeric argument required");
+        ctx.out.write(name() + u": " + args.value(0) + u": numeric argument required");
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 

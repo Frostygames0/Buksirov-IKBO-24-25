@@ -6,6 +6,7 @@
 
 namespace EmulatorMirea::Core
 {
+
 class TerminalOStream final : public IOutputStream
 {
 public:
@@ -16,6 +17,7 @@ public:
 private:
     ITerminalView* m_widget;
 };
+
 } // namespace EmulatorMirea::Core
 
 #endif // TERMINALOSTREAM_H

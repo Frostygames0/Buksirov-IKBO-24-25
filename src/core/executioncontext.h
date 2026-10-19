@@ -5,8 +5,10 @@
 
 namespace EmulatorMirea::Core
 {
+
 class IEnvProvider;
 class IOutputStream;
+class IVfs;
 
 struct ExecutionContext
 {
@@ -15,6 +17,6 @@ struct ExecutionContext
     QString userName;
     QString machineName;
 };
-} // namespace EmulatorMirea
+} // namespace EmulatorMirea::Core
 
 #endif // EXECUTIONCONTEXT_H

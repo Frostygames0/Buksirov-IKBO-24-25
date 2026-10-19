@@ -25,7 +25,7 @@ public:
 class StubCommand : public Command
 {
 public:
-    explicit StubCommand(QString name);
+    explicit StubCommand(const QString& name);
 
     [[nodiscard]] QString name() const override;
     [[nodiscard]] ExecutionResult execute(const QStringList& args, const ExecutionContext& ctx) const override;

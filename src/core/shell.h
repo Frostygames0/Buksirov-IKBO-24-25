@@ -7,6 +7,7 @@
 
 #include "core/interpreter.h"
 #include "core/systemenvprovider.h"
+#include "core/vfs/vfs.h"
 
 namespace EmulatorMirea::Core
 {
@@ -33,6 +34,7 @@ private:
 
     SystemEnvProvider m_env;
     Interpreter m_interpreter;
+    MemoryVfs m_vfs;
 
     QStringList m_history;
 };

@@ -9,10 +9,11 @@
 #include <QString>
 #include <QTimer>
 
+#include "core/executionresult.h"
 #include "core/scriptrunner.h"
 #include "core/terminalostream.h"
 #include "ui/terminalwidget.h"
-#include "core/executionresult.h"
+
 
 namespace EmulatorMirea::Ui
 {
@@ -48,7 +49,9 @@ void MainWindow::startup()
     {
         const Core::ExecutionResult result = runner.run(m_config.scriptPath);
         if (result.exitRequested())
+        {
             QCoreApplication::exit(*result.exitCode); // NOLINT
+        }
     }
 
     m_historyIndex = m_shell.historySize();
@@ -87,7 +90,9 @@ void MainWindow::onTerminalCommandEntered(const QString& line)
 
     Core::ExecutionResult result = m_shell.submit(line, out);
     if (result.exitRequested())
+    {
         QCoreApplication::exit(*result.exitCode); // NOLINT
+    }
 
     m_historyIndex = m_shell.historySize();
 
@@ -98,10 +103,14 @@ void MainWindow::onTerminalCommandEntered(const QString& line)
 void MainWindow::onTerminalHistoryUpRequested()
 {
     if (m_shell.historySize() == 0)
+    {
         return;
+    }
 
     if (m_historyIndex > 0)
+    {
         --m_historyIndex;
+    }
 
     m_terminalBox->setInput(m_shell.historyAt(m_historyIndex));
 }
@@ -110,7 +119,9 @@ void MainWindow::onTerminalHistoryDownRequested()
 {
     const qsizetype size = m_shell.historySize();
     if (size == 0)
+    {
         return;
+    }
 
     if (m_historyIndex < size - 1)
     {

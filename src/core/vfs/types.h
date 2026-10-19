@@ -1,7 +1,13 @@
+#ifndef VFS_TYPES_H
+#define VFS_TYPES_H
 
-#include <qtypes.h>
+#include <QString>
+#include <QStringLiteral>
+#include <QtTypes>
 
-enum class VfsDataType
+namespace EmulatorMirea::Core
+{
+enum class VfsEntryType
 {
     File,
     Dir,
@@ -9,16 +15,57 @@ enum class VfsDataType
 
 struct VfsEntry
 {
-    VfsDataType type;
+    VfsEntryType type = VfsEntryType::File;
     QString name;
-    qsizetype size;
+    qsizetype size = 0;
+
+    friend bool operator==(const VfsEntry&, const VfsEntry&) = default;
 };
 
-enum class VfsError
+enum class [[nodiscard]] VfsError
 {
-    None,
     NotFound,
+    NotEmpty,
+    NotAFile,
     NotADirectory,
+    InvalidPath,
     AlreadyExists,
     InvalidArgument,
+    InvalidMove,
+    InvalidCopy,
+    CannotRemoveRoot,
+    NotSupported,
 };
+
+inline QString vfsErrorToString(VfsError e)
+{
+    switch (e)
+    {
+        case VfsError::NotFound:
+            return QStringLiteral("NotFound");
+        case VfsError::NotEmpty:
+            return QStringLiteral("NotEmpty");
+        case VfsError::NotAFile:
+            return QStringLiteral("NotAFile");
+        case VfsError::NotADirectory:
+            return QStringLiteral("NotADirectory");
+        case VfsError::InvalidPath:
+            return QStringLiteral("InvalidPath");
+        case VfsError::AlreadyExists:
+            return QStringLiteral("AlreadyExists");
+        case VfsError::InvalidArgument:
+            return QStringLiteral("InvalidArgument");
+        case VfsError::InvalidMove:
+            return QStringLiteral("InvalidMove");
+        case VfsError::InvalidCopy:
+            return QStringLiteral("InvalidCopy");
+        case VfsError::CannotRemoveRoot:
+            return QStringLiteral("CannotRemoveRoot");
+        case VfsError::NotSupported:
+            return QStringLiteral("NotSupported");
+    }
+    return QStringLiteral("Unknown");
+}
+} // namespace EmulatorMirea::Core
+
+#endif

@@ -16,6 +16,7 @@ public:
     [[nodiscard]] virtual QString currentInput() const = 0;
 };
 
+
 } // namespace EmulatorMirea::Core
 
 #endif // ITERMINALVIEW_H

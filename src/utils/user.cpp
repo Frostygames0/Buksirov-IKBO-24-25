@@ -24,10 +24,14 @@ QString getCurrentUsername()
     wchar_t buf[UNLEN + 1];
     DWORD size = UNLEN + 1;
     if (GetUserNameW(buf, &size)) // NOLINT
+    {
         return QString::fromWCharArray(buf);
+    }
 #else
     if (struct passwd* pw = getpwuid(getuid()))
+    {
         return QString::fromLocal8Bit(pw->pw_name);
+    }
 #endif
     return qEnvironmentVariable("USER", qEnvironmentVariable("USERNAME"));
 }

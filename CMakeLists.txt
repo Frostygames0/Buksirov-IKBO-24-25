@@ -13,14 +13,14 @@ set(CMAKE_AUTORCC ON)
 
 qt_add_executable(EmulatorMirea
     WIN32
-    MACOSX_BUNDLE
 
     src/main.cpp
 
     # core: shell logic, no widgets
     src/core/executionresult.h
     src/core/executioncontext.h
-    src/core/scriptrunner.h src/core/scriptrunner.cpp
+
+    src/core/scriptrunner.h      src/core/scriptrunner.cpp
     src/core/launchconfig.h
     src/core/iterminalview.h
     src/core/terminalostream.h
@@ -32,8 +32,10 @@ qt_add_executable(EmulatorMirea
     src/core/shell.h             src/core/shell.cpp
 
     # core/vfs
-    src/core/vfs/vfs.h
-    src/core/vfs/memoryvfs.h     src/core/vfs/memoryvfs.cpp
+    src/core/vfs/vfs.h           src/core/vfs/vfs.cpp
+    src/core/vfs/path.h          src/core/vfs/path.cpp
+    src/core/vfs/types.h
+    src/core/vfs/xmlvfsreader.h  src/core/vfs/xmlvfsreader.cpp
 
     # core/commands
     src/core/commands/executor.h src/core/commands/executor.cpp
@@ -51,6 +53,8 @@ qt_add_executable(EmulatorMirea
 )
 
 target_include_directories(EmulatorMirea PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_compile_definitions(EmulatorMirea PRIVATE QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_BYTEARRAY)
 
 target_link_libraries(EmulatorMirea
     PRIVATE

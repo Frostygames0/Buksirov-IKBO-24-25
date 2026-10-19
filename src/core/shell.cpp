@@ -23,7 +23,9 @@ ExecutionResult Shell::submit(const QString& line, IOutputStream& out)
     addHistory(line);
 
     if (line.trimmed().isEmpty())
+    {
         return ExecutionResult::withStatus(0);
+    }
 
     const ExecutionContext ctx{
         .envProvider = m_env,
@@ -38,10 +40,14 @@ ExecutionResult Shell::submit(const QString& line, IOutputStream& out)
 void Shell::addHistory(const QString& line)
 {
     if (line.trimmed().isEmpty())
+    {
         return;
+    }
 
     if (m_history.isEmpty() || m_history.last() != line)
+    {
         m_history.append(line);
+    }
 }
 
 qsizetype Shell::historySize() const
@@ -56,7 +62,7 @@ QString Shell::historyAt(qsizetype index) const
 
 QString Shell::fancyName() const
 {
-    return m_userName + QStringLiteral("@") + m_machineName;
+    return m_userName + u'@' + m_machineName;
 }
 
 QString Shell::prompt() const

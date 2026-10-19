@@ -2,14 +2,12 @@
 BasedOnStyle: Microsoft
 # Breaks & Braces
 ColumnLimit: 120
-BreakBeforeBraces: Allman
-InsertBraces: false
-RemoveBracesLLVM: true
+InsertBraces: true
 AccessModifierOffset: -4
 PenaltyBreakAssignment: 1000
 PenaltyBreakScopeResolution: 1000
 BreakTemplateDeclarations: Yes
-SeparateDefinitionBlocks: Leave
+SeparateDefinitionBlocks: Always
 # Single Line Short
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortLambdasOnASingleLine: Inline
@@ -34,6 +32,7 @@ IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '^<(Q|Qt)[A-Za-z0-9_./]*>'
     Priority: 2
+    CaseSensitive: true
   - Regex: '^<.*>'
     Priority: 1
   - Regex: '^".*"'

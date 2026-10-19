@@ -1,5 +1,6 @@
 #include "scriptrunner.h"
 
+#include <QString>
 #include <QFile>
 #include <QTextStream>
 
@@ -30,8 +31,10 @@ ExecutionResult ScriptRunner::run(const QString& path)
     {
         const QString line = in.readLine();
         const QString trimmed = line.trimmed();
-        if (trimmed.isEmpty() || trimmed.startsWith('#'))
+        if (trimmed.isEmpty() || trimmed.startsWith(u'#'))
+        {
             continue;
+        }
 
         m_view->setPrompt(m_shell->prompt());
         m_view->showPrompt();
@@ -39,7 +42,9 @@ ExecutionResult ScriptRunner::run(const QString& path)
 
         result = m_shell->submit(line, out);
         if (result.exitRequested())
+        {
             break;
+        }
     }
 
     return result;
