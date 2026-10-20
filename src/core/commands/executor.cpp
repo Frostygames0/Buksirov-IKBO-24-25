@@ -1,24 +1,19 @@
 #include "executor.h"
 
-#include <memory>
-
 #include <QString>
-#include <QStringLiteral>
 #include <QStringList>
+#include <QStringLiteral>
 
 #include "core/commands/command.h"
+#include "core/commands/registry.h"
 #include "core/executioncontext.h"
 #include "core/stream.h"
+
 
 namespace EmulatorMirea::Core
 {
 
-CommandExecutor::CommandExecutor()
-{
-    m_registry.registerCommand(std::make_unique<StubCommand>(QStringLiteral("ls")));
-    m_registry.registerCommand(std::make_unique<StubCommand>(QStringLiteral("cd")));
-    m_registry.registerCommand(std::make_unique<ExitCommand>());
-}
+CommandExecutor::CommandExecutor(const CommandRegistry& registry) : m_registry(&registry) {}
 
 ExecutionResult CommandExecutor::execute(const QStringList& tokens, const ExecutionContext& ctx) const
 {
@@ -30,7 +25,7 @@ ExecutionResult CommandExecutor::execute(const QStringList& tokens, const Execut
 
     const QString& name = tokens.first();
 
-    const Command* cmd = m_registry.getCommand(name);
+    const Command* cmd = m_registry->getCommand(name);
     if (cmd == nullptr)
     {
         ctx.out.write(name + u": Command not found.");

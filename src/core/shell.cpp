@@ -1,20 +1,22 @@
 #include "shell.h"
 
+#include <utility>
+
 #include <QCoreApplication>
 #include <QString>
 #include <QStringLiteral>
 #include <QSysInfo>
 
-#include "core/commands/command.h"
+#include "core/envprovider.h"
+#include "core/executioncontext.h"
 #include "core/executionresult.h"
-#include "utils/user.h"
+#include "core/interpreter.h"
 
 namespace EmulatorMirea::Core
 {
 
-Shell::Shell()
-    : m_userName(UserUtils::getCurrentUsername()), m_machineName(QSysInfo::machineHostName()),
-      m_env(m_userName, m_machineName)
+Shell::Shell(UserIdentity identity, IEnvProvider& envProvider, Interpreter& interpreter, IVfs& vfs)
+    : m_identity(std::move(identity)), m_envProvider(envProvider), m_interpreter(interpreter), m_vfs(vfs)
 {
 }
 
@@ -28,10 +30,9 @@ ExecutionResult Shell::submit(const QString& line, IOutputStream& out)
     }
 
     const ExecutionContext ctx{
-        .envProvider = m_env,
+        .envProvider = m_envProvider,
         .out = out,
-        .userName = m_userName,
-        .machineName = m_machineName,
+        .identity = m_identity,
     };
 
     return m_interpreter.execute(line, ctx);
@@ -60,19 +61,14 @@ QString Shell::historyAt(qsizetype index) const
     return m_history.value(index);
 }
 
-QString Shell::fancyName() const
-{
-    return m_userName + u'@' + m_machineName;
-}
-
 QString Shell::prompt() const
 {
-    return QStringLiteral("[%1]$ ").arg(fancyName());
+    return QStringLiteral("[%1]$ ").arg(m_identity.fancyName());
 }
 
 QString Shell::title() const
 {
-    return fancyName();
+    return m_identity.fancyName();
 }
 
 } // namespace EmulatorMirea::Core

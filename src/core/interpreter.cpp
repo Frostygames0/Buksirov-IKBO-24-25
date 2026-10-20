@@ -11,6 +11,8 @@
 namespace EmulatorMirea::Core
 {
 
+Interpreter::Interpreter(CommandExecutor& commandExecutor) : m_commandExecutor(commandExecutor) {}
+
 ExecutionResult Interpreter::execute(QStringView cmd, const ExecutionContext& ctx) const
 {
     const QStringList args = m_lineParser.parse(cmd, ctx.envProvider);

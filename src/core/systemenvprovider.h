@@ -5,6 +5,7 @@
 #include <QString>
 
 #include "core/envprovider.h"
+#include "core/useridentity.h"
 
 namespace EmulatorMirea::Core
 {
@@ -12,7 +13,7 @@ namespace EmulatorMirea::Core
 class SystemEnvProvider : public IEnvProvider
 {
 public:
-    explicit SystemEnvProvider(const QString& userName, const QString& machineName);
+    explicit SystemEnvProvider(const UserIdentity& identity);
 
     [[nodiscard]] QString getEnv(const QString& name, const QString& defaultValue = {}) const override;
 

@@ -5,15 +5,17 @@
 #include <QString>
 #include <QStringLiteral>
 
+#include "core/useridentity.h"
+
+
 namespace EmulatorMirea::Core
 {
 
-SystemEnvProvider::SystemEnvProvider(const QString& userName, const QString& machineName)
-    : m_env(QProcessEnvironment::systemEnvironment())
+SystemEnvProvider::SystemEnvProvider(const UserIdentity& identity) : m_env(QProcessEnvironment::systemEnvironment())
 {
-    m_env.insert(QStringLiteral("USER"), userName);
-    m_env.insert(QStringLiteral("USERNAME"), userName);
-    m_env.insert(QStringLiteral("HOSTNAME"), machineName);
+    m_env.insert(QStringLiteral("USER"), identity.userName);
+    m_env.insert(QStringLiteral("USERNAME"), identity.userName);
+    m_env.insert(QStringLiteral("HOSTNAME"), identity.machineName);
     m_env.insert(QStringLiteral("HOME"), QDir::homePath());
 }
 

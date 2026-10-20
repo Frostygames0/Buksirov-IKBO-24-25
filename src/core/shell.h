@@ -5,21 +5,31 @@
 #include <QStringList>
 #include <QtTypes>
 
-#include "core/interpreter.h"
-#include "core/systemenvprovider.h"
-#include "core/vfs/vfs.h"
+#include "core/executionresult.h"
+#include "core/useridentity.h"
 
 namespace EmulatorMirea::Core
 {
 
+class IEnvProvider;
+class Interpreter;
+class IVfs;
 class IOutputStream;
 
 class Shell
 {
 public:
-    explicit Shell();
+    explicit Shell(UserIdentity identity, IEnvProvider& envProvider, Interpreter& interpreter, IVfs& vfs);
+
+    Shell(const Shell&) = delete;
+    Shell& operator=(const Shell&) = delete;
+
+    Shell(Shell&&) = delete;
+    Shell& operator=(Shell&&) = delete;
 
     ExecutionResult submit(const QString& line, IOutputStream& out);
+
+    
     [[nodiscard]] qsizetype historySize() const;
     [[nodiscard]] QString historyAt(qsizetype index) const;
     [[nodiscard]] QString prompt() const;
@@ -27,14 +37,12 @@ public:
 
 private:
     void addHistory(const QString& line);
-    [[nodiscard]] QString fancyName() const;
 
-    QString m_userName;
-    QString m_machineName;
+    UserIdentity m_identity;
 
-    SystemEnvProvider m_env;
-    Interpreter m_interpreter;
-    MemoryVfs m_vfs;
+    IEnvProvider& m_envProvider;
+    Interpreter& m_interpreter;
+    IVfs& m_vfs;
 
     QStringList m_history;
 };

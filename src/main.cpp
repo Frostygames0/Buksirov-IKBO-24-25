@@ -1,4 +1,8 @@
 #include <cstdio>
+#include <expected>
+#include <memory>
+#include <qchar.h>
+#include <qsysinfo.h>
 #include <utility>
 
 #include <QApplication>
@@ -7,10 +11,21 @@
 #include <QFontDatabase>
 #include <QTextStream>
 
+#include "core/commands/command.h"
+#include "core/commands/executor.h"
+#include "core/commands/registry.h"
+#include "core/interpreter.h"
 #include "core/launchconfig.h"
+#include "core/shell.h"
+#include "core/systemenvprovider.h"
+#include "core/useridentity.h"
+#include "core/vfs/xmlvfsreader.h"
 #include "ui/mainwindow.h"
+#include "utils/user.h"
 
-static int parseFromArgs(const QCoreApplication& app, EmulatorMirea::Core::LaunchConfig& cfg)
+using namespace EmulatorMirea;
+
+static int parseFromArgs(const QCoreApplication& app, Core::LaunchConfig& cfg)
 {
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Эмулятор оболочки"));
@@ -56,6 +71,25 @@ int main(int argc, char* argv[])
     if (const int result = parseFromArgs(a, cfg); result != 0)
     {
         return result;
+    }
+
+    Core::CommandRegistry registry;
+    registry.registerCommand(std::make_unique<Core::ExitCommand>());
+    registry.registerCommand(std::make_unique<Core::StubCommand>(QStringLiteral("ls")));
+    registry.registerCommand(std::make_unique<Core::StubCommand>(QStringLiteral("cd")));
+
+    Core::CommandExecutor executor{registry};
+    Core::Interpreter interpreter{executor};
+
+    Core::UserIdentity identity{.userName = UserUtils::getCurrentUsername(),
+                                .machineName = QSysInfo::machineHostName()};
+    Core::SystemEnvProvider envProvider{identity};
+
+    std::expected<Core::MemoryVfs, QString> vfs = Core::XmlVfs::readFromFile(cfg.vfsPath);
+
+    if (!vfs)
+    {
+        // todo
     }
 
     EmulatorMirea::Ui::MainWindow window(std::move(cfg));

@@ -3,19 +3,21 @@
 
 #include <QString>
 
+#include "core/useridentity.h"
+
 namespace EmulatorMirea::Core
 {
 
 class IEnvProvider;
 class IOutputStream;
 class IVfs;
+class UserIdentity;
 
 struct ExecutionContext
 {
     IEnvProvider& envProvider;
     IOutputStream& out;
-    QString userName;
-    QString machineName;
+    UserIdentity identity;
 };
 } // namespace EmulatorMirea::Core
 

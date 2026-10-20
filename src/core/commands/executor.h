@@ -4,21 +4,22 @@
 #include <QString>
 #include <QStringList>
 
-#include "core/commands/registry.h"
 #include "core/executioncontext.h"
 #include "core/executionresult.h"
 
 namespace EmulatorMirea::Core
 {
 
+class CommandRegistry;
+
 class CommandExecutor
 {
 public:
-    explicit CommandExecutor();
-    ExecutionResult execute(const QStringList& tokens, const ExecutionContext& ctx) const;
+    explicit CommandExecutor(const CommandRegistry& registry);
+    [[nodiscard]] ExecutionResult execute(const QStringList& tokens, const ExecutionContext& ctx) const;
 
 private:
-    CommandRegistry m_registry;
+    const CommandRegistry* m_registry;
 };
 
 } // namespace EmulatorMirea::Core
