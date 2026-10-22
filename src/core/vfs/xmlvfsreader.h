@@ -5,14 +5,18 @@
 
 #include <QString>
 
-#include "core/vfs/vfs.h"
-
-namespace EmulatorMirea::Core::XmlVfs
+namespace EmulatorMirea::Core
 {
 
-std::expected<MemoryVfs, QString> readFromFile(const QString& path);
+class IVfs;
+
+namespace XmlVfs
+{
+
+std::expected<void, QString> readFromFile(const QString& path, IVfs& vfs);
 bool writeStub(const QString& filePath);
 
-} // namespace EmulatorMirea::Core::XmlVfs
+} // namespace XmlVfs
+} // namespace EmulatorMirea::Core
 
 #endif

@@ -38,6 +38,7 @@ qt_add_executable(EmulatorMirea
     src/core/vfs/xmlvfsreader.h  src/core/vfs/xmlvfsreader.cpp
 
     # core/commands
+    src/core/commands/commandhistory.h src/core/commands/commandhistory.cpp
     src/core/commands/executor.h src/core/commands/executor.cpp
     src/core/commands/registry.h src/core/commands/registry.cpp
     src/core/commands/command.h  src/core/commands/command.cpp

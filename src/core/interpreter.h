@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringView>
+#include "core/commands/registry.h"
 #include "core/executionresult.h"
 #include "core/lineparser.h"
 
@@ -15,19 +16,13 @@ struct ExecutionContext;
 class Interpreter
 {
 public:
-    explicit Interpreter(CommandExecutor& commandExecutor);
+    explicit Interpreter(CommandRegistry& commandExecutor);
 
-    Interpreter(const Interpreter&) = delete;
-    Interpreter& operator=(const Interpreter&) = delete;
-
-    Interpreter(Interpreter&&) = delete;
-    Interpreter& operator=(Interpreter&&) = delete;
-
-    [[nodiscard]] ExecutionResult execute(QStringView cmd, const ExecutionContext& ctx) const;
+    [[nodiscard]] ExecutionResult execute(QStringView input, const ExecutionContext& ctx) const;
 
 private:
     LineParser m_lineParser;
-    CommandExecutor& m_commandExecutor;
+    CommandRegistry* m_registry;
 };
 
 } // namespace EmulatorMirea::Core

@@ -7,6 +7,7 @@
 #include <QStringLiteral>
 #include <QXmlStreamReader>
 #include <QtTypes>
+#include "core/vfs/vfs.h"
 
 namespace EmulatorMirea::Core::XmlVfs
 {
@@ -114,7 +115,7 @@ std::expected<void, QString> readTree(QXmlStreamReader& reader, IVfs& vfs)
 }
 } // namespace
 
-std::expected<MemoryVfs, QString> readFromFile(const QString& path)
+std::expected<void, QString> readFromFile(const QString& path, IVfs& vfs)
 {
     QFile file{path};
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -123,7 +124,6 @@ std::expected<MemoryVfs, QString> readFromFile(const QString& path)
     }
 
     QXmlStreamReader reader(&file);
-    MemoryVfs vfs;
 
     if (!reader.readNextStartElement())
     {
@@ -145,7 +145,7 @@ std::expected<MemoryVfs, QString> readFromFile(const QString& path)
         return std::unexpected(xmlError(reader, {}));
     }
 
-    return vfs;
+    return {};
 }
 
 bool writeStub(const QString& filePath)
