@@ -16,7 +16,7 @@ public:
 
 public slots:
     void setPrompt(const QString& prompt) override;
-    void print(const QString& text) override;
+    void write(const QString& text) override;
     void showPrompt() override;
     void setInput(const QString& text) override;
     [[nodiscard]] QString currentInput() const override;
@@ -33,7 +33,7 @@ protected:
 private:
     void moveCursorToEnd();
 
-    QString m_prompt = "$ ";
+    QString m_prompt{u"$ "};
     int m_promptPos = 0;
 };
 

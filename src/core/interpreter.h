@@ -3,28 +3,21 @@
 
 #include <QString>
 #include <QStringView>
-#include "core/commands/registry.h"
+
+#include "core/executioncontext.h"
 #include "core/executionresult.h"
-#include "core/lineparser.h"
 
 namespace EmulatorMirea::Core
 {
 
-class CommandExecutor;
-struct ExecutionContext;
+class ExecutionContext;
 
-class Interpreter
+namespace Interpreter
 {
-public:
-    explicit Interpreter(CommandRegistry& commandExecutor);
 
-    [[nodiscard]] ExecutionResult execute(QStringView input, const ExecutionContext& ctx) const;
+ExecutionResult execute(QStringView input, const ExecutionContext& ctx);
 
-private:
-    LineParser m_lineParser;
-    CommandRegistry* m_registry;
-};
-
+} // namespace Interpreter
 } // namespace EmulatorMirea::Core
 
 #endif // INTERPRETER_H

@@ -4,8 +4,10 @@
 #include <QMainWindow>
 #include <QtTypes>
 
-#include "core/launchconfig.h"
+#include "config.h"
+#include "core/executionresult.h"
 #include "core/shell.h"
+
 
 namespace EmulatorMirea::Ui
 {
@@ -17,18 +19,19 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(Core::LaunchConfig config);
+    explicit MainWindow(Core::Shell& shell);
+
+    void startup(const Config& config);
 
 private:
-    Core::LaunchConfig m_config;
-    Core::Shell m_shell;
+    Core::Shell& m_shell;
     qsizetype m_historyIndex = 0;
 
     void setupUi();
-    void startup();
-    void stepScript();
 
-    TerminalWidget* m_terminalBox = nullptr;
+    Core::ExecutionResult runScript(const QString& path);
+
+    TerminalWidget* m_terminalWidget = nullptr;
     void setupTerminal();
 
     void onTerminalCommandEntered(const QString& line);

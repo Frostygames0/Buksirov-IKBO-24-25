@@ -11,31 +11,35 @@
 #include "core/executioncontext.h"
 #include "core/executionresult.h"
 #include "core/interpreter.h"
+#include "core/iterminalview.h"
 
 namespace EmulatorMirea::Core
 {
 
-Shell::Shell(UserIdentity identity, IEnvProvider& envProvider, Interpreter& interpreter, IVfs& vfs)
-    : m_identity(std::move(identity)), m_envProvider(envProvider), m_interpreter(interpreter), m_vfs(vfs)
+Shell::Shell(UserIdentity identity,
+             std::unique_ptr<IEnvProvider> envProvider,
+             std::unique_ptr<CommandRegistry> registry,
+             std::unique_ptr<IVfs> vfs)
+    : m_identity(std::move(identity)), m_envProvider(std::move(envProvider)), m_registry(std::move(registry)),
+      m_vfs(std::move(vfs))
 {
 }
 
-ExecutionResult Shell::submit(const QString& line, IOutputStream& out)
+ExecutionResult Shell::submit(const QString& line, ITerminalView& view, HistoryMode historyMode)
 {
-    addHistory(line);
+    if (historyMode == HistoryMode::Save)
+    {
+        addHistory(line);
+    }
 
     if (line.trimmed().isEmpty())
     {
         return ExecutionResult::withStatus(0);
     }
 
-    const ExecutionContext ctx{
-        .envProvider = m_envProvider,
-        .out = out,
-        .identity = m_identity,
-    };
+    const ExecutionContext ctx{.identity = m_identity, .envProvider = *m_envProvider, .view = view, .vfs = *m_vfs};
 
-    return m_interpreter.execute(line, ctx);
+    return Interpreter::execute(line, ctx);
 }
 
 void Shell::addHistory(const QString& line)

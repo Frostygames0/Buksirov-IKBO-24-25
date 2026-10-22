@@ -3,21 +3,23 @@
 
 #include <QString>
 
+#include "core/iterminalview.h"
 #include "core/useridentity.h"
 
 namespace EmulatorMirea::Core
 {
 
 class IEnvProvider;
-class IOutputStream;
+class ITerminalView;
 class IVfs;
 class UserIdentity;
 
 struct ExecutionContext
 {
-    IEnvProvider& envProvider;
-    IOutputStream& out;
     UserIdentity identity;
+    IEnvProvider& envProvider;
+    ITerminalView& view;
+    IVfs& vfs;
 };
 } // namespace EmulatorMirea::Core
 

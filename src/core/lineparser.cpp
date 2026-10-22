@@ -7,7 +7,7 @@
 
 #include "core/envprovider.h"
 
-namespace EmulatorMirea::Core
+namespace EmulatorMirea::Core::LineParser
 {
 
 namespace
@@ -56,7 +56,7 @@ qsizetype expandDollar(QStringView in, qsizetype i, const IEnvProvider& env, QSt
 }
 } // namespace
 
-QStringList LineParser::parse(QStringView in, const IEnvProvider& env) const
+QStringList parse(QStringView in, const IEnvProvider& env)
 {
     QStringList tokens;
     QString word;

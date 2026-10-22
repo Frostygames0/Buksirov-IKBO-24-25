@@ -11,21 +11,22 @@
 #include <QFontDatabase>
 #include <QTextStream>
 
+#include "config.h"
 #include "core/commands/command.h"
 #include "core/commands/executor.h"
 #include "core/commands/registry.h"
-#include "core/interpreter.h"
-#include "core/launchconfig.h"
+#include "core/envprovider.h"
 #include "core/shell.h"
 #include "core/systemenvprovider.h"
 #include "core/useridentity.h"
+#include "core/vfs/vfs.h"
 #include "core/vfs/xmlvfsreader.h"
 #include "ui/mainwindow.h"
 #include "utils/user.h"
 
 using namespace EmulatorMirea;
 
-static int parseFromArgs(const QCoreApplication& app, Core::LaunchConfig& cfg)
+static Config parseFromArgs(const QCoreApplication& app)
 {
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Эмулятор оболочки"));
@@ -42,22 +43,43 @@ static int parseFromArgs(const QCoreApplication& app, Core::LaunchConfig& cfg)
 
     parser.process(app);
 
+    Config cfg;
     cfg.vfsPath = parser.value(QStringLiteral("vfs"));
     cfg.scriptPath = parser.value(QStringLiteral("script"));
 
-    QTextStream err(stderr);
     if (!cfg.vfsPath.isEmpty() && QFileInfo::exists(cfg.vfsPath) && !QFileInfo(cfg.vfsPath).isFile())
     {
-        err << QStringLiteral("error: object at VFS path is not a file: ") << cfg.vfsPath << u'\n';
-        return 2;
+        qWarning() << QStringLiteral("warning: object at VFS path is not a file: ") << cfg.vfsPath << u'\n';
     }
     if (!cfg.scriptPath.isEmpty() && !QFileInfo(cfg.scriptPath).isFile())
     {
-        err << QStringLiteral("error: script file not found at: ") << cfg.scriptPath << u'\n';
-        return 2;
+        qWarning() << QStringLiteral("warning: script file not found at: ") << cfg.scriptPath << u'\n';
     }
 
-    return 0;
+    return cfg;
+}
+
+Core::Shell createShell(const Config& cfg)
+{
+    std::unique_ptr<Core::CommandRegistry> registry = std::make_unique<Core::CommandRegistry>();
+    registry->registerCommand(std::make_unique<Core::ExitCommand>());
+    registry->registerCommand(std::make_unique<Core::StubCommand>(QStringLiteral("ls")));
+    registry->registerCommand(std::make_unique<Core::StubCommand>(QStringLiteral("cd")));
+
+    Core::UserIdentity identity{.userName = UserUtils::getCurrentUsername(),
+                                .machineName = QSysInfo::machineHostName()};
+
+    std::unique_ptr<Core::IEnvProvider> envProvider = std::make_unique<Core::SystemEnvProvider>(identity);
+
+    std::unique_ptr<Core::IVfs> vfs = std::make_unique<Core::MemoryVfs>();
+
+    std::expected<void, QString> res = Core::XmlVfs::readFromFile(cfg.vfsPath, *vfs);
+    if (!res)
+    {
+        qWarning() << QStringLiteral("warning: vfs file not found at: ") << cfg.scriptPath << u'\n';
+    }
+
+    return Core::Shell{std::move(identity), std::move(envProvider), std::move(registry), std::move(vfs)};
 }
 
 int main(int argc, char* argv[])
@@ -67,33 +89,14 @@ int main(int argc, char* argv[])
 
     QFontDatabase::addApplicationFont(QStringLiteral(":/fonts/JetBrainsMono-Regular.ttf"));
 
-    EmulatorMirea::Core::LaunchConfig cfg;
-    if (const int result = parseFromArgs(a, cfg); result != 0)
-    {
-        return result;
-    }
+    Config cfg = parseFromArgs(a);
+    Core::Shell shell = createShell(cfg);
 
-    Core::CommandRegistry registry;
-    registry.registerCommand(std::make_unique<Core::ExitCommand>());
-    registry.registerCommand(std::make_unique<Core::StubCommand>(QStringLiteral("ls")));
-    registry.registerCommand(std::make_unique<Core::StubCommand>(QStringLiteral("cd")));
+    Ui::MainWindow window(shell);
 
-    Core::CommandExecutor executor{registry};
-    Core::Interpreter interpreter{executor};
-
-    Core::UserIdentity identity{.userName = UserUtils::getCurrentUsername(),
-                                .machineName = QSysInfo::machineHostName()};
-    Core::SystemEnvProvider envProvider{identity};
-
-    std::expected<Core::MemoryVfs, QString> vfs = Core::XmlVfs::readFromFile(cfg.vfsPath);
-
-    if (!vfs)
-    {
-        // todo
-    }
-
-    EmulatorMirea::Ui::MainWindow window(std::move(cfg));
     window.show();
+
+    window.startup(cfg);
 
     return QApplication::exec();
 }

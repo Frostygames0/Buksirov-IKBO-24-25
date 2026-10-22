@@ -7,7 +7,6 @@
 
 #include "core/useridentity.h"
 
-
 namespace EmulatorMirea::Core
 {
 

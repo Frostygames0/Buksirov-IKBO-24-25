@@ -3,14 +3,14 @@
 
 #include <QString>
 
-#include "core/stream.h"
-
 namespace EmulatorMirea::Core
 {
-class ITerminalView : public IOutputStream
+class ITerminalView
 {
 public:
-    void write(const QString& text) override = 0;
+    virtual ~ITerminalView() = default;
+
+    virtual void write(const QString& text) = 0;
 
     virtual void setPrompt(const QString& prompt) = 0;
     virtual void showPrompt() = 0;
