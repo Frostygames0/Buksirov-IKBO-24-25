@@ -82,7 +82,7 @@ void TerminalWidget::keyPressEvent(QKeyEvent* event)
             const QString line = currentInput();
             moveCursorToEnd();
             insertPlainText(QString{u'\n'});
-            emit commandEntered(line, *this);
+            emit commandEntered(line);
             return;
         }
         case Qt::Key_Up:

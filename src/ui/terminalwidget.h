@@ -2,12 +2,11 @@
 
 #include <QPlainTextEdit>
 
-#include "core/output.h"
 
 namespace EmulatorMirea::Ui
 {
 
-class TerminalWidget : public QPlainTextEdit, public Core::IOutput
+class TerminalWidget : public QPlainTextEdit
 {
     Q_OBJECT
 public:
@@ -15,12 +14,12 @@ public:
 
 public slots:
     void setPrompt(const QString& prompt);
-    void writeLine(const QString& text) override;
+    void writeLine(const QString& text);
     void showPrompt();
     void setInput(const QString& text);
 
 signals:
-    void commandEntered(const QString& line, Core::IOutput& out);
+    void commandEntered(const QString& line);
     void historyUpRequested(const QString& currentInput);
     void historyDownRequested();
 
