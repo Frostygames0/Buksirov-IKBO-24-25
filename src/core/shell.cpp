@@ -11,23 +11,23 @@
 #include "core/executioncontext.h"
 #include "core/executionresult.h"
 #include "core/interpreter.h"
-#include "core/iterminalview.h"
+#include "core/terminalview.h"
 
 namespace EmulatorMirea::Core
 {
 
 Shell::Shell(UserIdentity identity,
              std::unique_ptr<IEnvProvider> envProvider,
-             std::unique_ptr<CommandRegistry> registry,
+             CommandRegistry registry,
              std::unique_ptr<IVfs> vfs)
     : m_identity(std::move(identity)), m_envProvider(std::move(envProvider)), m_registry(std::move(registry)),
       m_vfs(std::move(vfs))
 {
 }
 
-ExecutionResult Shell::submit(const QString& line, ITerminalView& view, HistoryMode historyMode)
+ExecutionResult Shell::submit(const QString& line, ITerminalView& view, Source source)
 {
-    if (historyMode == HistoryMode::Save)
+    if (source == Source::Interactive)
     {
         addHistory(line);
     }
@@ -37,9 +37,12 @@ ExecutionResult Shell::submit(const QString& line, ITerminalView& view, HistoryM
         return ExecutionResult::withStatus(0);
     }
 
-    const ExecutionContext ctx{.identity = m_identity, .envProvider = *m_envProvider, .view = view, .vfs = *m_vfs};
+    PwdEnvProvider decoratedProvider{*m_envProvider, m_cwd};
 
-    return Interpreter::execute(line, ctx);
+    const ExecutionContext ctx{
+        .identity = m_identity, .envProvider = decoratedProvider, .view = view, .vfs = *m_vfs, .cwd = m_cwd};
+
+    return Interpreter::execute(m_registry, line, ctx);
 }
 
 void Shell::addHistory(const QString& line)

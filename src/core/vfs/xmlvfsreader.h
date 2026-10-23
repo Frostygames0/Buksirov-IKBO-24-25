@@ -1,5 +1,4 @@
-#ifndef XMLVFSREADER_H
-#define XMLVFSREADER_H
+#pragma once
 
 #include <expected>
 
@@ -18,5 +17,3 @@ bool writeStub(const QString& filePath);
 
 } // namespace XmlVfs
 } // namespace EmulatorMirea::Core
-
-#endif

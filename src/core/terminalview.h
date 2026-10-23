@@ -1,5 +1,4 @@
-#ifndef ITERMINALVIEW_H
-#define ITERMINALVIEW_H
+#pragma once
 
 #include <QString>
 
@@ -20,5 +19,3 @@ public:
 };
 
 } // namespace EmulatorMirea::Core
-
-#endif // ITERMINALVIEW_H

@@ -1,10 +1,10 @@
-#ifndef EXECUTIONCONTEXT_H
-#define EXECUTIONCONTEXT_H
+#pragma once
 
 #include <QString>
 
-#include "core/iterminalview.h"
+#include "core/terminalview.h"
 #include "core/useridentity.h"
+#include "core/vfs/path.h"
 
 namespace EmulatorMirea::Core
 {
@@ -20,7 +20,6 @@ struct ExecutionContext
     IEnvProvider& envProvider;
     ITerminalView& view;
     IVfs& vfs;
+    VfsPath& cwd;
 };
 } // namespace EmulatorMirea::Core
-
-#endif // EXECUTIONCONTEXT_H

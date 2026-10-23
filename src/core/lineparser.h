@@ -1,5 +1,4 @@
-#ifndef LINEPARSER_H
-#define LINEPARSER_H
+#pragma once
 
 #include <QStringList>
 #include <QStringView>
@@ -18,5 +17,3 @@ namespace LineParser
 
 } // namespace LineParser
 } // namespace EmulatorMirea::Core
-
-#endif // LINEPARSER_H

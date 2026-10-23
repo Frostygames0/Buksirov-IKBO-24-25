@@ -1,9 +1,8 @@
-#ifndef TERMINALWIDGET_H
-#define TERMINALWIDGET_H
+#pragma once
 
 #include <QPlainTextEdit>
 
-#include "core/iterminalview.h"
+#include "core/terminalview.h"
 
 namespace EmulatorMirea::Ui
 {
@@ -38,5 +37,3 @@ private:
 };
 
 } // namespace EmulatorMirea::Ui
-
-#endif // TERMINALWIDGET_H

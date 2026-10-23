@@ -2,6 +2,7 @@
 
 #include <QKeyEvent>
 #include <QMimeData>
+#include <QString>
 #include <QTextCursor>
 
 namespace EmulatorMirea::Ui
@@ -18,7 +19,7 @@ void TerminalWidget::setPrompt(const QString& prompt)
     m_prompt = prompt;
 }
 
-void TerminalWidget::print(const QString& text)
+void TerminalWidget::write(const QString& text)
 {
     if (text.isEmpty())
     {
@@ -28,9 +29,9 @@ void TerminalWidget::print(const QString& text)
     moveCursorToEnd();
     insertPlainText(text);
 
-    if (!text.endsWith('\n'))
+    if (!text.endsWith(u'\n'))
     {
-        insertPlainText("\n");
+        insertPlainText(QString{u'\n'});
     }
 
     ensureCursorVisible();
@@ -80,7 +81,7 @@ void TerminalWidget::keyPressEvent(QKeyEvent* event)
         case Qt::Key_Enter: {
             const QString line = currentInput();
             moveCursorToEnd();
-            insertPlainText("\n");
+            insertPlainText(QString{u'\n'});
             emit commandEntered(line);
             return;
         }
@@ -147,7 +148,7 @@ void TerminalWidget::insertFromMimeData(const QMimeData* source)
     }
 
     QString text = source->text();
-    text.replace('\n', ' ').remove('\r');
+    text.replace(u'\n', u' ').remove(u'\r');
     insertPlainText(text);
 }
 

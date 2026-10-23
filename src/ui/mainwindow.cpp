@@ -79,7 +79,7 @@ Core::ExecutionResult MainWindow::runScript(const QString& path)
         m_terminalWidget->showPrompt();
         m_terminalWidget->write(line);
 
-        result = m_shell.submit(line, *m_terminalWidget, Core::Shell::HistoryMode::Ignore);
+        result = m_shell.submit(line, *m_terminalWidget, Core::Shell::Source::Script);
         if (result.exitRequested())
         {
             break;

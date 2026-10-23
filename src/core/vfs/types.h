@@ -1,5 +1,4 @@
-#ifndef VFS_TYPES_H
-#define VFS_TYPES_H
+#pragma once
 
 #include <QString>
 #include <QStringLiteral>
@@ -67,5 +66,3 @@ inline QString vfsErrorToString(VfsError e)
     return QStringLiteral("Unknown");
 }
 } // namespace EmulatorMirea::Core
-
-#endif

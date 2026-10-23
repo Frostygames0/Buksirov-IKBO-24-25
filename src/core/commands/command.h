@@ -1,5 +1,4 @@
-#ifndef COMMAND_H
-#define COMMAND_H
+#pragma once
 
 #include <QString>
 #include <QStringList>
@@ -22,18 +21,6 @@ public:
     [[nodiscard]] virtual ExecutionResult execute(const QStringList& args, const ExecutionContext& ctx) const = 0;
 };
 
-class StubCommand : public Command
-{
-public:
-    explicit StubCommand(const QString& name);
-
-    [[nodiscard]] QString name() const override;
-    [[nodiscard]] ExecutionResult execute(const QStringList& args, const ExecutionContext& ctx) const override;
-
-private:
-    QString m_name;
-};
-
 class ExitCommand : public Command
 {
 public:
@@ -42,5 +29,3 @@ public:
 };
 
 } // namespace EmulatorMirea::Core
-
-#endif // COMMAND_H

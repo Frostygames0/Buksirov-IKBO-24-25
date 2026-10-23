@@ -1,5 +1,4 @@
-#ifndef VFSPATH_H
-#define VFSPATH_H
+#pragma once
 
 #include <optional>
 
@@ -34,5 +33,3 @@ private:
 };
 
 }; // namespace EmulatorMirea::Core
-
-#endif

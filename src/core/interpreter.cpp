@@ -4,7 +4,6 @@
 #include <QStringView>
 
 #include "core/commands/command.h"
-#include "core/commands/executor.h"
 #include "core/commands/registry.h"
 #include "core/executioncontext.h"
 #include "core/executionresult.h"

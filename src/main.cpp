@@ -1,8 +1,6 @@
 #include <cstdio>
 #include <expected>
 #include <memory>
-#include <qchar.h>
-#include <qsysinfo.h>
 #include <utility>
 
 #include <QApplication>
@@ -13,7 +11,6 @@
 
 #include "config.h"
 #include "core/commands/command.h"
-#include "core/commands/executor.h"
 #include "core/commands/registry.h"
 #include "core/envprovider.h"
 #include "core/shell.h"
@@ -22,7 +19,7 @@
 #include "core/vfs/vfs.h"
 #include "core/vfs/xmlvfsreader.h"
 #include "ui/mainwindow.h"
-#include "utils/user.h"
+#include "userutil.h"
 
 using namespace EmulatorMirea;
 
@@ -59,18 +56,20 @@ static Config parseFromArgs(const QCoreApplication& app)
     return cfg;
 }
 
+Core::CommandRegistry createDefaultRegistry()
+{
+    Core::CommandRegistry registry;
+    registry.registerCommand(std::make_unique<Core::ExitCommand>());
+
+    return registry;
+}
+
 Core::Shell createShell(const Config& cfg)
 {
-    std::unique_ptr<Core::CommandRegistry> registry = std::make_unique<Core::CommandRegistry>();
-    registry->registerCommand(std::make_unique<Core::ExitCommand>());
-    registry->registerCommand(std::make_unique<Core::StubCommand>(QStringLiteral("ls")));
-    registry->registerCommand(std::make_unique<Core::StubCommand>(QStringLiteral("cd")));
-
     Core::UserIdentity identity{.userName = UserUtils::getCurrentUsername(),
                                 .machineName = QSysInfo::machineHostName()};
 
     std::unique_ptr<Core::IEnvProvider> envProvider = std::make_unique<Core::SystemEnvProvider>(identity);
-
     std::unique_ptr<Core::IVfs> vfs = std::make_unique<Core::MemoryVfs>();
 
     std::expected<void, QString> res = Core::XmlVfs::readFromFile(cfg.vfsPath, *vfs);
@@ -79,7 +78,7 @@ Core::Shell createShell(const Config& cfg)
         qWarning() << QStringLiteral("warning: vfs file not found at: ") << cfg.scriptPath << u'\n';
     }
 
-    return Core::Shell{std::move(identity), std::move(envProvider), std::move(registry), std::move(vfs)};
+    return Core::Shell{std::move(identity), std::move(envProvider), createDefaultRegistry(), std::move(vfs)};
 }
 
 int main(int argc, char* argv[])

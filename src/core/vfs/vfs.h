@@ -1,5 +1,4 @@
-#ifndef VFS_H
-#define VFS_H
+#pragma once
 
 #include <expected>
 #include <variant>
@@ -98,5 +97,3 @@ private:
     void clearImpl();
 };
 } // namespace EmulatorMirea::Core
-
-#endif

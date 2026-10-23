@@ -11,67 +11,28 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_AUTORCC ON)
 
+add_subdirectory(src/core)
+add_subdirectory(src/ui)
+
 qt_add_executable(EmulatorMirea
     WIN32
 
     src/main.cpp
-
-    # core: shell logic, no widgets
-    src/core/executionresult.h
-    src/core/executioncontext.h
-
-    src/core/scriptrunner.h      src/core/scriptrunner.cpp
-    src/core/launchconfig.h
-    src/core/iterminalview.h
-    src/core/terminalostream.h
-    src/core/stream.h
-    src/core/interpreter.h       src/core/interpreter.cpp
-    src/core/envprovider.h
-    src/core/systemenvprovider.h src/core/systemenvprovider.cpp
-    src/core/lineparser.h        src/core/lineparser.cpp
-    src/core/shell.h             src/core/shell.cpp
-
-    # core/vfs
-    src/core/vfs/vfs.h           src/core/vfs/vfs.cpp
-    src/core/vfs/path.h          src/core/vfs/path.cpp
-    src/core/vfs/types.h
-    src/core/vfs/xmlvfsreader.h  src/core/vfs/xmlvfsreader.cpp
-
-    # core/commands
-    src/core/commands/commandhistory.h src/core/commands/commandhistory.cpp
-    src/core/commands/executor.h src/core/commands/executor.cpp
-    src/core/commands/registry.h src/core/commands/registry.cpp
-    src/core/commands/command.h  src/core/commands/command.cpp
-
-    # ui: widgets
-    src/ui/mainwindow.h          src/ui/mainwindow.cpp
-    src/ui/terminalwidget.h      src/ui/terminalwidget.cpp
-
-    # utils
-    src/utils/user.h             src/utils/user.cpp
+    src/userutil.h src/userutil.cpp
 
     resources/resources.qrc
 )
 
 target_include_directories(EmulatorMirea PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-target_compile_definitions(EmulatorMirea PRIVATE QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_BYTEARRAY)
-
 target_link_libraries(EmulatorMirea
     PRIVATE
         Qt::Core
         Qt::Widgets
+        emulator_core
+        emulator_ui
 )
 
-target_precompile_headers(EmulatorMirea PRIVATE
-    <QString>
-    <QStringList>
-    <QObject>
-    <QCoreApplication>
-    <memory>
-    <functional>
-    <optional>
-)
+add_compile_definitions(QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_BYTEARRAY)
 
 install(TARGETS EmulatorMirea
     BUNDLE  DESTINATION .

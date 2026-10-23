@@ -1,5 +1,4 @@
-#ifndef EXECUTIONRESULT_H
-#define EXECUTIONRESULT_H
+#pragma once
 
 #include <optional>
 
@@ -32,5 +31,3 @@ struct ExecutionResult
 };
 
 } // namespace EmulatorMirea::Core
-
-#endif // EXECUTIONRESULT_H

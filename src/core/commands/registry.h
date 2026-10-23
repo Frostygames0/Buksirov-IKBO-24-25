@@ -1,5 +1,4 @@
-#ifndef COMMANDREGISTRY_H
-#define COMMANDREGISTRY_H
+#pragma once
 
 #include <memory>
 #include <unordered_map>
@@ -22,4 +21,3 @@ private:
 };
 
 } // namespace EmulatorMirea::Core
-#endif // COMMANDREGISTRY_H

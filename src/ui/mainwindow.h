@@ -1,13 +1,15 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include <QtTypes>
 
 #include "config.h"
 #include "core/executionresult.h"
-#include "core/shell.h"
 
+namespace EmulatorMirea::Core
+{
+class Shell;
+}
 
 namespace EmulatorMirea::Ui
 {
@@ -29,6 +31,7 @@ private:
 
     void setupUi();
 
+    // TODO: Remove it from here, it's not the best place
     Core::ExecutionResult runScript(const QString& path);
 
     TerminalWidget* m_terminalWidget = nullptr;
@@ -40,5 +43,3 @@ private:
 };
 
 } // namespace EmulatorMirea::Ui
-
-#endif // MAINWINDOW_H

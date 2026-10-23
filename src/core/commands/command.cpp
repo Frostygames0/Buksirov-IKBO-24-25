@@ -4,23 +4,9 @@
 #include <QStringLiteral>
 
 #include "core/executioncontext.h"
-#include "core/stream.h"
 
 namespace EmulatorMirea::Core
 {
-
-StubCommand::StubCommand(const QString& name) : m_name(name) {}
-
-QString StubCommand::name() const
-{
-    return m_name;
-}
-
-ExecutionResult StubCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
-{
-    ctx.out.write(m_name + u' ' + args.join(u' '));
-    return ExecutionResult::withStatus(ExitCode::Success);
-}
 
 QString ExitCommand::name() const
 {
@@ -31,7 +17,7 @@ ExecutionResult ExitCommand::execute(const QStringList& args, const ExecutionCon
 {
     if (args.size() > 1)
     {
-        ctx.out.write(name() + u": too many arguments");
+        ctx.view.write(name() + u": too many arguments");
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 
@@ -40,7 +26,7 @@ ExecutionResult ExitCommand::execute(const QStringList& args, const ExecutionCon
 
     if (!ok)
     {
-        ctx.out.write(name() + u": " + args.value(0) + u": numeric argument required");
+        ctx.view.write(name() + u": " + args.value(0) + u": numeric argument required");
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 
