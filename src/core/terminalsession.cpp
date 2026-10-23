@@ -16,7 +16,7 @@ void TerminalSession::start(const QString& scriptPath)
 {
     if (!scriptPath.isEmpty())
     {
-        ExecutionResult r = runScript(scriptPath, m_out);
+        ExecutionResult r = runScript(scriptPath);
         if (r.exitRequested())
         {
             emit exitRequested(*r.exitCode);
@@ -63,7 +63,7 @@ void TerminalSession::showPrompt()
     emit promptShown();
 }
 
-ExecutionResult TerminalSession::runScript(const QString& path, IOutput& out)
+ExecutionResult TerminalSession::runScript(const QString& path)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -87,7 +87,7 @@ ExecutionResult TerminalSession::runScript(const QString& path, IOutput& out)
         showPrompt();
         emit outputLine(line);
 
-        result = m_shell.submit(line, out, Core::Shell::Source::Script);
+        result = m_shell.submit(line, m_out, Core::Shell::Source::Script);
         if (result.exitRequested())
         {
             break;

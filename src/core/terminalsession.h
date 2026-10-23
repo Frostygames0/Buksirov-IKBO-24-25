@@ -39,7 +39,7 @@ private:
     void showPrompt();
 
     // TODO: Extract
-    ExecutionResult runScript(const QString& path, IOutput& out);
+    ExecutionResult runScript(const QString& path);
 
     class SignalWrappedOut : public IOutput
     {
