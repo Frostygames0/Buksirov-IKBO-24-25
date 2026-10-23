@@ -1,15 +1,11 @@
 #pragma once
 
+#include <qchar.h>
+
 #include <QMainWindow>
 #include <QtTypes>
 
-#include "config.h"
-#include "core/executionresult.h"
-
-namespace EmulatorMirea::Core
-{
-class Shell;
-}
+#include "core/terminalsession.h"
 
 namespace EmulatorMirea::Ui
 {
@@ -21,25 +17,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(Core::Shell& shell);
-
-    void startup(const Config& config);
+    explicit MainWindow(Core::TerminalSession& session);
+    void startDelayed(const QString& scriptPath);
 
 private:
-    Core::Shell& m_shell;
-    qsizetype m_historyIndex = 0;
+    Core::TerminalSession& m_session;
 
     void setupUi();
-
-    // TODO: Remove it from here, it's not the best place
-    Core::ExecutionResult runScript(const QString& path);
-
     TerminalWidget* m_terminalWidget = nullptr;
     void setupTerminal();
-
-    void onTerminalCommandEntered(const QString& line);
-    void onTerminalHistoryUpRequested();
-    void onTerminalHistoryDownRequested();
 };
 
 } // namespace EmulatorMirea::Ui

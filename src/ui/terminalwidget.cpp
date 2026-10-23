@@ -19,7 +19,7 @@ void TerminalWidget::setPrompt(const QString& prompt)
     m_prompt = prompt;
 }
 
-void TerminalWidget::write(const QString& text)
+void TerminalWidget::writeLine(const QString& text)
 {
     if (text.isEmpty())
     {
@@ -82,11 +82,11 @@ void TerminalWidget::keyPressEvent(QKeyEvent* event)
             const QString line = currentInput();
             moveCursorToEnd();
             insertPlainText(QString{u'\n'});
-            emit commandEntered(line);
+            emit commandEntered(line, *this);
             return;
         }
         case Qt::Key_Up:
-            emit historyUpRequested();
+            emit historyUpRequested(currentInput());
             return;
         case Qt::Key_Down:
             emit historyDownRequested();

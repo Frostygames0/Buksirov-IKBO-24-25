@@ -8,6 +8,7 @@
 #include "core/executioncontext.h"
 #include "core/executionresult.h"
 #include "core/lineparser.h"
+#include "core/output.h"
 
 namespace EmulatorMirea::Core::Interpreter
 {
@@ -27,7 +28,7 @@ ExecutionResult execute(CommandRegistry& registry, QStringView input, const Exec
     const Command* cmd = registry.getCommand(name);
     if (cmd == nullptr)
     {
-        ctx.view.write(name + u": Command not found.");
+        ctx.out.writeLine(name + u": Command not found.");
         return ExecutionResult::withStatus(ExitCode::CommandNotFound);
     }
 

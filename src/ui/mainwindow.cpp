@@ -8,23 +8,36 @@
 #include <QString>
 #include <QTimer>
 
-#include "config.h"
-#include "core/executionresult.h"
-#include "core/shell.h"
+#include "core/terminalsession.h"
 #include "ui/terminalwidget.h"
 
 namespace EmulatorMirea::Ui
 {
 
-MainWindow::MainWindow(Core::Shell& shell) : QMainWindow(nullptr), m_shell(shell)
+MainWindow::MainWindow(Core::TerminalSession& session) : QMainWindow(nullptr), m_session(session)
 {
     setupUi();
+
+    connect(m_terminalWidget, &TerminalWidget::commandEntered, &session, &Core::TerminalSession::onEnter);
+    connect(m_terminalWidget, &TerminalWidget::historyUpRequested, &session, &Core::TerminalSession::onHistoryUp);
+    connect(m_terminalWidget, &TerminalWidget::historyDownRequested, &session, &Core::TerminalSession::onHistoryDown);
+
+    connect(&m_session, &Core::TerminalSession::outputLine, m_terminalWidget, &TerminalWidget::writeLine);
+    connect(&m_session, &Core::TerminalSession::promptChanged, m_terminalWidget, &TerminalWidget::setPrompt);
+    connect(&m_session, &Core::TerminalSession::promptShown, m_terminalWidget, &TerminalWidget::showPrompt);
+    connect(&m_session, &Core::TerminalSession::inputChanged, m_terminalWidget, &TerminalWidget::setInput);
+    connect(
+        &m_session, &Core::TerminalSession::exitRequested, this, [](int exitCode) { QApplication::exit(exitCode); });
+}
+
+void MainWindow::startDelayed(const QString& scriptPath)
+{
+    QTimer::singleShot(0, [this, scriptPath]() { m_session.start(scriptPath); });
 }
 
 void MainWindow::setupUi()
 {
-    setObjectName("MainWindow");
-    setWindowTitle(tr("%1 — %2").arg(m_shell.title(), QApplication::applicationName()));
+    setWindowTitle(tr("%1 — %2").arg(m_session.title(), QApplication::applicationName()));
 
     setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
 
@@ -33,60 +46,6 @@ void MainWindow::setupUi()
 
     setupTerminal();
     setCentralWidget(m_terminalWidget);
-}
-
-void MainWindow::startup(const Config& config)
-{
-    qDebug() << "vfs =" << (config.vfsPath.isEmpty() ? QStringLiteral("(not set)") : config.vfsPath);
-    qDebug() << "script =" << (config.scriptPath.isEmpty() ? QStringLiteral("(not set)") : config.scriptPath);
-
-    if (!config.scriptPath.isEmpty())
-    {
-        const Core::ExecutionResult result = runScript(config.scriptPath);
-        if (result.exitRequested())
-        {
-            QCoreApplication::exit(*result.exitCode); // NOLINT
-        }
-    }
-
-    m_historyIndex = m_shell.historySize();
-    m_terminalWidget->setPrompt(m_shell.prompt());
-    m_terminalWidget->showPrompt();
-}
-
-Core::ExecutionResult MainWindow::runScript(const QString& path)
-{
-    QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        m_terminalWidget->write(QStringLiteral("[error] cannot open script: %1 (%2)").arg(path, file.errorString()));
-        return Core::ExecutionResult::withStatus(Core::ExitCode::UnableToRun);
-    }
-
-    QTextStream in(&file);
-    Core::ExecutionResult result;
-
-    while (!in.atEnd())
-    {
-        const QString line = in.readLine();
-        const QString trimmed = line.trimmed();
-        if (trimmed.isEmpty() || trimmed.startsWith(u'#'))
-        {
-            continue;
-        }
-
-        m_terminalWidget->setPrompt(m_shell.prompt());
-        m_terminalWidget->showPrompt();
-        m_terminalWidget->write(line);
-
-        result = m_shell.submit(line, *m_terminalWidget, Core::Shell::Source::Script);
-        if (result.exitRequested())
-        {
-            break;
-        }
-    }
-
-    return result;
 }
 
 void MainWindow::setupTerminal()
@@ -108,59 +67,6 @@ void MainWindow::setupTerminal()
 
     m_terminalWidget->setFrameShape(QFrame::NoFrame);
     m_terminalWidget->setBackgroundVisible(false);
-
-    connect(m_terminalWidget, &TerminalWidget::commandEntered, this, &MainWindow::onTerminalCommandEntered);
-    connect(m_terminalWidget, &TerminalWidget::historyUpRequested, this, &MainWindow::onTerminalHistoryUpRequested);
-    connect(m_terminalWidget, &TerminalWidget::historyDownRequested, this, &MainWindow::onTerminalHistoryDownRequested);
-}
-
-void MainWindow::onTerminalCommandEntered(const QString& line)
-{
-    Core::ExecutionResult result = m_shell.submit(line, *m_terminalWidget);
-    if (result.exitRequested())
-    {
-        QCoreApplication::exit(*result.exitCode); // NOLINT
-    }
-
-    m_historyIndex = m_shell.historySize();
-
-    m_terminalWidget->setPrompt(m_shell.prompt());
-    m_terminalWidget->showPrompt();
-}
-
-void MainWindow::onTerminalHistoryUpRequested()
-{
-    if (m_shell.historySize() == 0)
-    {
-        return;
-    }
-
-    if (m_historyIndex > 0)
-    {
-        --m_historyIndex;
-    }
-
-    m_terminalWidget->setInput(m_shell.historyAt(m_historyIndex));
-}
-
-void MainWindow::onTerminalHistoryDownRequested()
-{
-    const qsizetype size = m_shell.historySize();
-    if (size == 0)
-    {
-        return;
-    }
-
-    if (m_historyIndex < size - 1)
-    {
-        ++m_historyIndex;
-        m_terminalWidget->setInput(m_shell.historyAt(m_historyIndex));
-    }
-    else
-    {
-        m_historyIndex = size;
-        m_terminalWidget->setInput({});
-    }
 }
 
 } // namespace EmulatorMirea::Ui

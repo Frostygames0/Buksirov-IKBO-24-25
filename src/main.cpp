@@ -8,13 +8,14 @@
 #include <QFileInfo>
 #include <QFontDatabase>
 #include <QTextStream>
+#include <Qtimer>
 
-#include "config.h"
 #include "core/commands/command.h"
 #include "core/commands/registry.h"
 #include "core/envprovider.h"
 #include "core/shell.h"
 #include "core/systemenvprovider.h"
+#include "core/terminalsession.h"
 #include "core/useridentity.h"
 #include "core/vfs/vfs.h"
 #include "core/vfs/xmlvfsreader.h"
@@ -22,6 +23,12 @@
 #include "userutil.h"
 
 using namespace EmulatorMirea;
+
+struct Config
+{
+    QString vfsPath;
+    QString scriptPath;
+};
 
 static Config parseFromArgs(const QCoreApplication& app)
 {
@@ -60,6 +67,7 @@ Core::CommandRegistry createDefaultRegistry()
 {
     Core::CommandRegistry registry;
     registry.registerCommand(std::make_unique<Core::ExitCommand>());
+    registry.registerCommand(std::make_unique<Core::ListCommand>());
 
     return registry;
 }
@@ -78,24 +86,21 @@ Core::Shell createShell(const Config& cfg)
         qWarning() << QStringLiteral("warning: vfs file not found at: ") << cfg.scriptPath << u'\n';
     }
 
-    return Core::Shell{std::move(identity), std::move(envProvider), createDefaultRegistry(), std::move(vfs)};
+    return Core::Shell(std::move(identity), std::move(envProvider), createDefaultRegistry(), std::move(vfs));
 }
 
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv); // NOLINT
     QApplication::setApplicationName(QStringLiteral("EmulatorMirea"));
-
     QFontDatabase::addApplicationFont(QStringLiteral(":/fonts/JetBrainsMono-Regular.ttf"));
 
     Config cfg = parseFromArgs(a);
-    Core::Shell shell = createShell(cfg);
+    Core::TerminalSession session{createShell(cfg)};
 
-    Ui::MainWindow window(shell);
-
+    Ui::MainWindow window{session};
     window.show();
-
-    window.startup(cfg);
+    window.startDelayed(cfg.scriptPath);
 
     return QApplication::exec();
 }

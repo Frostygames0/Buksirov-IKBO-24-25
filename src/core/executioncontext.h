@@ -2,7 +2,7 @@
 
 #include <QString>
 
-#include "core/terminalview.h"
+#include "core/output.h"
 #include "core/useridentity.h"
 #include "core/vfs/path.h"
 
@@ -10,7 +10,7 @@ namespace EmulatorMirea::Core
 {
 
 class IEnvProvider;
-class ITerminalView;
+class IOutput;
 class IVfs;
 class UserIdentity;
 
@@ -18,7 +18,7 @@ struct ExecutionContext
 {
     UserIdentity identity;
     IEnvProvider& envProvider;
-    ITerminalView& view;
+    IOutput& out;
     IVfs& vfs;
     VfsPath& cwd;
 };

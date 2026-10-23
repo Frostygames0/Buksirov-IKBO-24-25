@@ -9,7 +9,7 @@
 #include "core/commands/registry.h"
 #include "core/envprovider.h"
 #include "core/executionresult.h"
-#include "core/terminalview.h"
+#include "core/output.h"
 #include "core/useridentity.h"
 #include "core/vfs/path.h"
 #include "core/vfs/vfs.h"
@@ -30,7 +30,7 @@ public:
         Script
     };
 
-    ExecutionResult submit(const QString& line, ITerminalView& view, Source source = Source::Interactive);
+    ExecutionResult submit(const QString& line, IOutput& out, Source source = Source::Interactive);
 
     [[nodiscard]] qsizetype historySize() const;
     [[nodiscard]] QString historyAt(qsizetype index) const;

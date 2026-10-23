@@ -11,7 +11,6 @@
 #include "core/executioncontext.h"
 #include "core/executionresult.h"
 #include "core/interpreter.h"
-#include "core/terminalview.h"
 
 namespace EmulatorMirea::Core
 {
@@ -25,7 +24,7 @@ Shell::Shell(UserIdentity identity,
 {
 }
 
-ExecutionResult Shell::submit(const QString& line, ITerminalView& view, Source source)
+ExecutionResult Shell::submit(const QString& line, IOutput& out, Source source)
 {
     if (source == Source::Interactive)
     {
@@ -40,7 +39,7 @@ ExecutionResult Shell::submit(const QString& line, ITerminalView& view, Source s
     PwdEnvProvider decoratedProvider{*m_envProvider, m_cwd};
 
     const ExecutionContext ctx{
-        .identity = m_identity, .envProvider = decoratedProvider, .view = view, .vfs = *m_vfs, .cwd = m_cwd};
+        .identity = m_identity, .envProvider = decoratedProvider, .out = out, .vfs = *m_vfs, .cwd = m_cwd};
 
     return Interpreter::execute(m_registry, line, ctx);
 }

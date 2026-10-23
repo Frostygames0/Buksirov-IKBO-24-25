@@ -28,4 +28,10 @@ public:
     [[nodiscard]] ExecutionResult execute(const QStringList& args, const ExecutionContext& ctx) const override;
 };
 
+class ListCommand : public Command
+{
+public:
+    [[nodiscard]] QString name() const override;
+    [[nodiscard]] ExecutionResult execute(const QStringList&, const ExecutionContext& ctx) const override;
+};
 } // namespace EmulatorMirea::Core
