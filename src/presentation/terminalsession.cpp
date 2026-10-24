@@ -6,17 +6,19 @@
 #include <QTextStream>
 
 #include "core/executionresult.h"
+#include "core/shell.h"
+#include "presentation/historynavigator.h"
 
-namespace EmulatorMirea::Core
+namespace EmulatorMirea::Presentation
 {
 
-TerminalSession::TerminalSession(Shell shell) : m_shell(std::move(shell)) {}
+TerminalSession::TerminalSession(Core::Shell shell) : m_shell(std::move(shell)) {}
 
 void TerminalSession::start(const QString& scriptPath)
 {
     if (!scriptPath.isEmpty())
     {
-        ExecutionResult r = runScript(scriptPath);
+        Core::ExecutionResult r = runScript(scriptPath);
         if (r.exitRequested())
         {
             emit exitRequested(*r.exitCode);
@@ -30,7 +32,7 @@ void TerminalSession::start(const QString& scriptPath)
 
 void TerminalSession::onEnter(const QString& line)
 {
-    ExecutionResult r = m_shell.submit(line, m_out);
+    Core::ExecutionResult r = m_shell.submit(line, m_out);
 
     m_navigator.reset();
     if (r.exitRequested())
@@ -63,12 +65,12 @@ void TerminalSession::showPrompt()
     emit promptShown();
 }
 
-ExecutionResult TerminalSession::runScript(const QString& path)
+Core::ExecutionResult TerminalSession::runScript(const QString& path)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        emit outputLine(QStringLiteral("[error] cannot open script: %1 (%2)").arg(path, file.errorString()));
+        emit outputLine(QStringLiteral("error: cannot open script: %1 (%2)").arg(path, file.errorString()));
         return Core::ExecutionResult::withStatus(Core::ExitCode::UnableToRun);
     }
 
@@ -97,4 +99,4 @@ ExecutionResult TerminalSession::runScript(const QString& path)
     return result;
 }
 
-} // namespace EmulatorMirea::Core
+} // namespace EmulatorMirea::Presentation

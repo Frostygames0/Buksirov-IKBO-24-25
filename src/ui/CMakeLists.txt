@@ -6,6 +6,6 @@ target_include_directories(emulator_ui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 target_link_libraries(emulator_ui
     PUBLIC
-        emulator_core
+        emulator_presentation
         Qt6::Widgets
 )

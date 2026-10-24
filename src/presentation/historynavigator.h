@@ -5,13 +5,16 @@
 
 namespace EmulatorMirea::Core
 {
-
 class Shell;
+}
+
+namespace EmulatorMirea::Presentation
+{
 
 class HistoryNavigator
 {
 public:
-    explicit HistoryNavigator(const Shell& shell);
+    explicit HistoryNavigator(const Core::Shell& shell);
 
     QString up(const QString& current);
     QString down();
@@ -19,9 +22,9 @@ public:
     void reset();
 
 private:
-    const Shell& m_shell;
+    const Core::Shell& m_shell;
     qsizetype m_index = 0;
     QString m_scratch;
 };
 
-} // namespace EmulatorMirea::Core
+} // namespace EmulatorMirea::Presentation

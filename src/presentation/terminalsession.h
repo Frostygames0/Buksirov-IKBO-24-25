@@ -3,18 +3,19 @@
 #include <QObject>
 #include <QString>
 
-#include "core/historynavigator.h"
 #include "core/output.h"
 #include "core/shell.h"
+#include "presentation/historynavigator.h"
 
-namespace EmulatorMirea::Core
+
+namespace EmulatorMirea::Presentation
 {
 
 class TerminalSession : public QObject
 {
     Q_OBJECT
 public:
-    explicit TerminalSession(Shell shell);
+    explicit TerminalSession(Core::Shell shell);
 
     void start(const QString& scriptPath);
 
@@ -33,15 +34,15 @@ signals:
     void exitRequested(int code);
 
 private:
-    Shell m_shell;
+    Core::Shell m_shell;
     HistoryNavigator m_navigator{m_shell};
 
     void showPrompt();
 
     // TODO: Extract
-    ExecutionResult runScript(const QString& path);
+    Core::ExecutionResult runScript(const QString& path);
 
-    class SignalWrappedOut : public IOutput
+    class SignalWrappedOut : public Core::IOutput
     {
     public:
         SignalWrappedOut(TerminalSession& session) : m_session(session) {}
@@ -55,4 +56,4 @@ private:
     SignalWrappedOut m_out{*this};
 };
 
-}; // namespace EmulatorMirea::Core
+}; // namespace EmulatorMirea::Presentation

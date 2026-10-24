@@ -8,37 +8,23 @@
 #include <QString>
 #include <QTimer>
 
-#include "core/terminalsession.h"
 #include "ui/terminalwidget.h"
 
 namespace EmulatorMirea::Ui
 {
 
-MainWindow::MainWindow(Core::TerminalSession& session) : QMainWindow(nullptr), m_session(session)
+MainWindow::MainWindow() : QMainWindow(nullptr)
 {
     setupUi();
-
-    connect(m_terminalWidget, &TerminalWidget::commandEntered, &session, &Core::TerminalSession::onEnter);
-    connect(m_terminalWidget, &TerminalWidget::historyUpRequested, &session, &Core::TerminalSession::onHistoryUp);
-    connect(m_terminalWidget, &TerminalWidget::historyDownRequested, &session, &Core::TerminalSession::onHistoryDown);
-
-    connect(&m_session, &Core::TerminalSession::outputLine, m_terminalWidget, &TerminalWidget::writeLine);
-    connect(&m_session, &Core::TerminalSession::promptChanged, m_terminalWidget, &TerminalWidget::setPrompt);
-    connect(&m_session, &Core::TerminalSession::promptShown, m_terminalWidget, &TerminalWidget::showPrompt);
-    connect(&m_session, &Core::TerminalSession::inputChanged, m_terminalWidget, &TerminalWidget::setInput);
-    connect(
-        &m_session, &Core::TerminalSession::exitRequested, this, [](int exitCode) { QApplication::exit(exitCode); });
 }
 
-void MainWindow::startDelayed(const QString& scriptPath)
+TerminalWidget& MainWindow::terminalWidget()
 {
-    QTimer::singleShot(0, [this, scriptPath]() { m_session.start(scriptPath); });
+    return *m_terminalWidget;
 }
 
 void MainWindow::setupUi()
 {
-    setWindowTitle(tr("%1 — %2").arg(m_session.title(), QApplication::applicationName()));
-
     setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
 
     setMinimumSize(400, 300);

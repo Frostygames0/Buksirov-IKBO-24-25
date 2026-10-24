@@ -5,10 +5,10 @@
 
 #include "core/shell.h"
 
-namespace EmulatorMirea::Core
+namespace EmulatorMirea::Presentation
 {
 
-HistoryNavigator::HistoryNavigator(const Shell& shell) : m_shell(shell) {}
+HistoryNavigator::HistoryNavigator(const Core::Shell& shell) : m_shell(shell) {}
 
 QString HistoryNavigator::up(const QString& current)
 {
@@ -44,4 +44,4 @@ void HistoryNavigator::reset()
     m_scratch.clear();
 }
 
-}; // namespace EmulatorMirea::Core
+}; // namespace EmulatorMirea::Presentation

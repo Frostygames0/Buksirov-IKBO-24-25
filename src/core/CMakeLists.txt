@@ -15,10 +15,9 @@ add_library(emulator_core STATIC
     lineparser.h         lineparser.cpp
     shell.h              shell.cpp
     systemenvprovider.h  systemenvprovider.cpp
-
-    historynavigator.h   historynavigator.cpp
-    terminalsession.h    terminalsession.cpp
+    
     output.h
+    scriptrunner.h
 )
 
 target_include_directories(emulator_core

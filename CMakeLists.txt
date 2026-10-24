@@ -9,9 +9,11 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 add_subdirectory(src/core)
+add_subdirectory(src/presentation)
 add_subdirectory(src/ui)
 
 qt_add_executable(EmulatorMirea

@@ -7,6 +7,7 @@
 #include <QStringLiteral>
 #include <QXmlStreamReader>
 #include <QtTypes>
+
 #include "core/vfs/vfs.h"
 
 namespace EmulatorMirea::Core::XmlVfs

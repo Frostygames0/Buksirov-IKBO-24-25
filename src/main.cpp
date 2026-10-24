@@ -1,36 +1,40 @@
-#include <cstdio>
 #include <expected>
 #include <memory>
-#include <utility>
 
 #include <QApplication>
 #include <QCommandLineParser>
-#include <QFileInfo>
+#include <QCoreApplication>
+#include <QDebug>
 #include <QFontDatabase>
-#include <QTextStream>
-#include <Qtimer>
+#include <QObject>
+#include <QString>
+#include <QSysInfo>
+#include <QTimer>
 
 #include "core/commands/command.h"
 #include "core/commands/registry.h"
 #include "core/envprovider.h"
 #include "core/shell.h"
 #include "core/systemenvprovider.h"
-#include "core/terminalsession.h"
 #include "core/useridentity.h"
 #include "core/vfs/vfs.h"
 #include "core/vfs/xmlvfsreader.h"
+#include "presentation/terminalsession.h"
 #include "ui/mainwindow.h"
+#include "ui/terminalwidget.h"
 #include "userutil.h"
 
 using namespace EmulatorMirea;
 
+namespace
+{
 struct Config
 {
     QString vfsPath;
     QString scriptPath;
 };
 
-static Config parseFromArgs(const QCoreApplication& app)
+Config parseFromArgs(const QCoreApplication& app)
 {
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Эмулятор оболочки"));
@@ -47,20 +51,7 @@ static Config parseFromArgs(const QCoreApplication& app)
 
     parser.process(app);
 
-    Config cfg;
-    cfg.vfsPath = parser.value(QStringLiteral("vfs"));
-    cfg.scriptPath = parser.value(QStringLiteral("script"));
-
-    if (!cfg.vfsPath.isEmpty() && QFileInfo::exists(cfg.vfsPath) && !QFileInfo(cfg.vfsPath).isFile())
-    {
-        qWarning() << QStringLiteral("warning: object at VFS path is not a file: ") << cfg.vfsPath << u'\n';
-    }
-    if (!cfg.scriptPath.isEmpty() && !QFileInfo(cfg.scriptPath).isFile())
-    {
-        qWarning() << QStringLiteral("warning: script file not found at: ") << cfg.scriptPath << u'\n';
-    }
-
-    return cfg;
+    return Config{.vfsPath = parser.value(QStringLiteral("vfs")), .scriptPath = parser.value(QStringLiteral("script"))};
 }
 
 Core::CommandRegistry createDefaultRegistry()
@@ -72,22 +63,59 @@ Core::CommandRegistry createDefaultRegistry()
     return registry;
 }
 
-Core::Shell createShell(const Config& cfg)
+std::unique_ptr<Core::IEnvProvider> createEnvProvider(const Core::UserIdentity& identity)
 {
-    Core::UserIdentity identity{.userName = UserUtils::getCurrentUsername(),
-                                .machineName = QSysInfo::machineHostName()};
+    return std::make_unique<Core::SystemEnvProvider>(identity);
+}
 
-    std::unique_ptr<Core::IEnvProvider> envProvider = std::make_unique<Core::SystemEnvProvider>(identity);
+std::unique_ptr<Core::IVfs> createAndReadVfs(const QString& vfsPath)
+{
     std::unique_ptr<Core::IVfs> vfs = std::make_unique<Core::MemoryVfs>();
 
-    std::expected<void, QString> res = Core::XmlVfs::readFromFile(cfg.vfsPath, *vfs);
-    if (!res)
+    if (vfsPath.isEmpty())
     {
-        qWarning() << QStringLiteral("warning: vfs file not found at: ") << cfg.scriptPath << u'\n';
+        return vfs;
     }
 
-    return Core::Shell(std::move(identity), std::move(envProvider), createDefaultRegistry(), std::move(vfs));
+    if (auto res = Core::XmlVfs::readFromFile(vfsPath, *vfs); !res)
+    {
+        qWarning().noquote() << "warning: failed to load VFS from" << vfsPath << "-" << res.error();
+    }
+
+    return vfs;
 }
+
+Core::UserIdentity createIdentityFromRealUser()
+{
+    return Core::UserIdentity{.userName = UserUtils::getCurrentUsername(), .machineName = QSysInfo::machineHostName()};
+}
+
+Core::Shell createShell(const Config& cfg)
+{
+    Core::UserIdentity identity{createIdentityFromRealUser()};
+
+    return Core::Shell(identity, createEnvProvider(identity), createDefaultRegistry(), createAndReadVfs(cfg.vfsPath));
+}
+
+void wireUIandPresenter(Ui::MainWindow& window, Presentation::TerminalSession& session)
+{
+    using Session = Presentation::TerminalSession;
+
+    Ui::TerminalWidget* widget = &window.terminalWidget();
+
+    QObject::connect(widget, &Ui::TerminalWidget::commandEntered, &session, &Session::onEnter);
+    QObject::connect(widget, &Ui::TerminalWidget::historyUpRequested, &session, &Session::onHistoryUp);
+    QObject::connect(widget, &Ui::TerminalWidget::historyDownRequested, &session, &Session::onHistoryDown);
+
+    QObject::connect(&session, &Session::outputLine, widget, &Ui::TerminalWidget::writeLine);
+    QObject::connect(&session, &Session::promptChanged, widget, &Ui::TerminalWidget::setPrompt);
+    QObject::connect(&session, &Session::promptShown, widget, &Ui::TerminalWidget::showPrompt);
+    QObject::connect(&session, &Session::inputChanged, widget, &Ui::TerminalWidget::setInput);
+    QObject::connect(&session, &Session::exitRequested, &window, [](int exitCode) { QApplication::exit(exitCode); });
+
+    window.setWindowTitle(QStringLiteral("%1 — %2").arg(session.title(), QApplication::applicationName()));
+}
+} // namespace
 
 int main(int argc, char* argv[])
 {
@@ -96,11 +124,14 @@ int main(int argc, char* argv[])
     QFontDatabase::addApplicationFont(QStringLiteral(":/fonts/JetBrainsMono-Regular.ttf"));
 
     Config cfg = parseFromArgs(a);
-    Core::TerminalSession session{createShell(cfg)};
 
-    Ui::MainWindow window{session};
+    Presentation::TerminalSession session{createShell(cfg)};
+    Ui::MainWindow window;
+
+    wireUIandPresenter(window, session);
+
     window.show();
-    window.startDelayed(cfg.scriptPath);
+    QTimer::singleShot(0, &session, [&] { session.start(cfg.scriptPath); });
 
     return QApplication::exec();
 }
