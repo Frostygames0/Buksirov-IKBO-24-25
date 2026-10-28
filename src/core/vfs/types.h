@@ -1,7 +1,5 @@
 #pragma once
 
-#include <qchar.h>
-
 #include <QString>
 #include <QStringLiteral>
 #include <QtTypes>
@@ -41,7 +39,7 @@ struct VfsEntry
 
     [[nodiscard]] QString toString() const
     {
-        return QStringLiteral("%1: %2 -- %3 bytes").arg(vfsEntryTypeToString(type), name).arg(size == 0);
+        return QStringLiteral("%1: %2 -- %3 bytes").arg(vfsEntryTypeToString(type), name).arg(size);
     }
 };
 
@@ -95,7 +93,7 @@ enum class VfsOperand
 {
     None,
     From,
-    To
+    To,
 };
 
 struct [[nodiscard]] VfsError
@@ -105,19 +103,21 @@ struct [[nodiscard]] VfsError
 
     VfsError(VfsErrorCode c, VfsOperand o = VfsOperand::None) : code(c), operand(o) {}
 
-    [[nodiscard]] QString message() const
+    [[nodiscard]] QString toString(const QString& path = {}) const
     {
-        QString text = vfsErrorCodeToStr(code);
+        QString error = vfsErrorCodeToStr(code);
+
+        QString operandText;
         switch (operand)
         {
             case VfsOperand::From:
-                return QStringLiteral("source: %1").arg(text);
+                operandText = QStringLiteral("source");
             case VfsOperand::To:
-                return QStringLiteral("destination: %1").arg(text);
+                operandText = QStringLiteral("destination");
             case VfsOperand::None:
                 break;
         }
-        return text;
+        return QStringLiteral("%1\"%2\" %3").arg(operandText, path, error);
     }
 };
 

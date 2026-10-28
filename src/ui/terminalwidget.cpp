@@ -6,7 +6,6 @@
 #include <QStringLiteral>
 #include <QTextCursor>
 
-
 namespace EmulatorMirea::Ui
 {
 
@@ -74,7 +73,8 @@ void TerminalWidget::moveCursorToEnd()
 void TerminalWidget::keyPressEvent(QKeyEvent* event)
 {
     const QTextCursor c = textCursor();
-    const bool touchesOutput = c.position() < m_promptPos || (c.hasSelection() && c.selectionStart() < m_promptPos);
+    const bool touchesOutput = c.position() < m_promptPos ||
+                               (c.hasSelection() && c.selectionStart() < m_promptPos);
 
     switch (event->key())
     {

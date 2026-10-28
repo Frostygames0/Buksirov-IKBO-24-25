@@ -5,6 +5,14 @@
             "${workspaceFolder}/scripts/vfs.xml",
             "--script",
             "${workspaceFolder}/scripts/script.sh"
+        ],
+        "console": "integratedTerminal",
+        "externalConsole": false,
+        "environment": [
+            {
+                "name": "QT_ASSUME_STDERR_HAS_CONSOLE",
+                "value": "1"
+            }
         ]
     }
 }

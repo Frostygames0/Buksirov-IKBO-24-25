@@ -31,22 +31,22 @@ ExecutionResult Shell::submit(const QString& line, IOutput& out, Source source)
         addHistory(line);
     }
 
-    if (line.trimmed().isEmpty())
-    {
-        return ExecutionResult::withStatus(0);
-    }
-
     ShellAwareProvider decoratedProvider{*m_envProvider, *this};
 
-    const ExecutionContext ctx{.identity = m_identity,
-                               .envProvider = decoratedProvider,
-                               .out = out,
-                               .vfs = *m_vfs,
-                               .cwd = m_cwd,
-                               .commandRegistry = m_registry};
+    const ExecutionContext ctx{
+        .identity = m_identity,
+        .envProvider = decoratedProvider,
+        .out = out,
+        .vfs = *m_vfs,
+        .cwd = m_cwd,
+        .commandRegistry = m_registry,
+    };
 
     auto res = Interpreter::execute(m_registry, line, ctx);
-    m_lastStatus = res.status;
+    if (res.status != ExitCode::None)
+    {
+        m_lastStatus = res.status;
+    }
 
     return res;
 }

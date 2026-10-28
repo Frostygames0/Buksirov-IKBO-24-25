@@ -19,8 +19,7 @@ ExecutionResult execute(CommandRegistry& registry, QStringView input, const Exec
 
     if (tokens.isEmpty())
     {
-        // TODO Handle it
-        return ExecutionResult::withStatus(0);
+        return ExecutionResult::withStatus(ExitCode::None);
     }
 
     const QString& name = tokens.first();

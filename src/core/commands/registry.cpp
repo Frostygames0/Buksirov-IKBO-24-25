@@ -29,6 +29,10 @@ QList<CommandRegistry::Info> CommandRegistry::allCommandsInfo() const
         commands.append({.name = name, .desciption = cmd->description()});
     }
 
+    std::sort(commands.begin(), commands.end(), [](const Info& first, const Info& second) {
+        return first.name.compare(second.name, Qt::CaseInsensitive) < 0;
+    });
+
     return commands;
 }
 

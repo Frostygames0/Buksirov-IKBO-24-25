@@ -45,28 +45,33 @@ Config parseFromArgs(const QCoreApplication& app)
 
     parser.addOption({
         {QStringLiteral("v"), QStringLiteral("vfs")},
-        QStringLiteral("Путь к локации VFS."), QStringLiteral("путь")
+        QStringLiteral("Путь к локации VFS."),
+        QStringLiteral("путь")
     });
     parser.addOption({
         {QStringLiteral("s"), QStringLiteral("script")},
-        QStringLiteral("Путь к скрипту"), QStringLiteral("путь")
+        QStringLiteral("Путь к скрипту"),
+        QStringLiteral("путь")
     });
 
     parser.process(app);
 
-    return Config{.vfsPath = parser.value(QStringLiteral("vfs")), .scriptPath = parser.value(QStringLiteral("script"))};
+    return Config{
+        .vfsPath = parser.value(QStringLiteral("vfs")),
+        .scriptPath = parser.value(QStringLiteral("script")),
+    };
 }
 
 Core::CommandRegistry createDefaultRegistry(const QString& vfsLoadPath)
 {
     Core::CommandRegistry registry;
+    registry.registerCommand(std::make_unique<Core::HelpCommand>());
     registry.registerCommand(std::make_unique<Core::ExitCommand>());
     registry.registerCommand(std::make_unique<Core::ListCommand>());
     registry.registerCommand(std::make_unique<Core::VfsInitCommand>(vfsLoadPath));
     registry.registerCommand(std::make_unique<Core::ChangeDirectoryCommand>());
     registry.registerCommand(std::make_unique<Core::ClearCommand>());
     registry.registerCommand(std::make_unique<Core::EchoCommand>());
-    registry.registerCommand(std::make_unique<Core::HelpCommand>());
 
     return registry;
 }
@@ -110,14 +115,17 @@ QStringList readScript(const QString& scriptPath, QStringList& diagnostics)
         return {};
     }
 
-    diagnostics << QStringLiteral("info: Loaded startup script from path '%1'").arg(QDir::cleanPath(scriptPath));
+    diagnostics
+        << QStringLiteral("info: Loaded startup script from path '%1'").arg(QDir::cleanPath(scriptPath));
     return *res;
 }
 
 Core::UserIdentity createIdentityFromRealUser()
 {
-    return Core::UserIdentity{.userName = Platform::UserUtils::getCurrentUsername(),
-                              .machineName = QSysInfo::machineHostName()};
+    return Core::UserIdentity{
+        .userName = Platform::UserUtils::getCurrentUsername(),
+        .machineName = QSysInfo::machineHostName(),
+    };
 }
 
 Core::Shell createShell(const Config& cfg, QStringList& errors)
@@ -168,8 +176,9 @@ int main(int argc, char* argv[])
     QStringList scriptToLaunch = readScript(cfg.scriptPath, errorsToPassThrough);
 
     window.show();
-    QTimer::singleShot(
-        0, &presenter, [&] { presenter.runStartup({.banner = errorsToPassThrough, .script = scriptToLaunch}); });
+    QTimer::singleShot(0, &presenter, [&] {
+        presenter.runStartup({.banner = errorsToPassThrough, .script = scriptToLaunch});
+    });
 
     return QApplication::exec();
 }

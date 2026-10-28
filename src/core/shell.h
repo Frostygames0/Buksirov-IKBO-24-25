@@ -27,7 +27,7 @@ public:
     enum class Source
     {
         Interactive,
-        Script
+        Script,
     };
 
     ExecutionResult submit(const QString& line, IOutput& out, Source source = Source::Interactive);
@@ -49,6 +49,7 @@ private:
     CommandRegistry m_registry;
 
     QStringList m_history;
+
     int m_lastStatus;
 
     class ShellAwareProvider final : public IEnvProvider

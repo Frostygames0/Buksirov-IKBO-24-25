@@ -65,19 +65,19 @@ ExecutionResult ListCommand::execute(const QStringList& args, const ExecutionCon
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 
-    QString pathStr = args.size() == 0 ? QString{} : args.at(0);
+    QString pathStr = args.empty() ? QString{} : args.at(0);
 
     auto resolved = ctx.cwd.resolve(pathStr);
     if (!resolved)
     {
-        ctx.writeLine(formatOutput(u"path " + resolved.error().message()));
+        ctx.writeLine(formatOutput(u"path " + resolved.error().toString(pathStr)));
         return ExecutionResult::withStatus(ExitCode::GeneralError);
     }
 
     auto stat = ctx.vfs.stat(*resolved);
     if (!stat)
     {
-        ctx.writeLine(formatOutput(u"path " + stat.error().message()));
+        ctx.writeLine(formatOutput(u"path " + stat.error().toString(pathStr)));
         return ExecutionResult::withStatus(ExitCode::GeneralError);
     }
 
@@ -90,12 +90,6 @@ ExecutionResult ListCommand::execute(const QStringList& args, const ExecutionCon
     }
 
     auto entries = ctx.vfs.list(*resolved);
-    if (!entries)
-    {
-        ctx.writeLine(formatOutput(entries.error().message()));
-        return ExecutionResult::withStatus(ExitCode::GeneralError);
-    };
-
     for (const VfsEntry& entry : *entries)
     {
         ctx.writeLine(entry.toString());
@@ -140,18 +134,18 @@ ExecutionResult ChangeDirectoryCommand::execute(const QStringList& args, const E
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 
-    QString pathStr = args.size() == 0 ? QString{} : args.at(0);
+    QString pathStr = args.empty() ? QString{} : args.at(0);
     auto resolved = ctx.cwd.resolve(pathStr);
     if (!resolved)
     {
-        ctx.writeLine(formatOutput(u"path " + resolved.error().message()));
+        ctx.writeLine(formatOutput(u"path " + resolved.error().toString(pathStr)));
         return ExecutionResult::withStatus(ExitCode::GeneralError);
     }
 
     auto res = ctx.cwd.set(*resolved);
     if (!res)
     {
-        ctx.writeLine(formatOutput(u"path " + res.error().message()));
+        ctx.writeLine(formatOutput(u"path " + res.error().toString(pathStr)));
         return ExecutionResult::withStatus(ExitCode::GeneralError);
     }
 
@@ -170,7 +164,7 @@ QString ClearCommand::description() const
 
 ExecutionResult ClearCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
 {
-    if (args.size() > 0)
+    if (!args.empty())
     {
         ctx.writeLine(formatOutput(u"too many arguments"));
         return ExecutionResult::withStatus(ExitCode::Misuse);
