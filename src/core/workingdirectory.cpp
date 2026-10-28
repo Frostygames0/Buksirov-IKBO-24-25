@@ -2,8 +2,6 @@
 
 #include <expected>
 
-#include <QtLogging>
-
 #include "core/vfs/types.h"
 #include "core/vfs/vfs.h"
 
@@ -26,4 +24,5 @@ std::expected<void, VfsError> WorkingDirectory::set(const VfsPath& absolute)
     m_cwd = absolute;
     return {};
 }
+
 }; // namespace EmulatorMirea::Core

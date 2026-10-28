@@ -19,7 +19,9 @@ Shell::Shell(UserIdentity identity,
              std::unique_ptr<IEnvProvider> envProvider,
              std::unique_ptr<IVfs> vfs,
              CommandRegistry registry)
-    : m_identity(std::move(identity)), m_envProvider(std::move(envProvider)), m_vfs(std::move(vfs)),
+    : m_identity(std::move(identity)),
+      m_envProvider(std::move(envProvider)),
+      m_vfs(std::move(vfs)),
       m_registry(std::move(registry))
 {
 }
@@ -62,26 +64,6 @@ void Shell::addHistory(const QString& line)
     {
         m_history.append(line);
     }
-}
-
-qsizetype Shell::historySize() const
-{
-    return m_history.size();
-}
-
-QString Shell::historyAt(qsizetype index) const
-{
-    return m_history.value(index);
-}
-
-QString Shell::prompt() const
-{
-    return QStringLiteral("%1:%2$ ").arg(m_identity.fancyName(), m_cwd.currentDir().toString());
-}
-
-QString Shell::title() const
-{
-    return m_identity.fancyName();
 }
 
 } // namespace EmulatorMirea::Core

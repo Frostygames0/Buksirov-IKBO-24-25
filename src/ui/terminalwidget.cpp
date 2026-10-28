@@ -90,7 +90,7 @@ void TerminalWidget::keyPressEvent(QKeyEvent* event)
             emit historyUpRequested(currentInput());
             return;
         case Qt::Key_Down:
-            emit historyDownRequested();
+            emit historyDownRequested(currentInput());
             return;
         case Qt::Key_Backspace:
             if (touchesOutput || (!c.hasSelection() && c.position() <= m_promptPos))

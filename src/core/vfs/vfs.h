@@ -29,4 +29,5 @@ public:
 
     virtual void clear() = 0;
 };
+
 } // namespace EmulatorMirea::Core

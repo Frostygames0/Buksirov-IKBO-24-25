@@ -4,7 +4,6 @@
 #include <QStringView>
 
 #include "core/commands/registry.h"
-#include "core/executioncontext.h"
 #include "core/executionresult.h"
 
 namespace EmulatorMirea::Core
@@ -19,4 +18,5 @@ namespace Interpreter
 ExecutionResult execute(CommandRegistry& registry, QStringView input, const ExecutionContext& ctx);
 
 } // namespace Interpreter
+
 } // namespace EmulatorMirea::Core

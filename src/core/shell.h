@@ -4,6 +4,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QStringLiteral>
 #include <QtTypes>
 
 #include "core/commands/registry.h"
@@ -23,7 +24,7 @@ public:
     explicit Shell(UserIdentity identity,
                    std::unique_ptr<IEnvProvider> envProvider,
                    std::unique_ptr<IVfs> vfs,
-                   CommandRegistry commandRegistry);
+                   CommandRegistry registry);
     enum class Source
     {
         Interactive,
@@ -32,10 +33,16 @@ public:
 
     ExecutionResult submit(const QString& line, IOutput& out, Source source = Source::Interactive);
 
-    [[nodiscard]] qsizetype historySize() const;
-    [[nodiscard]] QString historyAt(qsizetype index) const;
-    [[nodiscard]] QString prompt() const;
-    [[nodiscard]] QString title() const;
+    [[nodiscard]] qsizetype historySize() const { return m_history.size(); }
+
+    [[nodiscard]] QString historyAt(qsizetype index) const { return m_history.value(index); }
+
+    [[nodiscard]] QString prompt() const
+    {
+        return QStringLiteral("[%1 %2]$ ").arg(m_identity.fancyName(), m_cwd.currentDir().topmostName());
+    }
+
+    [[nodiscard]] QString title() const { return m_identity.fancyName(); }
 
 private:
     void addHistory(const QString& line);

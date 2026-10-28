@@ -17,8 +17,9 @@ public:
     TerminalWidget& terminalWidget();
 
 private:
-    void setupUi();
     TerminalWidget* m_terminalWidget = nullptr;
+
+    void setupUi();
     void setupTerminal();
 };
 

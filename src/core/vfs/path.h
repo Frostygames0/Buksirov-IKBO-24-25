@@ -25,7 +25,7 @@ public:
     [[nodiscard]] bool isRoot() const;
     [[nodiscard]] bool isDescendantOf(const VfsPath& ancestor) const;
 
-    [[nodiscard]] QString name() const;
+    [[nodiscard]] QString topmostName() const;
     [[nodiscard]] const QStringList& parts() const;
     [[nodiscard]] QString toString() const;
 

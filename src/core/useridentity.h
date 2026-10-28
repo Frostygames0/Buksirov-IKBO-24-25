@@ -5,6 +5,7 @@
 
 namespace EmulatorMirea::Core
 {
+
 struct UserIdentity
 {
     QString userName;
@@ -12,4 +13,5 @@ struct UserIdentity
 
     [[nodiscard]] QString fancyName() const { return QStringLiteral("%1$%2").arg(userName, machineName); }
 };
+
 }; // namespace EmulatorMirea::Core

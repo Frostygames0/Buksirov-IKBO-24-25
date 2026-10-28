@@ -4,6 +4,7 @@
 
 namespace EmulatorMirea::Core
 {
+
 class IVfs;
 
 class WorkingDirectory
@@ -18,10 +19,11 @@ public:
         return VfsPath::resolve(m_cwd, path);
     };
 
-    std::expected<void, VfsError> set(const VfsPath& absolute);
+    [[nodiscard]] std::expected<void, VfsError> set(const VfsPath& absolute);
 
 private:
-    VfsPath m_cwd;
     IVfs& m_vfs;
+    VfsPath m_cwd;
 };
+
 }; // namespace EmulatorMirea::Core

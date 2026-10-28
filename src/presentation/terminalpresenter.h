@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include <QObject>
 #include <QString>
 #include <QStringList>
@@ -31,7 +33,7 @@ public:
 public slots:
     void onEnter(const QString& line);
     void onHistoryUp(const QString& currentInput);
-    void onHistoryDown();
+    void onHistoryDown(const QString& currentInput);
 
 signals:
     void cleared();

@@ -1,11 +1,14 @@
 #pragma once
 
+#include <utility>
+
 #include <QString>
 #include <QStringLiteral>
 #include <QtTypes>
 
 namespace EmulatorMirea::Core
 {
+
 enum class VfsEntryType
 {
     File,
@@ -22,7 +25,7 @@ inline QString vfsEntryTypeToString(VfsEntryType t)
             return QStringLiteral("dir");
     }
 
-    return QStringLiteral("unknown");
+    std::unreachable();
 }
 
 struct VfsEntry
@@ -86,7 +89,7 @@ inline QString vfsErrorCodeToStr(VfsErrorCode e)
             return QStringLiteral("not supported");
     }
 
-    return QStringLiteral("unknown");
+    std::unreachable();
 }
 
 enum class VfsOperand
@@ -126,4 +129,5 @@ enum class VfsRemoveMode
     Single,
     Recursive,
 };
+
 } // namespace EmulatorMirea::Core

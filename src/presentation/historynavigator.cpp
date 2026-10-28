@@ -16,7 +16,7 @@ QString HistoryNavigator::up(const QString& current)
     }
     if (m_index == m_shell.historySize())
     {
-        m_scratch = current; // remember what user typed
+        m_scratch = current;
     }
     if (m_index > 0)
     {
@@ -25,15 +25,18 @@ QString HistoryNavigator::up(const QString& current)
     return m_shell.historyAt(m_index);
 }
 
-QString HistoryNavigator::down()
+QString HistoryNavigator::down(const QString& current)
 {
     const qsizetype n = m_shell.historySize();
+
     if (m_index >= n)
     {
+        m_scratch = current;
         return m_scratch;
     }
+
     ++m_index;
-    return m_index == n ? m_scratch : m_shell.historyAt(m_index);
+    return (m_index == n) ? m_scratch : m_shell.historyAt(m_index);
 }
 
 void HistoryNavigator::reset()

@@ -11,7 +11,6 @@ namespace EmulatorMirea::Core
 class IEnvProvider;
 class IOutput;
 class IVfs;
-class UserIdentity;
 class WorkingDirectory;
 class CommandRegistry;
 
@@ -25,5 +24,8 @@ struct ExecutionContext
     CommandRegistry& commandRegistry;
 
     void writeLine(const QString& line = {}) const { out.writeLine(line); }
+
+    void write(const QString& line) const { out.write(line); }
 };
+
 } // namespace EmulatorMirea::Core

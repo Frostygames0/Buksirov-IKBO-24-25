@@ -5,6 +5,6 @@
 namespace EmulatorMirea::Platform::UserUtils
 {
 
-QString getCurrentUsername();
+[[nodiscard]] QString getCurrentUsername();
 
 }

@@ -17,7 +17,7 @@ public:
     explicit HistoryNavigator(const Core::Shell& shell) : m_shell(shell) {}
 
     QString up(const QString& current);
-    QString down();
+    QString down(const QString& current);
 
     void reset();
 

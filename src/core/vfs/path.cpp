@@ -109,11 +109,11 @@ bool VfsPath::isDescendantOf(const VfsPath& ancestor) const
            std::equal(ancestor.m_parts.begin(), ancestor.m_parts.end(), m_parts.begin());
 }
 
-QString VfsPath::name() const
+QString VfsPath::topmostName() const
 {
     if (isRoot())
     {
-        return {};
+        return QStringLiteral("/");
     }
 
     return m_parts.last();

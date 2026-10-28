@@ -36,4 +36,4 @@ QString getCurrentUsername()
     return qEnvironmentVariable("USER", qEnvironmentVariable("USERNAME"));
 }
 
-} // namespace EmulatorMirea::UserUtils
+} // namespace EmulatorMirea::Platform::UserUtils

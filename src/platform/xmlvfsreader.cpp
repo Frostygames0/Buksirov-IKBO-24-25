@@ -78,7 +78,8 @@ std::expected<void, QString> readTree(QXmlStreamReader& reader, Core::IVfs& vfs)
         const auto path = parents.last().child(name);
         if (!path)
         {
-            return std::unexpected(QStringLiteral("Invalid <%1> name '%2' at line %3").arg(tag, name).arg(lineNumber));
+            return std::unexpected(
+                QStringLiteral("Invalid <%1> name '%2' at line %3").arg(tag, name).arg(lineNumber));
         }
 
         if (tag == u"dir")
@@ -125,7 +126,8 @@ std::expected<void, QString> readFromFile(const QString& path, Core::IVfs& vfs)
     QFile file{path};
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        return std::unexpected(QStringLiteral("Cannot open VFS file '%1' (%2)").arg(path, file.errorString()));
+        return std::unexpected(
+            QStringLiteral("Cannot open VFS file '%1' (%2)").arg(path, file.errorString()));
     }
 
     QXmlStreamReader reader(&file);

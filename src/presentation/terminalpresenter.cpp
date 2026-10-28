@@ -55,9 +55,9 @@ void TerminalPresenter::onHistoryUp(const QString& currentInput)
     emit inputSet(m_navigator.up(currentInput));
 }
 
-void TerminalPresenter::onHistoryDown()
+void TerminalPresenter::onHistoryDown(const QString& currentInput)
 {
-    emit inputSet(m_navigator.down());
+    emit inputSet(m_navigator.down(currentInput));
 }
 
 } // namespace EmulatorMirea::Presentation

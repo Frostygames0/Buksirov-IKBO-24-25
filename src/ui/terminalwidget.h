@@ -21,7 +21,7 @@ public slots:
 signals:
     void commandEntered(const QString& line);
     void historyUpRequested(const QString& currentInput);
-    void historyDownRequested();
+    void historyDownRequested(const QString& currentInput);
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;

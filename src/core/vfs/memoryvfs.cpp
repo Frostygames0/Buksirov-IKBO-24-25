@@ -305,12 +305,12 @@ std::expected<MemoryVfs::Slot, VfsErrorCode> MemoryVfs::resolveFreeSlot(const Vf
         return std::unexpected(VfsErrorCode::NotADirectory);
     }
 
-    if (findChild(*dir, path.name()) != NodeIdNone)
+    if (findChild(*dir, path.topmostName()) != NodeIdNone)
     {
         return std::unexpected(VfsErrorCode::AlreadyExists);
     }
 
-    return MemoryVfs::Slot{.parent = *parentId, .name = path.name()};
+    return MemoryVfs::Slot{.parent = *parentId, .name = path.topmostName()};
 }
 
 /*

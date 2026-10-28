@@ -6,8 +6,10 @@ InsertBraces: true
 AccessModifierOffset: -4
 PenaltyBreakAssignment: 1000
 PenaltyBreakScopeResolution: 1000
+PenaltyBreakFirstLessLess: 100000
 BreakTemplateDeclarations: Yes
 SeparateDefinitionBlocks: Always
+PackConstructorInitializers: CurrentLine
 # Single Line Short
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortLambdasOnASingleLine: Inline
@@ -16,12 +18,14 @@ BinPackArguments: false
 BinPackParameters: OnePerLine
 # Indentation
 IndentCaseLabels: true
-NamespaceIndentation: None
+ContinuationIndentWidth: 4
 # Alignment
 PointerAlignment: Left
 QualifierAlignment: Left
 AlignArrayOfStructures: Left
 AlignEscapedNewlines: DontAlign
+AlignAfterOpenBracket: true
+AlignOperands: Align
 # Literal separator
 IntegerLiteralSeparator:
   Decimal: 3

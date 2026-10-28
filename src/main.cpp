@@ -115,8 +115,8 @@ QStringList readScript(const QString& scriptPath, QStringList& diagnostics)
         return {};
     }
 
-    diagnostics
-        << QStringLiteral("info: Loaded startup script from path '%1'").arg(QDir::cleanPath(scriptPath));
+    diagnostics << QStringLiteral("info: Loaded startup script from path '%1'")
+                       .arg(QDir::cleanPath(scriptPath));
     return *res;
 }
 

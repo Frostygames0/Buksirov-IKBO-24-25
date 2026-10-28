@@ -9,4 +9,5 @@ namespace EmulatorMirea::Platform::ScriptReader
 {
 
 std::expected<QStringList, QString> readScript(const QString& path);
+
 };
