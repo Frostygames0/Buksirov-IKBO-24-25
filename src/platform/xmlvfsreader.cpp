@@ -1,5 +1,7 @@
 #include "xmlvfsreader.h"
 
+#include <expected>
+
 #include <QByteArray>
 #include <QFile>
 #include <QFileInfo>
@@ -8,9 +10,11 @@
 #include <QXmlStreamReader>
 #include <QtTypes>
 
+#include "core/vfs/path.h"
+#include "core/vfs/types.h"
 #include "core/vfs/vfs.h"
 
-namespace EmulatorMirea::Core::XmlVfs
+namespace EmulatorMirea::Platform::XmlVfs
 {
 namespace
 {
@@ -40,9 +44,9 @@ std::expected<QByteArray, QString> decode(const QString& text, const QString& en
     return std::unexpected(QStringLiteral("Unknown encoding '%1'").arg(encoding));
 }
 
-std::expected<void, QString> readTree(QXmlStreamReader& reader, IVfs& vfs)
+std::expected<void, QString> readTree(QXmlStreamReader& reader, Core::IVfs& vfs)
 {
-    QList<VfsPath> parents{VfsPath{}};
+    QList<Core::VfsPath> parents{Core::VfsPath{}};
 
     while (!parents.isEmpty())
     {
@@ -71,7 +75,7 @@ std::expected<void, QString> readTree(QXmlStreamReader& reader, IVfs& vfs)
         }
 
         const QString name = attrs.value(u"name").toString();
-        const std::optional<VfsPath> path = parents.last().child(name);
+        const auto path = parents.last().child(name);
         if (!path)
         {
             return std::unexpected(QStringLiteral("Invalid <%1> name '%2' at line %3").arg(tag, name).arg(lineNumber));
@@ -79,11 +83,11 @@ std::expected<void, QString> readTree(QXmlStreamReader& reader, IVfs& vfs)
 
         if (tag == u"dir")
         {
-            const std::expected<void, VfsError> created = vfs.createDir(*path);
+            const std::expected<void, Core::VfsError> created = vfs.createDir(*path);
             if (!created)
             {
                 return std::unexpected(QStringLiteral("Cannot create dir %1: %2")
-                                           .arg(path->toString(), vfsErrorToString(created.error())));
+                                           .arg(path->toString(), vfsErrorCodeToStr(created.error().code)));
             }
 
             parents.append(*path);
@@ -104,11 +108,11 @@ std::expected<void, QString> readTree(QXmlStreamReader& reader, IVfs& vfs)
             return std::unexpected(QStringLiteral("%1 (%2)").arg(data.error(), path->toString()));
         }
 
-        const std::expected<void, VfsError> created = vfs.createFile(*path, *data);
+        const std::expected<void, Core::VfsError> created = vfs.createFile(*path, *data);
         if (!created)
         {
-            return std::unexpected(
-                QStringLiteral("Cannot create file %1: %2").arg(path->toString(), vfsErrorToString(created.error())));
+            return std::unexpected(QStringLiteral("Cannot create file %1: %2")
+                                       .arg(path->toString(), vfsErrorCodeToStr(created.error().code)));
         }
     }
 
@@ -116,12 +120,12 @@ std::expected<void, QString> readTree(QXmlStreamReader& reader, IVfs& vfs)
 }
 } // namespace
 
-std::expected<void, QString> readFromFile(const QString& path, IVfs& vfs)
+std::expected<void, QString> readFromFile(const QString& path, Core::IVfs& vfs)
 {
     QFile file{path};
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        return std::unexpected(QStringLiteral("Cannot open '%1': %2").arg(path, file.errorString()));
+        return std::unexpected(QStringLiteral("Cannot open VFS file '%1' (%2)").arg(path, file.errorString()));
     }
 
     QXmlStreamReader reader(&file);
@@ -165,4 +169,4 @@ bool writeStub(const QString& filePath)
 
     return true;
 }
-} // namespace EmulatorMirea::Core::XmlVfs
+} // namespace EmulatorMirea::Platform::XmlVfs

@@ -155,4 +155,4 @@ QStringList parse(QStringView in, const IEnvProvider& env)
     return tokens;
 }
 
-} // namespace EmulatorMirea::Core
+} // namespace EmulatorMirea::Core::LineParser

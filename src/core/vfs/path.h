@@ -1,9 +1,13 @@
 #pragma once
 
+#include <expected>
 #include <optional>
+#include <qstringview.h>
 
 #include <QString>
 #include <QStringList>
+
+#include "core/vfs/types.h"
 
 namespace EmulatorMirea::Core
 {
@@ -11,13 +15,12 @@ namespace EmulatorMirea::Core
 class VfsPath
 {
 public:
-    VfsPath() = default;
-    static std::optional<VfsPath> fromString(const QString& line);
-    static std::optional<VfsPath> resolve(const VfsPath& cwd, const QString& line);
+    static std::expected<VfsPath, VfsErrorCode> fromString(QStringView line);
+    static std::expected<VfsPath, VfsErrorCode> resolve(const VfsPath& cwd, QStringView line);
 
     [[nodiscard]] VfsPath parent() const;
 
-    [[nodiscard]] std::optional<VfsPath> child(const QString& name) const;
+    [[nodiscard]] std::optional<VfsPath> child(QStringView name) const;
     [[nodiscard]] VfsPath join(const VfsPath& other) const;
     [[nodiscard]] bool isRoot() const;
     [[nodiscard]] bool isDescendantOf(const VfsPath& ancestor) const;

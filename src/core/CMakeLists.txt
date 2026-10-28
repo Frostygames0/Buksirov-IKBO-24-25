@@ -1,23 +1,23 @@
 add_library(emulator_core STATIC
-    commands/command.h   commands/command.cpp
-    commands/registry.h  commands/registry.cpp
+    commands/command.h     commands/command.cpp
+    commands/registry.h    commands/registry.cpp
     
     vfs/types.h
-    vfs/path.h           vfs/path.cpp
-    vfs/vfs.h            vfs/vfs.cpp
-    vfs/xmlvfsreader.h   vfs/xmlvfsreader.cpp
-
+    vfs/vfs.h
+    vfs/path.h             vfs/path.cpp
+    vfs/memoryvfs.h        vfs/memoryvfs.cpp
+    
+    workingdirectory.h     workingdirectory.cpp
     envprovider.h
     executioncontext.h
     executionresult.h
     useridentity.h
-    interpreter.h        interpreter.cpp
-    lineparser.h         lineparser.cpp
-    shell.h              shell.cpp
-    systemenvprovider.h  systemenvprovider.cpp
-    
+    interpreter.h          interpreter.cpp
+    lineparser.h           lineparser.cpp
+    shell.h                shell.cpp
+    systemenvprovider.h    systemenvprovider.cpp
+
     output.h
-    scriptrunner.h
 )
 
 target_include_directories(emulator_core

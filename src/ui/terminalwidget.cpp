@@ -3,7 +3,9 @@
 #include <QKeyEvent>
 #include <QMimeData>
 #include <QString>
+#include <QStringLiteral>
 #include <QTextCursor>
+
 
 namespace EmulatorMirea::Ui
 {
@@ -11,36 +13,29 @@ namespace EmulatorMirea::Ui
 TerminalWidget::TerminalWidget(QWidget* parent) : QPlainTextEdit(parent)
 {
     setUndoRedoEnabled(false);
-    setLineWrapMode(QPlainTextEdit::NoWrap);
 }
 
-void TerminalWidget::setPrompt(const QString& prompt)
+void TerminalWidget::write(const QString& text)
 {
-    m_prompt = prompt;
-}
-
-void TerminalWidget::writeLine(const QString& text)
-{
-    if (text.isEmpty())
-    {
-        return;
-    }
-
     moveCursorToEnd();
     insertPlainText(text);
-
-    if (!text.endsWith(u'\n'))
-    {
-        insertPlainText(QString{u'\n'});
-    }
 
     ensureCursorVisible();
 }
 
-void TerminalWidget::showPrompt()
+void TerminalWidget::writeLine(const QString& text)
 {
     moveCursorToEnd();
-    insertPlainText(m_prompt);
+    insertPlainText(text);
+    insertPlainText(QStringLiteral("\n"));
+
+    ensureCursorVisible();
+}
+
+void TerminalWidget::showPrompt(const QString& prompt)
+{
+    moveCursorToEnd();
+    insertPlainText(prompt);
     m_promptPos = textCursor().position();
     ensureCursorVisible();
 }
@@ -53,6 +48,12 @@ void TerminalWidget::setInput(const QString& text)
     c.insertText(text);
     setTextCursor(c);
     ensureCursorVisible();
+}
+
+void TerminalWidget::clearScreen()
+{
+    clear();
+    m_promptPos = 0;
 }
 
 QString TerminalWidget::currentInput() const
@@ -81,7 +82,7 @@ void TerminalWidget::keyPressEvent(QKeyEvent* event)
         case Qt::Key_Enter: {
             const QString line = currentInput();
             moveCursorToEnd();
-            insertPlainText(QString{u'\n'});
+            insertPlainText(QStringLiteral("\n"));
             emit commandEntered(line);
             return;
         }

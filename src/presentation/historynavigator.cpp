@@ -8,8 +8,6 @@
 namespace EmulatorMirea::Presentation
 {
 
-HistoryNavigator::HistoryNavigator(const Core::Shell& shell) : m_shell(shell) {}
-
 QString HistoryNavigator::up(const QString& current)
 {
     if (m_shell.historySize() == 0)

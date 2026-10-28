@@ -4,7 +4,6 @@
 
 #include "core/output.h"
 #include "core/useridentity.h"
-#include "core/vfs/path.h"
 
 namespace EmulatorMirea::Core
 {
@@ -13,6 +12,8 @@ class IEnvProvider;
 class IOutput;
 class IVfs;
 class UserIdentity;
+class WorkingDirectory;
+class CommandRegistry;
 
 struct ExecutionContext
 {
@@ -20,6 +21,9 @@ struct ExecutionContext
     IEnvProvider& envProvider;
     IOutput& out;
     IVfs& vfs;
-    VfsPath& cwd;
+    WorkingDirectory& cwd;
+    CommandRegistry& commandRegistry;
+
+    void writeLine(const QString& line = {}) const { out.writeLine(line); }
 };
 } // namespace EmulatorMirea::Core

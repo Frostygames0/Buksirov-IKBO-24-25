@@ -12,7 +12,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+add_compile_definitions(QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_BYTEARRAY)
+
 add_subdirectory(src/core)
+add_subdirectory(src/platform)
 add_subdirectory(src/presentation)
 add_subdirectory(src/ui)
 
@@ -20,8 +23,6 @@ qt_add_executable(EmulatorMirea
     WIN32
 
     src/main.cpp
-    src/userutil.h src/userutil.cpp
-
     resources/resources.qrc
 )
 
@@ -31,10 +32,10 @@ target_link_libraries(EmulatorMirea
         Qt::Core
         Qt::Widgets
         emulator_core
+        emulator_platform
+        emulator_presentation
         emulator_ui
 )
-
-add_compile_definitions(QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_BYTEARRAY)
 
 install(TARGETS EmulatorMirea
     BUNDLE  DESTINATION .

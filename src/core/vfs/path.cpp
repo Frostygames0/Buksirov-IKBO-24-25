@@ -1,37 +1,43 @@
 #include "path.h"
 
+#include <algorithm>
+#include <expected>
 #include <optional>
 
 #include <QString>
+#include <QStringView>
+
+#include "core/vfs/types.h"
 
 namespace EmulatorMirea::Core
 {
 
 namespace
 {
-bool isValidName(const QString& name)
+bool isValidName(QStringView name)
 {
     return !name.isEmpty() && name != u"." && name != u".." && !name.contains(u'/');
 }
 
-std::optional<VfsPath> applyString(VfsPath cur, const QString& line)
+std::expected<VfsPath, VfsErrorCode> applyString(VfsPath cur, QStringView line)
 {
-    for (const QString& part : line.split(u'/', Qt::SkipEmptyParts))
+    for (QStringView part : line.split(u'/', Qt::SkipEmptyParts))
     {
         if (part == u".")
         {
             continue;
         }
+
         if (part == u"..")
         {
             cur = cur.parent();
             continue;
         }
 
-        std::optional<VfsPath> next = cur.child(part);
+        auto next = cur.child(part);
         if (!next)
         {
-            return std::nullopt;
+            return std::unexpected(VfsErrorCode::InvalidPath);
         }
         cur = *next;
     }
@@ -40,18 +46,23 @@ std::optional<VfsPath> applyString(VfsPath cur, const QString& line)
 
 } // namespace
 
-std::optional<VfsPath> VfsPath::fromString(const QString& line)
+std::expected<VfsPath, VfsErrorCode> VfsPath::fromString(QStringView line)
 {
     if (!line.startsWith(u'/'))
     {
-        return std::nullopt;
+        return std::unexpected(VfsErrorCode::InvalidPath);
     }
 
     return applyString({}, line);
 }
 
-std::optional<VfsPath> VfsPath::resolve(const VfsPath& cwd, const QString& line)
+std::expected<VfsPath, VfsErrorCode> VfsPath::resolve(const VfsPath& cwd, QStringView line)
 {
+    if (line.isEmpty())
+    {
+        return cwd;
+    }
+
     return applyString(line.startsWith(u'/') ? VfsPath{} : cwd, line);
 }
 
@@ -68,7 +79,7 @@ VfsPath VfsPath::parent() const
     return result;
 }
 
-std::optional<VfsPath> VfsPath::child(const QString& name) const
+std::optional<VfsPath> VfsPath::child(QStringView name) const
 {
     if (!isValidName(name))
     {
@@ -76,7 +87,7 @@ std::optional<VfsPath> VfsPath::child(const QString& name) const
     }
 
     VfsPath result = *this;
-    result.m_parts.append(name);
+    result.m_parts.append(name.toString());
     return result;
 }
 

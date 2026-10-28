@@ -15,7 +15,7 @@
 #include <QSysInfo>
 #include <QtEnvironmentVariables>
 
-namespace EmulatorMirea::UserUtils
+namespace EmulatorMirea::Platform::UserUtils
 {
 
 QString getCurrentUsername()

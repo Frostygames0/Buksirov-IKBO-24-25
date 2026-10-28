@@ -2,7 +2,6 @@
 
 #include <QPlainTextEdit>
 
-
 namespace EmulatorMirea::Ui
 {
 
@@ -13,10 +12,11 @@ public:
     explicit TerminalWidget(QWidget* parent = nullptr);
 
 public slots:
-    void setPrompt(const QString& prompt);
+    void write(const QString& text);
     void writeLine(const QString& text);
-    void showPrompt();
+    void showPrompt(const QString& prompt);
     void setInput(const QString& text);
+    void clearScreen();
 
 signals:
     void commandEntered(const QString& line);
@@ -31,7 +31,6 @@ private:
     void moveCursorToEnd();
     [[nodiscard]] QString currentInput() const;
 
-    QString m_prompt{u"$ "};
     int m_promptPos = 0;
 };
 

@@ -21,4 +21,15 @@ Command* CommandRegistry::getCommand(const QString& name) const
     return it == m_commands.end() ? nullptr : it->second.get();
 }
 
+QList<CommandRegistry::Info> CommandRegistry::allCommandsInfo() const
+{
+    QList<Info> commands;
+    for (const auto& [name, cmd] : m_commands)
+    {
+        commands.append({.name = name, .desciption = cmd->description()});
+    }
+
+    return commands;
+}
+
 } // namespace EmulatorMirea::Core

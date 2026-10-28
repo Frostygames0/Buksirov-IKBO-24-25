@@ -11,8 +11,8 @@
 #include "core/executionresult.h"
 #include "core/output.h"
 #include "core/useridentity.h"
-#include "core/vfs/path.h"
 #include "core/vfs/vfs.h"
+#include "core/workingdirectory.h"
 
 namespace EmulatorMirea::Core
 {
@@ -22,8 +22,8 @@ class Shell
 public:
     explicit Shell(UserIdentity identity,
                    std::unique_ptr<IEnvProvider> envProvider,
-                   CommandRegistry commandRegistry,
-                   std::unique_ptr<IVfs> vfs);
+                   std::unique_ptr<IVfs> vfs,
+                   CommandRegistry commandRegistry);
     enum class Source
     {
         Interactive,
@@ -43,23 +43,29 @@ private:
     UserIdentity m_identity;
 
     std::unique_ptr<IEnvProvider> m_envProvider;
-    CommandRegistry m_registry;
     std::unique_ptr<IVfs> m_vfs;
+    WorkingDirectory m_cwd{*m_vfs};
+
+    CommandRegistry m_registry;
 
     QStringList m_history;
+    int m_lastStatus;
 
-    VfsPath m_cwd;
-
-    class PwdEnvProvider final : public IEnvProvider
+    class ShellAwareProvider final : public IEnvProvider
     {
     public:
-        PwdEnvProvider(const IEnvProvider& base, const VfsPath& cwd) : m_base(base), m_cwd(cwd) {}
+        ShellAwareProvider(const IEnvProvider& base, const Shell& shell) : m_base(base), m_shell(shell) {}
 
         [[nodiscard]] QString getEnv(const QString& name, const QString& defaultValue = {}) const override
         {
             if (name == u"PWD")
             {
-                return m_cwd.toString();
+                return m_shell.m_cwd.currentDir().toString();
+            }
+
+            if (name == u"status")
+            {
+                return QString::number(m_shell.m_lastStatus);
             }
 
             return m_base.getEnv(name, defaultValue);
@@ -67,7 +73,7 @@ private:
 
     private:
         const IEnvProvider& m_base;
-        const VfsPath& m_cwd;
+        const Shell& m_shell;
     };
 };
 

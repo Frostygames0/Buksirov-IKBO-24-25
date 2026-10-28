@@ -1,4 +1,4 @@
-#include "vfs.h"
+#include "memoryvfs.h"
 
 #include <expected>
 #include <queue>
@@ -23,7 +23,7 @@ MemoryVfs::MemoryVfs()
 
 std::expected<VfsEntry, VfsError> MemoryVfs::stat(const VfsPath& path) const
 {
-    const std::expected<NodeId, VfsError> id = lookup(path);
+    const std::expected<NodeId, VfsErrorCode> id = lookup(path);
     if (!id)
     {
         return std::unexpected(id.error());
@@ -34,7 +34,7 @@ std::expected<VfsEntry, VfsError> MemoryVfs::stat(const VfsPath& path) const
 
 std::expected<QList<VfsEntry>, VfsError> MemoryVfs::list(const VfsPath& path) const
 {
-    const std::expected<NodeId, VfsError> id = lookup(path);
+    const std::expected<NodeId, VfsErrorCode> id = lookup(path);
     if (!id)
     {
         return std::unexpected(id.error());
@@ -43,7 +43,7 @@ std::expected<QList<VfsEntry>, VfsError> MemoryVfs::list(const VfsPath& path) co
     const auto* dir = std::get_if<DirData>(&m_nodes[*id].data);
     if (dir == nullptr)
     {
-        return std::unexpected(VfsError::NotADirectory);
+        return std::unexpected(VfsErrorCode::NotADirectory);
     }
 
     QList<VfsEntry> result;
@@ -57,7 +57,7 @@ std::expected<QList<VfsEntry>, VfsError> MemoryVfs::list(const VfsPath& path) co
 
 std::expected<QByteArray, VfsError> MemoryVfs::readFile(const VfsPath& path) const
 {
-    const std::expected<NodeId, VfsError> id = lookup(path);
+    const std::expected<NodeId, VfsErrorCode> id = lookup(path);
     if (!id)
     {
         return std::unexpected(id.error());
@@ -66,7 +66,7 @@ std::expected<QByteArray, VfsError> MemoryVfs::readFile(const VfsPath& path) con
     const auto* file = std::get_if<FileData>(&m_nodes[*id].data);
     if (file == nullptr)
     {
-        return std::unexpected(VfsError::NotAFile);
+        return std::unexpected(VfsErrorCode::NotAFile);
     }
 
     return *file;
@@ -74,7 +74,7 @@ std::expected<QByteArray, VfsError> MemoryVfs::readFile(const VfsPath& path) con
 
 std::expected<void, VfsError> MemoryVfs::createFile(const VfsPath& path, const QByteArray& data)
 {
-    const std::expected<Slot, VfsError> slot = resolveFreeSlot(path);
+    const std::expected<Slot, VfsErrorCode> slot = resolveFreeSlot(path);
     if (!slot)
     {
         return std::unexpected(slot.error());
@@ -86,7 +86,7 @@ std::expected<void, VfsError> MemoryVfs::createFile(const VfsPath& path, const Q
 
 std::expected<void, VfsError> MemoryVfs::createDir(const VfsPath& path)
 {
-    const std::expected<Slot, VfsError> slot = resolveFreeSlot(path);
+    const std::expected<Slot, VfsErrorCode> slot = resolveFreeSlot(path);
     if (!slot)
     {
         return std::unexpected(slot.error());
@@ -98,21 +98,21 @@ std::expected<void, VfsError> MemoryVfs::createDir(const VfsPath& path)
 
 std::expected<void, VfsError> MemoryVfs::copy(const VfsPath& from, const VfsPath& to)
 {
-    const std::expected<NodeId, VfsError> src = lookup(from);
+    const std::expected<NodeId, VfsErrorCode> src = lookup(from);
     if (!src)
     {
-        return std::unexpected(src.error());
+        return std::unexpected(VfsError{src.error(), VfsOperand::From});
     }
 
-    const std::expected<Slot, VfsError> slot = resolveFreeSlot(to);
+    const std::expected<Slot, VfsErrorCode> slot = resolveFreeSlot(to);
     if (!slot)
     {
-        return std::unexpected(slot.error());
+        return std::unexpected(VfsError{src.error(), VfsOperand::To});
     }
 
     if (isAncestorOrSelf(*src, slot->parent))
     {
-        return std::unexpected(VfsError::InvalidCopy);
+        return std::unexpected(VfsErrorCode::InvalidCopy);
     }
 
     struct Task
@@ -152,26 +152,26 @@ std::expected<void, VfsError> MemoryVfs::copy(const VfsPath& from, const VfsPath
 
 std::expected<void, VfsError> MemoryVfs::move(const VfsPath& from, const VfsPath& to)
 {
-    const std::expected<NodeId, VfsError> src = lookup(from);
+    const std::expected<NodeId, VfsErrorCode> src = lookup(from);
     if (!src)
     {
-        return std::unexpected(src.error());
+        return std::unexpected(VfsError{src.error(), VfsOperand::From});
     }
 
     if (*src == NodeIdRoot)
     {
-        return std::unexpected(VfsError::InvalidPath);
+        return std::unexpected(VfsErrorCode::InvalidPath);
     }
 
-    const std::expected<Slot, VfsError> slot = resolveFreeSlot(to);
+    const std::expected<Slot, VfsErrorCode> slot = resolveFreeSlot(to);
     if (!slot)
     {
-        return std::unexpected(slot.error());
+        return std::unexpected(VfsError{src.error(), VfsOperand::To});
     }
 
     if (isAncestorOrSelf(*src, slot->parent))
     {
-        return std::unexpected(VfsError::InvalidMove);
+        return std::unexpected(VfsErrorCode::InvalidMove);
     }
 
     detachUnsafe(*src);
@@ -183,9 +183,9 @@ std::expected<void, VfsError> MemoryVfs::move(const VfsPath& from, const VfsPath
     return {};
 }
 
-std::expected<void, VfsError> MemoryVfs::remove(const VfsPath& path, RemoveMode mode)
+std::expected<void, VfsError> MemoryVfs::remove(const VfsPath& path, VfsRemoveMode mode)
 {
-    const std::expected<NodeId, VfsError> id = lookup(path);
+    const std::expected<NodeId, VfsErrorCode> id = lookup(path);
     if (!id)
     {
         return std::unexpected(id.error());
@@ -193,12 +193,12 @@ std::expected<void, VfsError> MemoryVfs::remove(const VfsPath& path, RemoveMode 
 
     if (*id == NodeIdRoot)
     {
-        return std::unexpected(VfsError::CannotRemoveRoot);
+        return std::unexpected(VfsErrorCode::CannotRemoveRoot);
     }
 
-    if (mode == RemoveMode::Single && hasChildren(*id))
+    if (mode == VfsRemoveMode::Single && hasChildren(*id))
     {
-        return std::unexpected(VfsError::NotEmpty);
+        return std::unexpected(VfsErrorCode::NotEmpty);
     }
 
     detachUnsafe(*id);
@@ -246,7 +246,7 @@ VfsEntry MemoryVfs::makeEntryFromNode(const Node& n)
     return {.type = VfsEntryType::Dir, .name = n.name, .size = 0};
 }
 
-std::expected<MemoryVfs::NodeId, VfsError> MemoryVfs::lookup(const VfsPath& path) const
+std::expected<MemoryVfs::NodeId, VfsErrorCode> MemoryVfs::lookup(const VfsPath& path) const
 {
     NodeId current = NodeIdRoot;
 
@@ -255,13 +255,13 @@ std::expected<MemoryVfs::NodeId, VfsError> MemoryVfs::lookup(const VfsPath& path
         const auto* dir = std::get_if<DirData>(&m_nodes[current].data);
         if (dir == nullptr)
         {
-            return std::unexpected(VfsError::NotADirectory);
+            return std::unexpected(VfsErrorCode::NotADirectory);
         }
 
         const NodeId next = findChild(*dir, name);
         if (next == NodeIdNone)
         {
-            return std::unexpected(VfsError::NotFound);
+            return std::unexpected(VfsErrorCode::NotFound);
         }
 
         current = next;
@@ -286,14 +286,14 @@ MemoryVfs::NodeId MemoryVfs::findChild(const DirData& dir, const QString& name) 
  * This function checks whether it's possible to create something at path, be it a dir or a file.
  * It checks whether all parts of the path before the object itself are directories
  */
-std::expected<MemoryVfs::Slot, VfsError> MemoryVfs::resolveFreeSlot(const VfsPath& path) const
+std::expected<MemoryVfs::Slot, VfsErrorCode> MemoryVfs::resolveFreeSlot(const VfsPath& path) const
 {
     if (path.isRoot())
     {
-        return std::unexpected(VfsError::AlreadyExists);
+        return std::unexpected(VfsErrorCode::AlreadyExists);
     }
 
-    const std::expected<NodeId, VfsError> parentId = lookup(path.parent());
+    const std::expected<NodeId, VfsErrorCode> parentId = lookup(path.parent());
     if (!parentId)
     {
         return std::unexpected(parentId.error());
@@ -302,12 +302,12 @@ std::expected<MemoryVfs::Slot, VfsError> MemoryVfs::resolveFreeSlot(const VfsPat
     const auto* dir = std::get_if<DirData>(&m_nodes[*parentId].data);
     if (dir == nullptr)
     {
-        return std::unexpected(VfsError::NotADirectory);
+        return std::unexpected(VfsErrorCode::NotADirectory);
     }
 
     if (findChild(*dir, path.name()) != NodeIdNone)
     {
-        return std::unexpected(VfsError::AlreadyExists);
+        return std::unexpected(VfsErrorCode::AlreadyExists);
     }
 
     return MemoryVfs::Slot{.parent = *parentId, .name = path.name()};

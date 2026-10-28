@@ -16,6 +16,7 @@ public:
     explicit SystemEnvProvider(const UserIdentity& identity);
 
     [[nodiscard]] QString getEnv(const QString& name, const QString& defaultValue = {}) const override;
+
 private:
     QProcessEnvironment m_env;
     VfsPath m_cwd;

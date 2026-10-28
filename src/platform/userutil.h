@@ -2,7 +2,7 @@
 
 #include <QString>
 
-namespace EmulatorMirea::UserUtils
+namespace EmulatorMirea::Platform::UserUtils
 {
 
 QString getCurrentUsername();
