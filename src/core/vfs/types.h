@@ -119,7 +119,7 @@ struct [[nodiscard]] VfsError
             case VfsOperand::None:
                 break;
         }
-        return QStringLiteral("%1\"%2\" %3").arg(operandText, path, error);
+        return QStringLiteral("%1\"%2\" -- %3").arg(operandText, path, error);
     }
 };
 

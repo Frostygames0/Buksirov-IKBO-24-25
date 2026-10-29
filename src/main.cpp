@@ -72,6 +72,10 @@ Core::CommandRegistry createDefaultRegistry(const QString& vfsLoadPath)
     registry.registerCommand<Core::ChangeDirectoryCommand>();
     registry.registerCommand<Core::ClearCommand>();
     registry.registerCommand<Core::EchoCommand>();
+    registry.registerCommand<Core::RemoveCommand>();
+    registry.registerCommand<Core::MoveCommand>();
+    registry.registerCommand<Core::WcCommand>();
+    registry.registerCommand<Core::UniqCommand>();
 
     return registry;
 }

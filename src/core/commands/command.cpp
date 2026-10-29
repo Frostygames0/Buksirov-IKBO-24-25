@@ -16,16 +16,6 @@
 namespace EmulatorMirea::Core
 {
 
-QString ExitCommand::name() const
-{
-    return QStringLiteral("exit");
-}
-
-QString ExitCommand::description() const
-{
-    return QStringLiteral("terminates terminal with an exit code");
-};
-
 ExecutionResult ExitCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
 {
     if (args.size() > 1)
@@ -45,16 +35,6 @@ ExecutionResult ExitCommand::execute(const QStringList& args, const ExecutionCon
 
     return ExecutionResult::exit(exitCode);
 }
-
-QString ListCommand::name() const
-{
-    return QStringLiteral("ls");
-}
-
-QString ListCommand::description() const
-{
-    return QStringLiteral("lists files of a directory");
-};
 
 ExecutionResult ListCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
 {
@@ -99,31 +79,11 @@ ExecutionResult ListCommand::execute(const QStringList& args, const ExecutionCon
 
 VfsInitCommand::VfsInitCommand(QString vfsLoadPath) : m_vfsLoadPath(std::move(vfsLoadPath)) {}
 
-QString VfsInitCommand::name() const
-{
-    return QStringLiteral("vfs-init");
-}
-
-QString VfsInitCommand::description() const
-{
-    return QStringLiteral("initializes (resets) VFS");
-};
-
 ExecutionResult VfsInitCommand::execute(const QStringList&, const ExecutionContext& ctx) const
 {
     ctx.vfs.clear();
     return ExecutionResult::withStatus(ExitCode::Success);
 }
-
-QString ChangeDirectoryCommand::name() const
-{
-    return QStringLiteral("cd");
-}
-
-QString ChangeDirectoryCommand::description() const
-{
-    return QStringLiteral("changes current directory");
-};
 
 ExecutionResult ChangeDirectoryCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
 {
@@ -151,16 +111,6 @@ ExecutionResult ChangeDirectoryCommand::execute(const QStringList& args, const E
     return ExecutionResult::withStatus(ExitCode::Success);
 }
 
-QString ClearCommand::name() const
-{
-    return QStringLiteral("clear");
-}
-
-QString ClearCommand::description() const
-{
-    return QStringLiteral("clears the screen of the terminal");
-};
-
 ExecutionResult ClearCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
 {
     if (!args.empty())
@@ -172,16 +122,6 @@ ExecutionResult ClearCommand::execute(const QStringList& args, const ExecutionCo
     ctx.out.clear();
     return ExecutionResult::withStatus(ExitCode::Success);
 }
-
-QString EchoCommand::name() const
-{
-    return QStringLiteral("echo");
-}
-
-QString EchoCommand::description() const
-{
-    return QStringLiteral("prints its input");
-};
 
 ExecutionResult EchoCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
 {
@@ -201,16 +141,6 @@ ExecutionResult EchoCommand::execute(const QStringList& args, const ExecutionCon
     return ExecutionResult::withStatus(ExitCode::Success);
 }
 
-QString HelpCommand::name() const
-{
-    return QStringLiteral("help");
-}
-
-QString HelpCommand::description() const
-{
-    return QStringLiteral("displays a list of all available commands");
-};
-
 ExecutionResult HelpCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
 {
     if (args.size() > 1)
@@ -225,6 +155,120 @@ ExecutionResult HelpCommand::execute(const QStringList& args, const ExecutionCon
         ctx.writeLine(info.toString());
     }
 
+    return ExecutionResult::withStatus(ExitCode::Success);
+}
+
+ExecutionResult RemoveCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
+{
+    if (args.size() > 2)
+    {
+        ctx.writeLine(formatOutput(u"too many arguments"));
+        return ExecutionResult::withStatus(ExitCode::Misuse);
+    }
+
+    VfsRemoveMode mode = VfsRemoveMode::Single;
+
+    QString pathStr;
+    for (const QString& arg : args)
+    {
+        if (arg == u"-r")
+        {
+            mode = VfsRemoveMode::Recursive;
+        }
+        else
+        {
+            if (!pathStr.isEmpty())
+            {
+                ctx.writeLine(formatOutput(u"redundant path: " + arg));
+                return ExecutionResult::withStatus(ExitCode::Misuse);
+            }
+
+            pathStr = arg;
+        }
+    }
+
+    if (pathStr.isEmpty())
+    {
+        ctx.writeLine(formatOutput(u"removal path was not specified"));
+        return ExecutionResult::withStatus(ExitCode::Misuse);
+    }
+
+    auto resolved = ctx.cwd.resolve(pathStr);
+    if (!resolved)
+    {
+        ctx.writeLine(formatOutput(u"path " + resolved.error().toString(pathStr)));
+        return ExecutionResult::withStatus(ExitCode::GeneralError);
+    }
+
+    auto res = ctx.vfs.remove(*resolved, mode);
+    if (!res)
+    {
+        ctx.writeLine(formatOutput(u"error while removing " + res.error().toString(pathStr)));
+        return ExecutionResult::withStatus(ExitCode::GeneralError);
+    }
+
+    return ExecutionResult::withStatus(ExitCode::Success);
+}
+
+ExecutionResult MoveCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
+{
+    if (args.size() > 2)
+    {
+        ctx.writeLine(formatOutput(u"too many arguments"));
+        return ExecutionResult::withStatus(ExitCode::Misuse);
+    }
+
+    if (args.isEmpty())
+    {
+        ctx.writeLine(formatOutput(u"source was not specified"));
+        return ExecutionResult::withStatus(ExitCode::Misuse);
+    }
+
+    const QString& srcPathStr = args.at(0);
+
+    auto resolvedSrc = ctx.cwd.resolve(srcPathStr);
+    auto srcRes = resolvedSrc.and_then([&ctx](const VfsPath& path) { return ctx.vfs.stat(path); });
+    if (!srcRes)
+    {
+        ctx.writeLine(formatOutput(u"path " + srcRes.error().toString(srcPathStr)));
+        return ExecutionResult::withStatus(ExitCode::GeneralError);
+    }
+
+    if (args.size() == 1)
+    {
+        ctx.writeLine(formatOutput(u"destination was not specified"));
+        return ExecutionResult::withStatus(ExitCode::Misuse);
+    }
+
+    const QString& dstPathStr = args.at(1);
+
+    auto resolvedDst = ctx.cwd.resolve(dstPathStr);
+    auto dstRes = resolvedDst.and_then([&ctx](const VfsPath& path) { return ctx.vfs.stat(path); });
+    if (!dstRes)
+    {
+        ctx.writeLine(formatOutput(u"path " + dstRes.error().toString(srcPathStr)));
+        return ExecutionResult::withStatus(ExitCode::GeneralError);
+    }
+
+    auto res = ctx.vfs.move(*resolvedSrc, *resolvedDst);
+    if (!res)
+    {
+        ctx.writeLine(res.error().toString());
+        return ExecutionResult::withStatus(ExitCode::GeneralError);
+    }
+
+    return ExecutionResult::withStatus(ExitCode::Success);
+}
+
+ExecutionResult WcCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
+{
+    // TODO Stub
+    return ExecutionResult::withStatus(ExitCode::Success);
+}
+
+ExecutionResult UniqCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
+{
+    // TODO Stub
     return ExecutionResult::withStatus(ExitCode::Success);
 }
 
