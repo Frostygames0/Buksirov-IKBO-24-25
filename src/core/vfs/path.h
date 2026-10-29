@@ -2,10 +2,10 @@
 
 #include <expected>
 #include <optional>
-#include <qstringview.h>
 
 #include <QString>
 #include <QStringList>
+#include <QStringView>
 
 #include "core/vfs/types.h"
 
@@ -15,6 +15,8 @@ namespace EmulatorMirea::Core
 class VfsPath
 {
 public:
+    explicit VfsPath() = default;
+
     static std::expected<VfsPath, VfsErrorCode> fromString(QStringView line);
     static std::expected<VfsPath, VfsErrorCode> resolve(const VfsPath& cwd, QStringView line);
 

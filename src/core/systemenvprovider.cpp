@@ -2,7 +2,6 @@
 
 #include <QProcessEnvironment>
 #include <QString>
-#include <QStringLiteral>
 
 #include "core/useridentity.h"
 

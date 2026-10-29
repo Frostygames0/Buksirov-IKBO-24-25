@@ -104,7 +104,6 @@ QStringList readScript(const QString& scriptPath, QStringList& diagnostics)
 {
     if (scriptPath.isEmpty())
     {
-        diagnostics << QStringLiteral("warning: Unable to read script. Path is empty");
         return {};
     }
 
@@ -132,10 +131,10 @@ Core::Shell createShell(const Config& cfg, QStringList& errors)
 {
     Core::UserIdentity identity{createIdentityFromRealUser()};
 
-    return Core::Shell(identity,
+    return Core::Shell{identity,
                        createEnvProvider(identity),
                        createAndReadVfs(cfg.vfsPath, errors),
-                       createDefaultRegistry(cfg.vfsPath));
+                       createDefaultRegistry(cfg.vfsPath)};
 }
 
 void wireUIandPresenter(Ui::MainWindow& window, Presentation::TerminalPresenter& session)
@@ -152,8 +151,8 @@ void wireUIandPresenter(Ui::MainWindow& window, Presentation::TerminalPresenter&
     QObject::connect(&session, &Presenter::outputLine, widget, &Ui::TerminalWidget::writeLine);
     QObject::connect(&session, &Presenter::promptShown, widget, &Ui::TerminalWidget::showPrompt);
     QObject::connect(&session, &Presenter::inputSet, widget, &Ui::TerminalWidget::setInput);
-    QObject::connect(&session, &Presenter::exitRequested, qApp, &QCoreApplication::exit);
     QObject::connect(&session, &Presenter::cleared, widget, &Ui::TerminalWidget::clearScreen);
+    QObject::connect(&session, &Presenter::exitRequested, qApp, &QCoreApplication::exit);
 
     window.setWindowTitle(QStringLiteral("%1 — %2").arg(session.title(), QApplication::applicationName()));
 }
@@ -163,6 +162,8 @@ int main(int argc, char* argv[])
 {
     QApplication a(argc, argv); // NOLINT
     QApplication::setApplicationName(QStringLiteral("EmulatorMirea"));
+    QApplication::setOrganizationName(QStringLiteral("Ivan"));
+
     QFontDatabase::addApplicationFont(QStringLiteral(":/fonts/JetBrainsMono-Regular.ttf"));
 
     Config cfg = parseFromArgs(a);

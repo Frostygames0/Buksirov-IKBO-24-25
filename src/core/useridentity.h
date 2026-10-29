@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QString>
-#include <QStringLiteral>
 
 namespace EmulatorMirea::Core
 {

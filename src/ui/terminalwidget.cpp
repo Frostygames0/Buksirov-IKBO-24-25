@@ -3,7 +3,6 @@
 #include <QKeyEvent>
 #include <QMimeData>
 #include <QString>
-#include <QStringLiteral>
 #include <QTextCursor>
 
 namespace EmulatorMirea::Ui

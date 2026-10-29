@@ -4,7 +4,6 @@
 
 #include <QString>
 #include <QStringList>
-#include <QStringLiteral>
 #include <QtTypes>
 
 #include "core/commands/registry.h"
@@ -57,7 +56,7 @@ private:
 
     QStringList m_history;
 
-    int m_lastStatus;
+    int m_lastStatus{};
 
     class ShellAwareProvider final : public IEnvProvider
     {

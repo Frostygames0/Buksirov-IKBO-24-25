@@ -53,7 +53,7 @@ std::expected<VfsPath, VfsErrorCode> VfsPath::fromString(QStringView line)
         return std::unexpected(VfsErrorCode::InvalidPath);
     }
 
-    return applyString({}, line);
+    return applyString(VfsPath{}, line);
 }
 
 std::expected<VfsPath, VfsErrorCode> VfsPath::resolve(const VfsPath& cwd, QStringView line)

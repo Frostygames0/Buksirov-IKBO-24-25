@@ -5,7 +5,6 @@
 
 #include <QString>
 #include <QStringList>
-#include <QStringLiteral>
 
 #include "core/commands/registry.h"
 #include "core/executioncontext.h"

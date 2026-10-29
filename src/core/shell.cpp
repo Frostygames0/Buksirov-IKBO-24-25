@@ -4,7 +4,6 @@
 
 #include <QCoreApplication>
 #include <QString>
-#include <QStringLiteral>
 #include <QSysInfo>
 
 #include "core/envprovider.h"

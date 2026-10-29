@@ -1,11 +1,11 @@
 #pragma once
 
+#include <concepts>
 #include <memory>
 #include <unordered_map>
 #include <utility>
 
 #include <QString>
-#include <QStringLiteral>
 
 #include "core/commands/command.h"
 
@@ -23,9 +23,12 @@ public:
         [[nodiscard]] QString toString() const { return QStringLiteral("%1 - %2").arg(name, desciption); }
     };
 
+    explicit CommandRegistry() = default;
+
     void registerCommand(std::unique_ptr<Command> command);
 
-    template <class T, class... Args>
+    template <std::derived_from<Command> T, class... Args>
+        requires std::constructible_from<T, Args...>
     void registerCommand(Args&&... args)
     {
         registerCommand(std::make_unique<T>(std::forward<Args>(args)...));

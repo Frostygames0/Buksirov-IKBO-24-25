@@ -1,12 +1,10 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-#include <QFile>
 #include <QFont>
 #include <QFrame>
 #include <QIcon>
 #include <QString>
-#include <QTimer>
 
 #include "ui/terminalwidget.h"
 
@@ -25,7 +23,7 @@ TerminalWidget& MainWindow::terminalWidget()
 
 void MainWindow::setupUi()
 {
-    setWindowIcon(QIcon(QStringLiteral(":/icon.png")));
+    setWindowIcon(QIcon{QStringLiteral(":/icon.png")});
 
     setMinimumSize(400, 300);
     resize(800, 600);

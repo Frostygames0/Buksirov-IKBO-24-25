@@ -3,7 +3,6 @@
 #include <utility>
 
 #include <QString>
-#include <QStringLiteral>
 #include <QtTypes>
 
 namespace EmulatorMirea::Core
