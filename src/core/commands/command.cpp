@@ -193,11 +193,10 @@ ExecutionResult RemoveCommand::execute(const QStringList& args, const ExecutionC
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 
-    auto resolved = ctx.cwd.resolve(pathStr);
+    auto resolved = resolveAndStatOrStop(pathStr, ctx);
     if (!resolved)
     {
-        ctx.writeLine(formatOutput(u"path " + resolved.error().toString(pathStr)));
-        return ExecutionResult::withStatus(ExitCode::GeneralError);
+        return resolved.error();
     }
 
     auto res = ctx.vfs.remove(*resolved, mode);
@@ -208,6 +207,20 @@ ExecutionResult RemoveCommand::execute(const QStringList& args, const ExecutionC
     }
 
     return ExecutionResult::withStatus(ExitCode::Success);
+}
+
+std::expected<VfsPath, ExecutionResult> Command::resolveAndStatOrStop(const QString& str,
+                                                                      const ExecutionContext& ctx) const
+{
+    auto resolvedSrc = ctx.cwd.resolve(str);
+    auto srcRes = resolvedSrc.and_then([&ctx](const VfsPath& path) { return ctx.vfs.stat(path); });
+    if (!srcRes)
+    {
+        ctx.writeLine(formatOutput(u"path " + srcRes.error().toString(str)));
+        return std::unexpected(ExecutionResult::withStatus(ExitCode::GeneralError));
+    }
+
+    return *resolvedSrc;
 }
 
 ExecutionResult MoveCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
@@ -225,13 +238,10 @@ ExecutionResult MoveCommand::execute(const QStringList& args, const ExecutionCon
     }
 
     const QString& srcPathStr = args.at(0);
-
-    auto resolvedSrc = ctx.cwd.resolve(srcPathStr);
-    auto srcRes = resolvedSrc.and_then([&ctx](const VfsPath& path) { return ctx.vfs.stat(path); });
-    if (!srcRes)
+    auto resolvedSrc = resolveAndStatOrStop(srcPathStr, ctx);
+    if (!resolvedSrc)
     {
-        ctx.writeLine(formatOutput(u"path " + srcRes.error().toString(srcPathStr)));
-        return ExecutionResult::withStatus(ExitCode::GeneralError);
+        return resolvedSrc.error();
     }
 
     if (args.size() == 1)
@@ -241,13 +251,10 @@ ExecutionResult MoveCommand::execute(const QStringList& args, const ExecutionCon
     }
 
     const QString& dstPathStr = args.at(1);
-
-    auto resolvedDst = ctx.cwd.resolve(dstPathStr);
-    auto dstRes = resolvedDst.and_then([&ctx](const VfsPath& path) { return ctx.vfs.stat(path); });
-    if (!dstRes)
+    auto resolvedDst = resolveAndStatOrStop(dstPathStr, ctx);
+    if (!resolvedDst)
     {
-        ctx.writeLine(formatOutput(u"path " + dstRes.error().toString(srcPathStr)));
-        return ExecutionResult::withStatus(ExitCode::GeneralError);
+        return resolvedDst.error();
     }
 
     auto res = ctx.vfs.move(*resolvedSrc, *resolvedDst);
