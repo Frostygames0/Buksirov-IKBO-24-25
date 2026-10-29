@@ -66,6 +66,15 @@ private:
 
     [[nodiscard]] std::expected<Slot, VfsErrorCode> resolveFreeSlot(const VfsPath& path) const;
 
+    struct ResolvedDestination
+    {
+        NodeId parent;
+        QString name;
+    };
+
+    [[nodiscard]] std::expected<ResolvedDestination, VfsError> resolveDestination(const VfsPath& to,
+                                                                                  NodeId srcId) const;
+
     NodeId createNodeUnsafe(NodeId parent, QString name, NodeData data);
     void detachUnsafe(NodeId id);
 

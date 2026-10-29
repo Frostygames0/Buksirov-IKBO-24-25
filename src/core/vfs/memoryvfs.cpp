@@ -96,6 +96,24 @@ std::expected<void, VfsError> MemoryVfs::createDir(const VfsPath& path)
     return {};
 }
 
+std::expected<MemoryVfs::ResolvedDestination, VfsError> MemoryVfs::resolveDestination(const VfsPath& to,
+                                                                                      NodeId srcId) const
+{
+    const std::expected<NodeId, VfsErrorCode> existingDst = lookup(to);
+    if (existingDst && std::holds_alternative<DirData>(m_nodes[*existingDst].data))
+    {
+        return ResolvedDestination{.parent = *existingDst, .name = m_nodes[srcId].name};
+    }
+
+    const std::expected<Slot, VfsErrorCode> slot = resolveFreeSlot(to);
+    if (!slot)
+    {
+        return std::unexpected(VfsError{slot.error(), VfsOperand::To});
+    }
+
+    return ResolvedDestination{.parent = slot->parent, .name = slot->name};
+}
+
 std::expected<void, VfsError> MemoryVfs::copy(const VfsPath& from, const VfsPath& to)
 {
     const std::expected<NodeId, VfsErrorCode> src = lookup(from);
@@ -104,13 +122,13 @@ std::expected<void, VfsError> MemoryVfs::copy(const VfsPath& from, const VfsPath
         return std::unexpected(VfsError{src.error(), VfsOperand::From});
     }
 
-    const std::expected<Slot, VfsErrorCode> slot = resolveFreeSlot(to);
-    if (!slot)
+    const auto dest = resolveDestination(to, *src);
+    if (!dest)
     {
-        return std::unexpected(VfsError{src.error(), VfsOperand::To});
+        return std::unexpected(dest.error());
     }
 
-    if (isAncestorOrSelf(*src, slot->parent))
+    if (isAncestorOrSelf(*src, dest->parent))
     {
         return std::unexpected(VfsErrorCode::InvalidCopy);
     }
@@ -123,14 +141,13 @@ std::expected<void, VfsError> MemoryVfs::copy(const VfsPath& from, const VfsPath
     };
 
     std::queue<Task> queue;
-    queue.push({.src = *src, .dstParent = slot->parent, .name = slot->name});
+    queue.push({.src = *src, .dstParent = dest->parent, .name = dest->name});
 
     while (!queue.empty())
     {
         Task t = std::move(queue.front());
         queue.pop();
 
-        // Snapshot: createNode may reallocate m_nodes.
         const NodeData data = m_nodes[t.src].data;
 
         if (const auto* dir = std::get_if<DirData>(&data))
@@ -163,22 +180,22 @@ std::expected<void, VfsError> MemoryVfs::move(const VfsPath& from, const VfsPath
         return std::unexpected(VfsErrorCode::InvalidPath);
     }
 
-    const std::expected<Slot, VfsErrorCode> slot = resolveFreeSlot(to);
-    if (!slot)
+    const auto dest = resolveDestination(to, *src);
+    if (!dest)
     {
-        return std::unexpected(VfsError{src.error(), VfsOperand::To});
+        return std::unexpected(dest.error());
     }
 
-    if (isAncestorOrSelf(*src, slot->parent))
+    if (isAncestorOrSelf(*src, dest->parent))
     {
         return std::unexpected(VfsErrorCode::InvalidMove);
     }
 
     detachUnsafe(*src);
 
-    m_nodes[*src].name = slot->name;
-    m_nodes[*src].parent = slot->parent;
-    std::get<DirData>(m_nodes[slot->parent].data).append(*src);
+    m_nodes[*src].name = dest->name;
+    m_nodes[*src].parent = dest->parent;
+    std::get<DirData>(m_nodes[dest->parent].data).append(*src);
 
     return {};
 }
