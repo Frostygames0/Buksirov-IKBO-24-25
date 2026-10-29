@@ -2,8 +2,10 @@
 
 #include <memory>
 #include <unordered_map>
+#include <utility>
 
 #include <QString>
+#include <QStringLiteral>
 
 #include "core/commands/command.h"
 
@@ -22,6 +24,12 @@ public:
     };
 
     void registerCommand(std::unique_ptr<Command> command);
+
+    template <class T, class... Args>
+    void registerCommand(Args&&... args)
+    {
+        registerCommand(std::make_unique<T>(std::forward<Args>(args)...));
+    };
 
     [[nodiscard]] Command* getCommand(const QString& name) const;
 

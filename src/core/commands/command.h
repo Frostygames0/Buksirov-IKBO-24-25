@@ -1,7 +1,5 @@
 #pragma once
 
-#include <qchar.h>
-
 #include <QString>
 #include <QStringList>
 
@@ -35,8 +33,10 @@ class ExitCommand final : public Command
 {
 public:
     [[nodiscard]] QString name() const override;
+
     [[nodiscard]] ExecutionResult execute(const QStringList& args,
                                           const ExecutionContext& ctx) const override;
+
     [[nodiscard]] QString description() const override;
 };
 
@@ -44,8 +44,10 @@ class ListCommand final : public Command
 {
 public:
     [[nodiscard]] QString name() const override;
+
     [[nodiscard]] ExecutionResult execute(const QStringList& args,
                                           const ExecutionContext& ctx) const override;
+
     [[nodiscard]] QString description() const override;
 };
 

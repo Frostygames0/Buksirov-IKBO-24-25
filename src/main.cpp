@@ -65,13 +65,13 @@ Config parseFromArgs(const QCoreApplication& app)
 Core::CommandRegistry createDefaultRegistry(const QString& vfsLoadPath)
 {
     Core::CommandRegistry registry;
-    registry.registerCommand(std::make_unique<Core::HelpCommand>());
-    registry.registerCommand(std::make_unique<Core::ExitCommand>());
-    registry.registerCommand(std::make_unique<Core::ListCommand>());
-    registry.registerCommand(std::make_unique<Core::VfsInitCommand>(vfsLoadPath));
-    registry.registerCommand(std::make_unique<Core::ChangeDirectoryCommand>());
-    registry.registerCommand(std::make_unique<Core::ClearCommand>());
-    registry.registerCommand(std::make_unique<Core::EchoCommand>());
+    registry.registerCommand<Core::HelpCommand>();
+    registry.registerCommand<Core::ExitCommand>();
+    registry.registerCommand<Core::ListCommand>();
+    registry.registerCommand<Core::VfsInitCommand>(vfsLoadPath);
+    registry.registerCommand<Core::ChangeDirectoryCommand>();
+    registry.registerCommand<Core::ClearCommand>();
+    registry.registerCommand<Core::EchoCommand>();
 
     return registry;
 }
