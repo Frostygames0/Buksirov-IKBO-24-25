@@ -8,6 +8,13 @@
 namespace EmulatorMirea::Core
 {
 
+enum class VfsEncoding
+{
+    None,
+    Utf8,
+    Base64,
+};
+
 enum class VfsEntryType
 {
     File,
@@ -30,6 +37,8 @@ inline QString vfsEntryTypeToString(VfsEntryType t)
 struct VfsEntry
 {
     VfsEntryType type = VfsEntryType::File;
+    VfsEncoding encoding = VfsEncoding::None;
+
     QString name;
     qsizetype size = 0;
 

@@ -72,7 +72,9 @@ std::expected<QByteArray, VfsError> MemoryVfs::readFile(const VfsPath& path) con
     return *file;
 }
 
-std::expected<void, VfsError> MemoryVfs::createFile(const VfsPath& path, const QByteArray& data)
+std::expected<void, VfsError> MemoryVfs::createFile(const VfsPath& path,
+                                                    const QByteArray& data,
+                                                    VfsEncoding encoding)
 {
     const std::expected<Slot, VfsErrorCode> slot = resolveFreeSlot(path);
     if (!slot)

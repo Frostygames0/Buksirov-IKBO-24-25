@@ -22,7 +22,9 @@ public:
     [[nodiscard]] std::expected<QList<VfsEntry>, VfsError> list(const VfsPath& path) const override;
     [[nodiscard]] std::expected<QByteArray, VfsError> readFile(const VfsPath& path) const override;
 
-    std::expected<void, VfsError> createFile(const VfsPath& path, const QByteArray& data) override;
+    std::expected<void, VfsError> createFile(const VfsPath& path,
+                                             const QByteArray& data,
+                                             VfsEncoding encoding) override;
     std::expected<void, VfsError> createDir(const VfsPath& path) override;
     std::expected<void, VfsError> copy(const VfsPath& from, const VfsPath& to) override;
     std::expected<void, VfsError> move(const VfsPath& from, const VfsPath& to) override;

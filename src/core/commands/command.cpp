@@ -1,8 +1,12 @@
 #include "command.h"
 
 #include <expected>
+#include <qnamespace.h>
+#include <qtypes.h>
 #include <utility>
 
+#include <QRegularExpression>
+#include <QSet>
 #include <QString>
 #include <QStringList>
 
@@ -269,13 +273,72 @@ ExecutionResult MoveCommand::execute(const QStringList& args, const ExecutionCon
 
 ExecutionResult WcCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
 {
-    // TODO Stub
+    if (args.size() > 1)
+    {
+        ctx.writeLine(formatOutput(u"too many arguments"));
+        return ExecutionResult::withStatus(ExitCode::Misuse);
+    }
+
+    if (args.isEmpty())
+    {
+        ctx.writeLine(formatOutput(u"file was not specified"));
+        return ExecutionResult::withStatus(ExitCode::Misuse);
+    }
+
+    const QString& srcPathStr = args.at(0);
+    auto resolvedSrc = resolveAndStatOrStop(srcPathStr, ctx);
+    if (!resolvedSrc)
+    {
+        return resolvedSrc.error();
+    }
+
+    auto file = ctx.vfs.readFile(*resolvedSrc);
+    if (!file)
+    {
+        ctx.writeLine(formatOutput(file.error().toString(srcPathStr)));
+        return ExecutionResult::withStatus(ExitCode::GeneralError);
+    }
+
+    QString parsed = QString::fromUtf8(*file);
+    qsizetype count = parsed.split(QRegularExpression(QStringLiteral("\\s+")), Qt::SkipEmptyParts).size();
+    ctx.writeLine(QStringLiteral("%1 words").arg(count));
+
     return ExecutionResult::withStatus(ExitCode::Success);
 }
 
 ExecutionResult UniqCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
 {
-    // TODO Stub
+    if (args.size() > 1)
+    {
+        ctx.writeLine(formatOutput(u"too many arguments"));
+        return ExecutionResult::withStatus(ExitCode::Misuse);
+    }
+
+    if (args.isEmpty())
+    {
+        ctx.writeLine(formatOutput(u"file was not specified"));
+        return ExecutionResult::withStatus(ExitCode::Misuse);
+    }
+
+    const QString& srcPathStr = args.at(0);
+    auto resolvedSrc = resolveAndStatOrStop(srcPathStr, ctx);
+    if (!resolvedSrc)
+    {
+        return resolvedSrc.error();
+    }
+
+    auto file = ctx.vfs.readFile(*resolvedSrc);
+    if (!file)
+    {
+        ctx.writeLine(formatOutput(file.error().toString(srcPathStr)));
+        return ExecutionResult::withStatus(ExitCode::GeneralError);
+    }
+
+    QString parsed = QString::fromUtf8(*file);
+    QStringList lines = parsed.split(u'\n', Qt::SkipEmptyParts);
+    QSet<QString> uniqueLines(lines.begin(), lines.end());
+
+    ctx.writeLine(QStringLiteral("%1 lines").arg(uniqueLines.size()));
     return ExecutionResult::withStatus(ExitCode::Success);
 }
 
