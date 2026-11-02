@@ -1,12 +1,9 @@
 #pragma once
 
-#include <expected>
-
 #include <QString>
 #include <QStringList>
 
 #include "core/executionresult.h"
-#include "core/vfs/path.h"
 
 namespace EmulatorMirea::Core
 {
@@ -30,10 +27,6 @@ public:
 
 protected:
     [[nodiscard]] QString formatOutput(QStringView out) const { return name() + u": " + out; }
-
-    // TODO I dislike that we depend on VFS here, maybe put it inside or in some other place?
-    [[nodiscard]] std::expected<VfsPath, ExecutionResult> resolveAndStatOrStop(
-        const QString& str, const ExecutionContext& ctx) const;
 };
 
 class ExitCommand final : public Command

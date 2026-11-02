@@ -3,7 +3,7 @@
 #include <QString>
 #include <QStringView>
 
-#include "core/commands/registry.h"
+#include "core/commands_v2/registry.h"
 #include "core/executionresult.h"
 
 namespace EmulatorMirea::Core

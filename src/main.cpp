@@ -12,8 +12,9 @@
 #include <QSysInfo>
 #include <QTimer>
 
-#include "core/commands/command.h"
-#include "core/commands/registry.h"
+#include "core/commands_v2/builder.h"
+#include "core/commands_v2/command.h"
+#include "core/commands_v2/registry.h"
 #include "core/envprovider.h"
 #include "core/shell.h"
 #include "core/systemenvprovider.h"
@@ -65,17 +66,25 @@ Config parseFromArgs(const QCoreApplication& app)
 Core::CommandRegistry createDefaultRegistry(const QString& vfsLoadPath)
 {
     Core::CommandRegistry registry;
-    registry.registerCommand<Core::HelpCommand>();
-    registry.registerCommand<Core::ExitCommand>();
-    registry.registerCommand<Core::ListCommand>();
-    registry.registerCommand<Core::VfsInitCommand>(vfsLoadPath);
-    registry.registerCommand<Core::ChangeDirectoryCommand>();
-    registry.registerCommand<Core::ClearCommand>();
-    registry.registerCommand<Core::EchoCommand>();
-    registry.registerCommand<Core::RemoveCommand>();
-    registry.registerCommand<Core::MoveCommand>();
-    registry.registerCommand<Core::WcCommand>();
-    registry.registerCommand<Core::UniqCommand>();
+    registry.registerCommand(
+        Core::CommandBuilder{}
+            .name("exit")
+            .description("exits the terminal")
+            .args(Core::ArgumentBuilder{}.positional<int>("exitcode", "exitcode").buildSet())
+            .build(
+                [](const Core::ExecutionContext&, int code) { return Core::ExecutionResult::exit(code); }));
+
+    // registry.registerCommand<Core::HelpCommand>();
+    // registry.registerCommand<Core::ExitCommand>();
+    // registry.registerCommand<Core::ListCommand>();
+    // registry.registerCommand<Core::VfsInitCommand>(vfsLoadPath);
+    // registry.registerCommand<Core::ChangeDirectoryCommand>();
+    // registry.registerCommand<Core::ClearCommand>();
+    // registry.registerCommand<Core::EchoCommand>();
+    // registry.registerCommand<Core::RemoveCommand>();
+    // registry.registerCommand<Core::MoveCommand>();
+    // registry.registerCommand<Core::WcCommand>();
+    // registry.registerCommand<Core::UniqCommand>();
 
     return registry;
 }

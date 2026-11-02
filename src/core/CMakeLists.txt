@@ -1,6 +1,11 @@
 add_library(emulator_core STATIC
-    commands/command.h     commands/command.cpp
-    commands/registry.h    commands/registry.cpp
+    #commands/command.h     commands/command.cpp
+    #commands/registry.h    commands/registry.cpp
+
+    commands_v2/command.h
+    commands_v2/builder.h
+    commands_v2/arguments.h
+    commands_v2/registry.h commands_v2/registry.cpp
     
     vfs/types.h
     vfs/vfs.h

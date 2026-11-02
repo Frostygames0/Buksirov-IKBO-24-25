@@ -197,34 +197,21 @@ ExecutionResult RemoveCommand::execute(const QStringList& args, const ExecutionC
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 
-    auto resolved = resolveAndStatOrStop(pathStr, ctx);
-    if (!resolved)
-    {
-        return resolved.error();
-    }
+    // auto resolved = resolveAndStatOrStop(pathStr, ctx);
+    // if (!resolved)
+    // {
+    //     return resolved.error();
+    // }
 
-    auto res = ctx.vfs.remove(*resolved, mode);
-    if (!res)
-    {
-        ctx.writeLine(formatOutput(u"error while removing " + res.error().toString(pathStr)));
-        return ExecutionResult::withStatus(ExitCode::GeneralError);
-    }
+    // auto res = ctx.vfs.remove(*resolved, mode);
+    // if (!res)
+    // {
+    //     ctx.writeLine(formatOutput(u"error while removing " + res.error().toString(pathStr)));
+    //     return ExecutionResult::withStatus(ExitCode::GeneralError);
+    // }
+
 
     return ExecutionResult::withStatus(ExitCode::Success);
-}
-
-std::expected<VfsPath, ExecutionResult> Command::resolveAndStatOrStop(const QString& str,
-                                                                      const ExecutionContext& ctx) const
-{
-    auto resolvedSrc = ctx.cwd.resolve(str);
-    auto srcRes = resolvedSrc.and_then([&ctx](const VfsPath& path) { return ctx.vfs.stat(path); });
-    if (!srcRes)
-    {
-        ctx.writeLine(formatOutput(u"path " + srcRes.error().toString(str)));
-        return std::unexpected(ExecutionResult::withStatus(ExitCode::GeneralError));
-    }
-
-    return *resolvedSrc;
 }
 
 ExecutionResult MoveCommand::execute(const QStringList& args, const ExecutionContext& ctx) const
@@ -241,32 +228,32 @@ ExecutionResult MoveCommand::execute(const QStringList& args, const ExecutionCon
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 
-    const QString& srcPathStr = args.at(0);
-    auto resolvedSrc = resolveAndStatOrStop(srcPathStr, ctx);
-    if (!resolvedSrc)
-    {
-        return resolvedSrc.error();
-    }
+    // const QString& srcPathStr = args.at(0);
+    // auto resolvedSrc = resolveAndStatOrStop(srcPathStr, ctx);
+    // if (!resolvedSrc)
+    // {
+    //     return resolvedSrc.error();
+    // }
 
-    if (args.size() == 1)
-    {
-        ctx.writeLine(formatOutput(u"destination was not specified"));
-        return ExecutionResult::withStatus(ExitCode::Misuse);
-    }
+    // if (args.size() == 1)
+    // {
+    //     ctx.writeLine(formatOutput(u"destination was not specified"));
+    //     return ExecutionResult::withStatus(ExitCode::Misuse);
+    // }
 
-    const QString& dstPathStr = args.at(1);
-    auto resolvedDst = resolveAndStatOrStop(dstPathStr, ctx);
-    if (!resolvedDst)
-    {
-        return resolvedDst.error();
-    }
+    // const QString& dstPathStr = args.at(1);
+    // auto resolvedDst = resolveAndStatOrStop(dstPathStr, ctx);
+    // if (!resolvedDst)
+    // {
+    //     return resolvedDst.error();
+    // }
 
-    auto res = ctx.vfs.move(*resolvedSrc, *resolvedDst);
-    if (!res)
-    {
-        ctx.writeLine(res.error().toString());
-        return ExecutionResult::withStatus(ExitCode::GeneralError);
-    }
+    // auto res = ctx.vfs.move(*resolvedSrc, *resolvedDst);
+    // if (!res)
+    // {
+    //     ctx.writeLine(res.error().toString());
+    //     return ExecutionResult::withStatus(ExitCode::GeneralError);
+    // }
 
     return ExecutionResult::withStatus(ExitCode::Success);
 }
@@ -285,23 +272,23 @@ ExecutionResult WcCommand::execute(const QStringList& args, const ExecutionConte
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 
-    const QString& srcPathStr = args.at(0);
-    auto resolvedSrc = resolveAndStatOrStop(srcPathStr, ctx);
-    if (!resolvedSrc)
-    {
-        return resolvedSrc.error();
-    }
+    // const QString& srcPathStr = args.at(0);
+    // auto resolvedSrc = resolveAndStatOrStop(srcPathStr, ctx);
+    // if (!resolvedSrc)
+    // {
+    //     return resolvedSrc.error();
+    // }
 
-    auto file = ctx.vfs.readFile(*resolvedSrc);
-    if (!file)
-    {
-        ctx.writeLine(formatOutput(file.error().toString(srcPathStr)));
-        return ExecutionResult::withStatus(ExitCode::GeneralError);
-    }
+    // auto file = ctx.vfs.readFile(*resolvedSrc);
+    // if (!file)
+    // {
+    //     ctx.writeLine(formatOutput(file.error().toString(srcPathStr)));
+    //     return ExecutionResult::withStatus(ExitCode::GeneralError);
+    // }
 
-    QString parsed = QString::fromUtf8(*file);
-    qsizetype count = parsed.split(QRegularExpression(QStringLiteral("\\s+")), Qt::SkipEmptyParts).size();
-    ctx.writeLine(QStringLiteral("%1 words").arg(count));
+    // QString parsed = QString::fromUtf8(*file);
+    // qsizetype count = parsed.split(QRegularExpression(QStringLiteral("\\s+")), Qt::SkipEmptyParts).size();
+    // ctx.writeLine(QStringLiteral("%1 words").arg(count));
 
     return ExecutionResult::withStatus(ExitCode::Success);
 }
@@ -320,25 +307,25 @@ ExecutionResult UniqCommand::execute(const QStringList& args, const ExecutionCon
         return ExecutionResult::withStatus(ExitCode::Misuse);
     }
 
-    const QString& srcPathStr = args.at(0);
-    auto resolvedSrc = resolveAndStatOrStop(srcPathStr, ctx);
-    if (!resolvedSrc)
-    {
-        return resolvedSrc.error();
-    }
+    // const QString& srcPathStr = args.at(0);
+    // auto resolvedSrc = resolveAndStatOrStop(srcPathStr, ctx);
+    // if (!resolvedSrc)
+    // {
+    //     return resolvedSrc.error();
+    // }
 
-    auto file = ctx.vfs.readFile(*resolvedSrc);
-    if (!file)
-    {
-        ctx.writeLine(formatOutput(file.error().toString(srcPathStr)));
-        return ExecutionResult::withStatus(ExitCode::GeneralError);
-    }
+    // auto file = ctx.vfs.readFile(*resolvedSrc);
+    // if (!file)
+    // {
+    //     ctx.writeLine(formatOutput(file.error().toString(srcPathStr)));
+    //     return ExecutionResult::withStatus(ExitCode::GeneralError);
+    // }
 
-    QString parsed = QString::fromUtf8(*file);
-    QStringList lines = parsed.split(u'\n', Qt::SkipEmptyParts);
-    QSet<QString> uniqueLines(lines.begin(), lines.end());
+    // QString parsed = QString::fromUtf8(*file);
+    // QStringList lines = parsed.split(u'\n', Qt::SkipEmptyParts);
+    // QSet<QString> uniqueLines(lines.begin(), lines.end());
 
-    ctx.writeLine(QStringLiteral("%1 lines").arg(uniqueLines.size()));
+    // ctx.writeLine(QStringLiteral("%1 lines").arg(uniqueLines.size()));
     return ExecutionResult::withStatus(ExitCode::Success);
 }
 

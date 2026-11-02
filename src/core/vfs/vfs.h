@@ -23,7 +23,7 @@ public:
 
     virtual std::expected<void, VfsError> createFile(const VfsPath& path,
                                                      const QByteArray& data,
-                                                     VfsEncoding encoding) = 0;
+                                                     VfsEncoding encoding = VfsEncoding::None) = 0;
     virtual std::expected<void, VfsError> createDir(const VfsPath& path) = 0;
     virtual std::expected<void, VfsError> copy(const VfsPath& from, const VfsPath& to) = 0;
     virtual std::expected<void, VfsError> move(const VfsPath& from, const VfsPath& to) = 0;

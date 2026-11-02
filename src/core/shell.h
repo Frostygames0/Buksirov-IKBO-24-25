@@ -6,7 +6,7 @@
 #include <QStringList>
 #include <QtTypes>
 
-#include "core/commands/registry.h"
+#include "core/commands_v2/registry.h"
 #include "core/envprovider.h"
 #include "core/executionresult.h"
 #include "core/output.h"

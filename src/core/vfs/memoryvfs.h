@@ -24,7 +24,7 @@ public:
 
     std::expected<void, VfsError> createFile(const VfsPath& path,
                                              const QByteArray& data,
-                                             VfsEncoding encoding) override;
+                                             VfsEncoding encoding = VfsEncoding::None) override;
     std::expected<void, VfsError> createDir(const VfsPath& path) override;
     std::expected<void, VfsError> copy(const VfsPath& from, const VfsPath& to) override;
     std::expected<void, VfsError> move(const VfsPath& from, const VfsPath& to) override;
