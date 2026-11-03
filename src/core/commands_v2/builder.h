@@ -18,7 +18,9 @@ template <class... Args>
 class CommandBuilder
 {
 public:
-    CommandBuilder() = default;
+    CommandBuilder()
+        requires(sizeof...(Args) == 0)
+    = default;
 
     [[nodiscard]] CommandBuilder name(std::string name) &&
     {
@@ -46,9 +48,9 @@ public:
                      ExecutionResult>
     [[nodiscard]] Command build(F&& func) &&
     {
-        Command::Impl handler = [argSet = std::move(m_args), f = std::forward<F>(func)](
-                                    std::span<const std::string> unparsedArgs,
-                                    const ExecutionContext& ctx) mutable -> ExecutionResult {
+        Command::Handler handler = [argSet = std::move(m_args), f = std::forward<F>(func)](
+                                       std::span<const std::string> unparsedArgs,
+                                       const ExecutionContext& ctx) mutable -> ExecutionResult {
             for (const std::string& arg : unparsedArgs)
             {
                 if (arg == "--help" || arg == "-h")

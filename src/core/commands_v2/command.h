@@ -13,12 +13,12 @@ namespace EmulatorMirea::Core
 class Command
 {
 public:
-    using Impl = std::function<ExecutionResult(std::span<const std::string>, const ExecutionContext&)>;
+    using Handler = std::function<ExecutionResult(std::span<const std::string>, const ExecutionContext&)>;
 
     [[nodiscard]] ExecutionResult execute(std::span<const std::string> args,
                                           const ExecutionContext& ctx) const
     {
-        return m_impl(args, ctx);
+        return m_handler(args, ctx);
     }
 
     [[nodiscard]] const std::string& name() const { return m_name; }
@@ -28,12 +28,12 @@ public:
 private:
     std::string m_name;
     std::string m_description;
-    Impl m_impl;
+    Handler m_handler;
 
-    Command(std::string name, std::string description, Impl impl)
+    Command(std::string name, std::string description, Handler impl)
         : m_name(std::move(name)),
           m_description(std::move(description)),
-          m_impl(std::move(impl))
+          m_handler(std::move(impl))
     {
     }
 
