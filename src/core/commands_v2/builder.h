@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <span>
-#include <string_view>
 
 #include "core/commands_v2/arguments.h"
 #include "core/commands_v2/command.h"
@@ -15,26 +14,24 @@ template <class... Args>
 class CommandBuilder
 {
 public:
-    CommandBuilder()
-        requires(sizeof...(Args) == 0)
-    = default;
+    CommandBuilder() = default;
 
-    [[nodiscard]] CommandBuilder name(std::string n) &&
+    [[nodiscard]] CommandBuilder name(std::string name) &&
     {
-        m_name = std::move(n);
+        m_name = std::move(name);
         return std::move(*this);
     }
 
-    [[nodiscard]] CommandBuilder description(std::string d) &&
+    [[nodiscard]] CommandBuilder description(std::string description) &&
     {
-        m_description = std::move(d);
+        m_description = std::move(description);
         return std::move(*this);
     }
 
     template <class... Us>
-    [[nodiscard]] CommandBuilder<Us...> args(ArgumentSet<Us...> a) &&
+    [[nodiscard]] CommandBuilder<Us...> args(ArgumentSet<Us...> args) &&
     {
-        return CommandBuilder<Us...>(std::move(m_name), std::move(m_description), std::move(a));
+        return CommandBuilder<Us...>(std::move(m_name), std::move(m_description), std::move(args));
     }
 
     template <class F>
@@ -46,12 +43,21 @@ public:
     [[nodiscard]] Command build(F&& func) &&
     {
         Command::Impl handler = [argSet = std::move(m_args), f = std::forward<F>(func)](
-                                    std::span<const std::string_view> unparsedArgs,
+                                    std::span<const std::string> unparsedArgs,
                                     const ExecutionContext& ctx) mutable -> ExecutionResult {
+            for (const std::string& arg : unparsedArgs)
+            {
+                if (arg == "--help" || arg == "-h")
+                {
+                    ctx.writeLine(argSet.usage());
+                    return ExecutionResult::withStatus(ExitCode::Success);
+                }
+            }
+
             auto parsed = argSet.parse(unparsedArgs);
             if (!parsed)
             {
-                ctx.writeLine(QString::fromStdString(parsed.error()));
+                ctx.writeLine(parsed.error());
                 return ExecutionResult::withStatus(ExitCode::Misuse);
             }
 

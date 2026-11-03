@@ -28,7 +28,7 @@ public:
 
     void runStartup(const StartupParams& startParams);
 
-    [[nodiscard]] QString title() const { return m_shell.title(); }
+    [[nodiscard]] QString title() const { return QString::fromStdString(m_shell.title()); }
 
 public slots:
     void onEnter(const QString& line);
@@ -52,9 +52,12 @@ private:
     public:
         explicit SignalWrappedOut(TerminalPresenter& session) : m_session(session) {}
 
-        void write(const QString& line) override { emit m_session.output(line); }
+        void write(const std::string& line) override { emit m_session.output(QString::fromStdString(line)); }
 
-        void writeLine(const QString& line) override { emit m_session.outputLine(line); }
+        void writeLine(const std::string& line) override
+        {
+            emit m_session.outputLine(QString::fromStdString(line));
+        }
 
         void clear() override { emit m_session.cleared(); };
 

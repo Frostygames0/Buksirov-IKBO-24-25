@@ -1,9 +1,10 @@
 #include "lineparser.h"
 
-#include <QChar>
-#include <QString>
-#include <QStringList>
-#include <QStringView>
+#include <cctype>
+#include <cstddef>
+#include <string_view>
+#include <vector>
+#include <string>
 
 #include "core/envprovider.h"
 
@@ -12,42 +13,47 @@ namespace EmulatorMirea::Core::LineParser
 
 namespace
 {
-bool isDoubleQuoteEscapable(QChar c)
+bool isDoubleQuoteEscapable(char c)
 {
-    return c == u'"' || c == u'\\' || c == u'$';
+    return c == '"' || c == '\\' || c == '$';
 }
 
-bool isNameStart(QChar c)
+bool isNameStart(char c)
 {
-    return c.isLetter() || c == u'_';
+    return (std::isalpha(static_cast<unsigned char>(c)) != 0) || c == u'_';
 }
 
-bool isNameChar(QChar c)
+bool isNameChar(char c)
 {
-    return c.isLetterOrNumber() || c == u'_';
+    return std::isalnum(static_cast<unsigned char>(c)) != 0 || c == '_';
 }
 
-qsizetype expandDollar(QStringView in, qsizetype i, const IEnvProvider& env, QString& out)
+bool isSpace(char c)
 {
-    const qsizetype n = in.size();
+    return std::isspace(static_cast<unsigned char>(c)) != 0;
+}
 
-    if (i + 1 < n && in[i + 1] == u'{')
+std::size_t expandDollar(std::string_view in, std::size_t i, const IEnvProvider& env, std::string& out)
+{
+    const std::size_t n = in.size();
+
+    if (i + 1 < n && in[i + 1] == '{')
     {
-        const qsizetype end = in.indexOf(u'}', i + 2);
-        if (end != -1)
+        const std::size_t end = in.find('}', i + 2);
+        if (end != std::string_view::npos)
         {
-            out += env.getEnv(in.mid(i + 2, end - i - 2).toString(), {});
+            out += env.getEnv(in.substr(i + 2, end - (i + 2)));
             return end;
         }
     }
     else if (i + 1 < n && isNameStart(in[i + 1]))
     {
-        qsizetype j = i + 1;
+        std::size_t j = i + 1;
         while (j < n && isNameChar(in[j]))
         {
             ++j;
         }
-        out += env.getEnv(in.mid(i + 1, j - i - 1).toString(), {});
+        out += env.getEnv(in.substr(i + 1, j - (i + 1)));
         return j - 1;
     }
 
@@ -56,36 +62,36 @@ qsizetype expandDollar(QStringView in, qsizetype i, const IEnvProvider& env, QSt
 }
 } // namespace
 
-QStringList parse(QStringView in, const IEnvProvider& env)
+std::vector<std::string> parse(std::string_view in, const IEnvProvider& env)
 {
-    QStringList tokens;
-    QString word;
+    std::vector<std::string> tokens;
+    std::string word;
     bool inToken = false;
     bool quoted = false; // token used quotes, so an empty value is kept
-    QChar quote;
+    char quote = 0;
 
     auto finishToken = [&] {
         // An unquoted token that expanded to nothing disappears; "" stays.
-        if (!word.isEmpty() || quoted)
+        if (!word.empty() || quoted)
         {
-            tokens << word;
+            tokens.push_back(word);
         }
         word.clear();
         inToken = false;
         quoted = false;
     };
 
-    for (qsizetype i = 0; i < in.size(); ++i)
+    for (std::size_t i = 0; i < in.size(); ++i)
     {
-        const QChar c = in[i];
+        const char c = in[i];
         const bool hasNext = i + 1 < in.size();
 
         // If it's a single quote, then parse it verbatim, no expansion or anything
-        if (quote == u'\'')
+        if (quote == '\'')
         {
             if (c == quote)
             {
-                quote = QChar();
+                quote = 0;
             }
             else
             {
@@ -97,13 +103,13 @@ QStringList parse(QStringView in, const IEnvProvider& env)
         {
             if (c == quote)
             {
-                quote = QChar();
+                quote = 0;
             }
-            else if (c == u'\\' && hasNext && isDoubleQuoteEscapable(in[i + 1]))
+            else if (c == '\\' && hasNext && isDoubleQuoteEscapable(in[i + 1]))
             {
                 word += in[++i];
             }
-            else if (c == u'$')
+            else if (c == '$')
             {
                 i = expandDollar(in, i, env, word);
             }
@@ -113,26 +119,26 @@ QStringList parse(QStringView in, const IEnvProvider& env)
             }
         }
         // If char is a quote, then start to process according to quote rules
-        else if (c == u'\'' || c == u'"')
+        else if (c == '\'' || c == '"')
         {
             quote = c;
             inToken = true;
             quoted = true;
         }
         // if it's a slash, read it verbatim
-        else if (c == u'\\' && hasNext)
+        else if (c == '\\' && hasNext)
         {
             word += in[++i];
             inToken = true;
         }
         // if it's a dollar, then expand dollar
-        else if (c == u'$')
+        else if (c == '$')
         {
             i = expandDollar(in, i, env, word);
             inToken = true;
         }
         // if it's a space and nothing else, then just finish the token
-        else if (c.isSpace())
+        else if (isSpace(c))
         {
             if (inToken)
             {

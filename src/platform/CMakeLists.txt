@@ -1,7 +1,8 @@
 add_library(emulator_platform STATIC
-    scriptreader.h scriptreader.cpp
-    xmlvfsreader.h xmlvfsreader.cpp
-    userutil.h     userutil.cpp
+    scriptreader.h       scriptreader.cpp
+    xmlvfsreader.h       xmlvfsreader.cpp
+    userutil.h           userutil.cpp
+    systemenvprovider.h  systemenvprovider.cpp
 )
 
 target_include_directories(emulator_platform

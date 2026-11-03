@@ -26,13 +26,6 @@ public:
 
     void registerCommand(Command&& command);
 
-    template <std::derived_from<Command> T, class... Args>
-        requires std::constructible_from<T, Args...>
-    void registerCommand(Args&&... args)
-    {
-        registerCommand(std::make_unique<T>(std::forward<Args>(args)...));
-    };
-
     [[nodiscard]] const Command* getCommand(const std::string& name) const;
 
     [[nodiscard]] std::vector<Info> allCommandsInfo() const;

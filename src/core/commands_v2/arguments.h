@@ -1,10 +1,12 @@
 #pragma once
 
+#include <any>
 #include <cassert>
 #include <charconv>
 #include <concepts>
 #include <expected>
 #include <format>
+#include <iostream>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -19,13 +21,14 @@ struct ArgumentSpec
     {
         Flag,
         Option,
-        Positional
+        Positional,
     };
 
     Kind kind = Kind::Flag;
     char shortName = 0;
     std::string longName;
     std::string description;
+    std::any defaultValue;
 };
 
 namespace Detail
@@ -90,7 +93,7 @@ public:
     [[nodiscard]] const std::vector<ArgumentSpec>& specs() const { return m_specs; }
 
     [[nodiscard]] std::expected<std::tuple<Args...>, std::string> parse(
-        std::span<const std::string_view> args) const
+        std::span<const std::string> args) const
     {
         RawSet raw(m_specs.size());
         const std::vector<std::size_t> positionals = positionalIndices();
@@ -126,10 +129,13 @@ public:
             }
         }
 
-        if (nextPositional < positionals.size())
+        for (std::size_t i = nextPositional; i < positionals.size(); ++i)
         {
-            return std::unexpected(
-                std::format("missing argument: <{}>", m_specs[positionals[nextPositional]].longName));
+            const ArgumentSpec& spec = m_specs[positionals[i]];
+            if (!spec.defaultValue.has_value())
+            {
+                return std::unexpected(std::format("missing argument: <{}>", spec.longName));
+            }
         }
 
         return make(std::index_sequence_for<Args...>{}, raw);
@@ -186,14 +192,14 @@ private:
     class Cursor
     {
     public:
-        explicit Cursor(std::span<const std::string_view> tokens) : m_tokens(tokens) {}
+        explicit Cursor(std::span<const std::string> tokens) : m_tokens(tokens) {}
 
         [[nodiscard]] bool atEnd() const { return m_pos >= m_tokens.size(); }
 
         std::string_view take() { return m_tokens[m_pos++]; }
 
     private:
-        std::span<const std::string_view> m_tokens;
+        std::span<const std::string> m_tokens;
         std::size_t m_pos = 0;
     };
 
@@ -365,16 +371,26 @@ private:
         }
         else if constexpr (Detail::IsOptional<T>::value)
         {
-            if (!raw)
+            using ValueType = T::value_type;
+            if (!raw || !error.empty())
             {
-                return std::nullopt;
+                if (!raw && spec.defaultValue.has_value())
+                {
+                    return std::any_cast<T>(spec.defaultValue);
+                }
+                return T{};
             }
-            return extractFromRaw<typename T::value_type>(raw, spec, error);
+
+            return extractFromRaw<ValueType>(raw, spec, error);
         }
         else
         {
             if (!raw || !error.empty())
             {
+                if (!raw && spec.defaultValue.has_value())
+                {
+                    return std::any_cast<T>(spec.defaultValue);
+                }
                 return T{};
             }
             auto converted = Detail::convert<T>(*raw, spec.longName);
@@ -435,6 +451,22 @@ public:
     }
 
     template <Detail::ValueType T = std::string>
+    [[nodiscard]] ArgumentBuilder<Args..., T> positional(std::string name,
+                                                         std::string description,
+                                                         T&& defaultValue) &&
+    {
+        ArgumentSpec spec{
+            .kind = ArgumentSpec::Kind::Positional,
+            .shortName = 0,
+            .longName = std::move(name),
+            .description = std::move(description),
+            .defaultValue = std::forward<T>(defaultValue),
+        };
+
+        return std::move(*this).template add<T>(std::move(spec));
+    }
+
+    template <Detail::ValueType T = std::string>
     [[nodiscard]] ArgumentBuilder<Args..., T> positional(std::string name, std::string description) &&
     {
         ArgumentSpec spec{
@@ -448,6 +480,8 @@ public:
     }
 
     [[nodiscard]] ArgumentSet<Args...> buildSet() && { return ArgumentSet<Args...>(std::move(m_specs)); }
+
+    [[nodiscard]] ArgumentSet<Args...> buildSet() & { return ArgumentSet<Args...>(m_specs); }
 
 private:
     std::vector<ArgumentSpec> m_specs;

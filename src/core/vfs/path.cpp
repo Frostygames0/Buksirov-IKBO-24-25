@@ -3,9 +3,9 @@
 #include <algorithm>
 #include <expected>
 #include <optional>
-
-#include <QString>
-#include <QStringView>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "core/vfs/types.h"
 
@@ -14,21 +14,76 @@ namespace EmulatorMirea::Core
 
 namespace
 {
-bool isValidName(QStringView name)
+
+[[nodiscard]] std::string joinStrings(const std::vector<std::string>& parts, std::string_view delim)
 {
-    return !name.isEmpty() && name != u"." && name != u".." && !name.contains(u'/');
+    if (parts.empty())
+    {
+        return {};
+    }
+
+    std::size_t totalSize = 0;
+    for (const auto& part : parts)
+    {
+        totalSize += part.size();
+    }
+    totalSize += delim.size() * (parts.size() - 1);
+
+    std::string result;
+    result.reserve(totalSize);
+
+    result += parts[0];
+    for (std::size_t i = 1; i < parts.size(); ++i)
+    {
+        result.append(delim);
+        result.append(parts[i]);
+    }
+
+    return result;
 }
 
-std::expected<VfsPath, VfsErrorCode> applyString(VfsPath cur, QStringView line)
+[[nodiscard]] std::vector<std::string_view> split(std::string_view str, char delim)
 {
-    for (QStringView part : line.split(u'/', Qt::SkipEmptyParts))
+    std::vector<std::string_view> result;
+    std::size_t start = 0;
+    std::size_t end = str.find(delim);
+
+    while (end != std::string_view::npos)
     {
-        if (part == u".")
+        auto part = str.substr(start, end - start);
+        if (!part.empty())
+        {
+            result.push_back(str.substr(start, end - start));
+        }
+
+        start = end + 1;
+        end = str.find(delim, start);
+    }
+
+    auto lastPart = str.substr(start);
+    if (!lastPart.empty())
+    {
+        result.push_back(str.substr(start));
+    }
+
+    return result;
+}
+
+bool isValidName(std::string_view name)
+{
+    return !name.empty() && name != "." && name != ".." && !name.contains('/');
+}
+
+std::expected<VfsPath, VfsErrorCode> applyString(VfsPath cur, std::string_view line)
+{
+    for (std::string_view part : split(line, '/'))
+    {
+        if (part == ".")
         {
             continue;
         }
 
-        if (part == u"..")
+        if (part == "..")
         {
             cur = cur.parent();
             continue;
@@ -46,9 +101,9 @@ std::expected<VfsPath, VfsErrorCode> applyString(VfsPath cur, QStringView line)
 
 } // namespace
 
-std::expected<VfsPath, VfsErrorCode> VfsPath::fromString(QStringView line)
+std::expected<VfsPath, VfsErrorCode> VfsPath::fromString(std::string_view line)
 {
-    if (!line.startsWith(u'/'))
+    if (!line.starts_with('/'))
     {
         return std::unexpected(VfsErrorCode::InvalidPath);
     }
@@ -56,14 +111,14 @@ std::expected<VfsPath, VfsErrorCode> VfsPath::fromString(QStringView line)
     return applyString(VfsPath{}, line);
 }
 
-std::expected<VfsPath, VfsErrorCode> VfsPath::resolve(const VfsPath& cwd, QStringView line)
+std::expected<VfsPath, VfsErrorCode> VfsPath::resolve(const VfsPath& cwd, std::string_view line)
 {
-    if (line.isEmpty())
+    if (line.empty())
     {
         return cwd;
     }
 
-    return applyString(line.startsWith(u'/') ? VfsPath{} : cwd, line);
+    return applyString(line.starts_with('/') ? VfsPath{} : cwd, line);
 }
 
 VfsPath VfsPath::parent() const
@@ -74,12 +129,12 @@ VfsPath VfsPath::parent() const
     }
 
     VfsPath result = *this;
-    result.m_parts.removeLast();
+    result.m_parts.pop_back();
 
     return result;
 }
 
-std::optional<VfsPath> VfsPath::child(QStringView name) const
+std::optional<VfsPath> VfsPath::child(std::string_view name) const
 {
     if (!isValidName(name))
     {
@@ -87,14 +142,15 @@ std::optional<VfsPath> VfsPath::child(QStringView name) const
     }
 
     VfsPath result = *this;
-    result.m_parts.append(name.toString());
+
+    result.m_parts.emplace_back(name);
     return result;
 }
 
 VfsPath VfsPath::join(const VfsPath& other) const
 {
     VfsPath result = *this;
-    result.m_parts += other.m_parts;
+    result.m_parts.append_range(other.parts());
     return result;
 }
 
@@ -109,24 +165,24 @@ bool VfsPath::isDescendantOf(const VfsPath& ancestor) const
            std::equal(ancestor.m_parts.begin(), ancestor.m_parts.end(), m_parts.begin());
 }
 
-QString VfsPath::topmostName() const
+std::string_view VfsPath::topmostName() const
 {
     if (isRoot())
     {
-        return QStringLiteral("/");
+        return "/";
     }
 
-    return m_parts.last();
+    return m_parts.back();
 }
 
-const QStringList& VfsPath::parts() const
+const std::vector<std::string>& VfsPath::parts() const
 {
     return m_parts;
 }
 
-QString VfsPath::toString() const
+std::string VfsPath::toString() const
 {
-    return u"/" + m_parts.join(u'/');
+    return "/" + joinStrings(m_parts, "/");
 }
 
 } // namespace EmulatorMirea::Core

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include <QString>
 #include <QtTypes>
 
@@ -23,7 +25,7 @@ public:
 
 private:
     const Core::Shell& m_shell;
-    qsizetype m_index = 0;
+    std::size_t m_index = 0;
     QString m_scratch;
 };
 

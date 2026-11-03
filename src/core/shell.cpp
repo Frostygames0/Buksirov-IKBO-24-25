@@ -1,10 +1,8 @@
 #include "shell.h"
 
 #include <utility>
-
-#include <QCoreApplication>
-#include <QString>
-#include <QSysInfo>
+#include <string_view>
+#include <memory>
 
 #include "core/envprovider.h"
 #include "core/executioncontext.h"
@@ -25,7 +23,7 @@ Shell::Shell(UserIdentity identity,
 {
 }
 
-ExecutionResult Shell::submit(const QString& line, IOutput& out, Source source)
+ExecutionResult Shell::submit(const std::string& line, IOutput& out, Source source)
 {
     if (source == Source::Interactive)
     {
@@ -52,16 +50,34 @@ ExecutionResult Shell::submit(const QString& line, IOutput& out, Source source)
     return res;
 }
 
-void Shell::addHistory(const QString& line)
+namespace
 {
-    if (line.trimmed().isEmpty())
+std::string_view trim(std::string_view sv)
+{
+    const char* spaces = " \t\n\r\f\v";
+
+    size_t start = sv.find_first_not_of(spaces);
+    if (start == std::string_view::npos)
+    {
+        return "";
+    }
+
+    size_t end = sv.find_last_not_of(spaces);
+
+    return sv.substr(start, end - start + 1);
+}
+} // namespace
+
+void Shell::addHistory(std::string_view line)
+{
+    if (trim(line).empty())
     {
         return;
     }
 
-    if (m_history.isEmpty() || m_history.last() != line)
+    if (m_history.empty() || m_history.back() != line)
     {
-        m_history.append(line);
+        m_history.emplace_back(line);
     }
 }
 

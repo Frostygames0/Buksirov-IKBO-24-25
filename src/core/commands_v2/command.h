@@ -3,7 +3,6 @@
 #include <functional>
 #include <span>
 #include <string>
-#include <string_view>
 
 #include "core/executioncontext.h"
 #include "core/executionresult.h"
@@ -13,9 +12,9 @@ namespace EmulatorMirea::Core
 class Command
 {
 public:
-    using Impl = std::function<ExecutionResult(std::span<const std::string_view>, const ExecutionContext&)>;
+    using Impl = std::function<ExecutionResult(std::span<const std::string>, const ExecutionContext&)>;
 
-    [[nodiscard]] ExecutionResult execute(std::span<const std::string_view> args,
+    [[nodiscard]] ExecutionResult execute(std::span<const std::string> args,
                                           const ExecutionContext& ctx) const
     {
         return m_impl(args, ctx);

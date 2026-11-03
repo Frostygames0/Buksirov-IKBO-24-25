@@ -1,7 +1,9 @@
 #pragma once
 
+#include <string>
+#include <string_view>
+
 #include <QProcessEnvironment>
-#include <QString>
 
 #include "core/envprovider.h"
 #include "core/useridentity.h"
@@ -15,7 +17,8 @@ class SystemEnvProvider : public IEnvProvider
 public:
     explicit SystemEnvProvider(const UserIdentity& identity);
 
-    [[nodiscard]] QString getEnv(const QString& name, const QString& defaultValue = {}) const override;
+    [[nodiscard]] std::string getEnv(std::string_view name,
+                                     const std::string& defaultValue = {}) const override;
 
 private:
     QProcessEnvironment m_env;

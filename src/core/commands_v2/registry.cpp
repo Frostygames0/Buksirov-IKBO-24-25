@@ -1,8 +1,7 @@
 #include "registry.h"
 
+#include <string>
 #include <utility>
-
-#include <QString>
 
 #include "core/commands_v2/command.h"
 
@@ -18,7 +17,7 @@ void CommandRegistry::registerCommand(Command&& command)
 const Command* CommandRegistry::getCommand(const std::string& name) const
 {
     const auto it = m_commands.find(name);
-    return it == m_commands.end() ? nullptr : &(it->second);
+    return it == m_commands.end() ? nullptr : &it->second;
 }
 
 std::vector<CommandRegistry::Info> CommandRegistry::allCommandsInfo() const

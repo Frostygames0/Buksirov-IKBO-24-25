@@ -1,16 +1,17 @@
 #pragma once
 
-#include <QString>
+#include <format>
+#include <string>
 
 namespace EmulatorMirea::Core
 {
 
 struct UserIdentity
 {
-    QString userName;
-    QString machineName;
+    std::string userName;
+    std::string machineName;
 
-    [[nodiscard]] QString fancyName() const { return QStringLiteral("%1$%2").arg(userName, machineName); }
+    [[nodiscard]] std::string fancyName() const { return std::format("{}${}", userName, machineName); }
 };
 
 }; // namespace EmulatorMirea::Core

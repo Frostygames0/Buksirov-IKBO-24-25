@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QStringList>
-#include <QStringView>
+#include <string_view>
+#include <string>
+#include <vector>
 
 #include "core/envprovider.h"
 
@@ -13,7 +14,7 @@ class IEnvProvider;
 namespace LineParser
 {
 
-[[nodiscard]] QStringList parse(QStringView in, const IEnvProvider& env);
+[[nodiscard]] std::vector<std::string> parse(std::string_view in, const IEnvProvider& env);
 
 } // namespace LineParser
 } // namespace EmulatorMirea::Core

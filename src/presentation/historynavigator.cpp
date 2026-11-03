@@ -22,12 +22,12 @@ QString HistoryNavigator::up(const QString& current)
     {
         --m_index;
     }
-    return m_shell.historyAt(m_index);
+    return QString::fromUtf8(m_shell.historyAt(m_index));
 }
 
 QString HistoryNavigator::down(const QString& current)
 {
-    const qsizetype n = m_shell.historySize();
+    const std::size_t n = m_shell.historySize();
 
     if (m_index >= n)
     {
@@ -36,7 +36,7 @@ QString HistoryNavigator::down(const QString& current)
     }
 
     ++m_index;
-    return (m_index == n) ? m_scratch : m_shell.historyAt(m_index);
+    return (m_index == n) ? m_scratch : QString::fromUtf8(m_shell.historyAt(m_index));
 }
 
 void HistoryNavigator::reset()

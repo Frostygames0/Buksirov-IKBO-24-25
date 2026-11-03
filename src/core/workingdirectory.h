@@ -14,7 +14,7 @@ public:
 
     [[nodiscard]] const VfsPath& currentDir() const { return m_cwd; }
 
-    [[nodiscard]] std::expected<VfsPath, VfsError> resolve(QStringView path) const
+    [[nodiscard]] std::expected<VfsPath, VfsError> resolve(std::string_view path) const
     {
         return VfsPath::resolve(m_cwd, path);
     };

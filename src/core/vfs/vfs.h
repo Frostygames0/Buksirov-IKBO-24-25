@@ -1,9 +1,8 @@
 #pragma once
 
+#include <cstddef>
 #include <expected>
-
-#include <QByteArray>
-#include <QList>
+#include <vector>
 
 #include "core/vfs/types.h"
 
@@ -18,11 +17,12 @@ public:
     virtual ~IVfs() = default;
 
     [[nodiscard]] virtual std::expected<VfsEntry, VfsError> stat(const VfsPath& path) const = 0;
-    [[nodiscard]] virtual std::expected<QList<VfsEntry>, VfsError> list(const VfsPath& path) const = 0;
-    [[nodiscard]] virtual std::expected<QByteArray, VfsError> readFile(const VfsPath& path) const = 0;
+    [[nodiscard]] virtual std::expected<std::vector<VfsEntry>, VfsError> list(const VfsPath& path) const = 0;
+    [[nodiscard]] virtual std::expected<std::vector<std::byte>, VfsError> readFile(
+        const VfsPath& path) const = 0;
 
     virtual std::expected<void, VfsError> createFile(const VfsPath& path,
-                                                     const QByteArray& data,
+                                                     std::vector<std::byte> data,
                                                      VfsEncoding encoding = VfsEncoding::None) = 0;
     virtual std::expected<void, VfsError> createDir(const VfsPath& path) = 0;
     virtual std::expected<void, VfsError> copy(const VfsPath& from, const VfsPath& to) = 0;

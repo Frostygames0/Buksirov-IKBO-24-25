@@ -12,16 +12,14 @@
 #include <QSysInfo>
 #include <QTimer>
 
-#include "core/commands_v2/builder.h"
-#include "core/commands_v2/command.h"
-#include "core/commands_v2/registry.h"
+#include "core/commands_v2/commands.h"
 #include "core/envprovider.h"
 #include "core/shell.h"
-#include "core/systemenvprovider.h"
 #include "core/useridentity.h"
 #include "core/vfs/memoryvfs.h"
 #include "core/vfs/vfs.h"
 #include "platform/scriptreader.h"
+#include "platform/systemenvprovider.h"
 #include "platform/userutil.h"
 #include "platform/xmlvfsreader.h"
 #include "presentation/terminalpresenter.h"
@@ -61,32 +59,6 @@ Config parseFromArgs(const QCoreApplication& app)
         .vfsPath = parser.value(QStringLiteral("vfs")),
         .scriptPath = parser.value(QStringLiteral("script")),
     };
-}
-
-Core::CommandRegistry createDefaultRegistry(const QString& vfsLoadPath)
-{
-    Core::CommandRegistry registry;
-    registry.registerCommand(
-        Core::CommandBuilder{}
-            .name("exit")
-            .description("exits the terminal")
-            .args(Core::ArgumentBuilder{}.positional<int>("exitcode", "exitcode").buildSet())
-            .build(
-                [](const Core::ExecutionContext&, int code) { return Core::ExecutionResult::exit(code); }));
-
-    // registry.registerCommand<Core::HelpCommand>();
-    // registry.registerCommand<Core::ExitCommand>();
-    // registry.registerCommand<Core::ListCommand>();
-    // registry.registerCommand<Core::VfsInitCommand>(vfsLoadPath);
-    // registry.registerCommand<Core::ChangeDirectoryCommand>();
-    // registry.registerCommand<Core::ClearCommand>();
-    // registry.registerCommand<Core::EchoCommand>();
-    // registry.registerCommand<Core::RemoveCommand>();
-    // registry.registerCommand<Core::MoveCommand>();
-    // registry.registerCommand<Core::WcCommand>();
-    // registry.registerCommand<Core::UniqCommand>();
-
-    return registry;
 }
 
 std::unique_ptr<Core::IEnvProvider> createEnvProvider(const Core::UserIdentity& identity)
@@ -135,8 +107,8 @@ QStringList readScript(const QString& scriptPath, QStringList& diagnostics)
 Core::UserIdentity createIdentityFromRealUser()
 {
     return Core::UserIdentity{
-        .userName = Platform::UserUtils::getCurrentUsername(),
-        .machineName = QSysInfo::machineHostName(),
+        .userName = Platform::UserUtils::getCurrentUsername().toStdString(),
+        .machineName = QSysInfo::machineHostName().toStdString(),
     };
 }
 
@@ -147,7 +119,7 @@ Core::Shell createShell(const Config& cfg, QStringList& errors)
     return Core::Shell{identity,
                        createEnvProvider(identity),
                        createAndReadVfs(cfg.vfsPath, errors),
-                       createDefaultRegistry(cfg.vfsPath)};
+                       Core::Commands::createDefaultRegistry()};
 }
 
 void wireUIandPresenter(Ui::MainWindow& window, Presentation::TerminalPresenter& session)

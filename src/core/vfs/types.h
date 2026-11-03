@@ -1,9 +1,10 @@
 #pragma once
 
+#include <cstddef>
+#include <format>
+#include <string>
+#include <string_view>
 #include <utility>
-
-#include <QString>
-#include <QtTypes>
 
 namespace EmulatorMirea::Core
 {
@@ -21,14 +22,14 @@ enum class VfsEntryType
     Dir,
 };
 
-inline QString vfsEntryTypeToString(VfsEntryType t)
+inline std::string_view vfsEntryTypeToString(VfsEntryType t)
 {
     switch (t)
     {
         case VfsEntryType::File:
-            return QStringLiteral("file");
+            return "file";
         case VfsEntryType::Dir:
-            return QStringLiteral("dir");
+            return "dir";
     }
 
     std::unreachable();
@@ -39,8 +40,8 @@ struct VfsEntry
     VfsEntryType type = VfsEntryType::File;
     VfsEncoding encoding = VfsEncoding::None;
 
-    QString name;
-    qsizetype size = 0;
+    std::string name;
+    std::size_t size = 0;
 
     friend bool operator==(const VfsEntry&, const VfsEntry&) = default;
 
@@ -48,9 +49,9 @@ struct VfsEntry
 
     [[nodiscard]] bool isFile() const { return type == VfsEntryType::File; }
 
-    [[nodiscard]] QString toString() const
+    [[nodiscard]] std::string toString() const
     {
-        return QStringLiteral("%1: %2 -- %3 bytes").arg(vfsEntryTypeToString(type), name).arg(size);
+        return std::format("{}: {} -- {} bytes", vfsEntryTypeToString(type), name, size);
     }
 };
 
@@ -69,32 +70,32 @@ enum class VfsErrorCode
     NotSupported,
 };
 
-inline QString vfsErrorCodeToStr(VfsErrorCode e)
+inline std::string_view vfsErrorCodeToStr(VfsErrorCode e)
 {
     switch (e)
     {
         case VfsErrorCode::NotFound:
-            return QStringLiteral("not found");
+            return "not found";
         case VfsErrorCode::NotEmpty:
-            return QStringLiteral("not empty");
+            return "not empty";
         case VfsErrorCode::NotAFile:
-            return QStringLiteral("not a file");
+            return "not a file";
         case VfsErrorCode::NotADirectory:
-            return QStringLiteral("not a directory");
+            return "not a directory";
         case VfsErrorCode::InvalidPath:
-            return QStringLiteral("invalid path");
+            return "invalid path";
         case VfsErrorCode::AlreadyExists:
-            return QStringLiteral("already exists");
+            return "already exists";
         case VfsErrorCode::InvalidArgument:
-            return QStringLiteral("invalid argument");
+            return "invalid argument";
         case VfsErrorCode::InvalidMove:
-            return QStringLiteral("invalid move");
+            return "invalid move";
         case VfsErrorCode::InvalidCopy:
-            return QStringLiteral("invalid copy");
+            return "invalid copy";
         case VfsErrorCode::CannotRemoveRoot:
-            return QStringLiteral("cannot remove root");
+            return "cannot remove root";
         case VfsErrorCode::NotSupported:
-            return QStringLiteral("not supported");
+            return "not supported";
     }
 
     std::unreachable();
@@ -114,21 +115,21 @@ struct [[nodiscard]] VfsError
 
     VfsError(VfsErrorCode c, VfsOperand o = VfsOperand::None) : code(c), operand(o) {}
 
-    [[nodiscard]] QString toString(const QString& path = {}) const
+    [[nodiscard]] std::string toString(std::string_view path = "") const
     {
-        QString error = vfsErrorCodeToStr(code);
+        std::string_view error = vfsErrorCodeToStr(code);
 
-        QString operandText;
+        std::string_view operandText;
         switch (operand)
         {
             case VfsOperand::From:
-                operandText = QStringLiteral("source");
+                operandText = "source";
             case VfsOperand::To:
-                operandText = QStringLiteral("destination");
+                operandText = "destination";
             case VfsOperand::None:
                 break;
         }
-        return QStringLiteral("%1\"%2\" -- %3").arg(operandText, path, error);
+        return std::format("{}\"{}\" -- {}", operandText, path, error);
     }
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QString>
+#include <string>
 
 #include "core/output.h"
 #include "core/useridentity.h"
@@ -23,9 +23,9 @@ struct ExecutionContext
     WorkingDirectory& cwd;
     CommandRegistry& commandRegistry;
 
-    void writeLine(const QString& line = {}) const { out.writeLine(line); }
+    void writeLine(const std::string& line = "") const { out.writeLine(line); }
 
-    void write(const QString& line) const { out.write(line); }
+    void write(const std::string& line) const { out.write(line); }
 };
 
 } // namespace EmulatorMirea::Core

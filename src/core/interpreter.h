@@ -1,7 +1,6 @@
 #pragma once
 
-#include <QString>
-#include <QStringView>
+#include <string_view>
 
 #include "core/commands_v2/registry.h"
 #include "core/executionresult.h"
@@ -15,7 +14,7 @@ class CommandRegistry;
 namespace Interpreter
 {
 
-ExecutionResult execute(CommandRegistry& registry, QStringView input, const ExecutionContext& ctx);
+ExecutionResult execute(CommandRegistry& registry, std::string_view input, const ExecutionContext& ctx);
 
 } // namespace Interpreter
 

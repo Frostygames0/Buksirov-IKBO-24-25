@@ -1,6 +1,7 @@
 #pragma once
 
-#include <QString>
+#include <string>
+#include <string_view>
 
 namespace EmulatorMirea::Core
 {
@@ -12,7 +13,8 @@ class IEnvProvider
 public:
     virtual ~IEnvProvider() = default;
 
-    [[nodiscard]] virtual QString getEnv(const QString& name, const QString& defaultValue = {}) const = 0;
+    [[nodiscard]] virtual std::string getEnv(std::string_view name,
+                                             const std::string& defaultValue = {}) const = 0;
 };
 
 } // namespace EmulatorMirea::Core

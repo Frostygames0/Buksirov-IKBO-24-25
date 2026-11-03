@@ -1,11 +1,9 @@
 add_library(emulator_core STATIC
-    #commands/command.h     commands/command.cpp
-    #commands/registry.h    commands/registry.cpp
-
     commands_v2/command.h
     commands_v2/builder.h
     commands_v2/arguments.h
     commands_v2/registry.h commands_v2/registry.cpp
+    commands_v2/commands.h commands_v2/commands.cpp
     
     vfs/types.h
     vfs/vfs.h
@@ -20,16 +18,10 @@ add_library(emulator_core STATIC
     interpreter.h          interpreter.cpp
     lineparser.h           lineparser.cpp
     shell.h                shell.cpp
-    systemenvprovider.h    systemenvprovider.cpp
 
     output.h
 )
 
 target_include_directories(emulator_core
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..
-)
-
-target_link_libraries(emulator_core
-    PUBLIC
-        Qt6::Core
 )

@@ -74,7 +74,7 @@ std::expected<void, QString> readTree(QXmlStreamReader& reader, Core::IVfs& vfs)
                 QStringLiteral("Tag %1 at line %2 has no 'name' attribute").arg(tag).arg(lineNumber));
         }
 
-        const QString name = attrs.value(u"name").toString();
+        const std::string name = attrs.value(u"name").toString().toStdString();
         const auto path = parents.last().child(name);
         if (!path)
         {
@@ -109,7 +109,11 @@ std::expected<void, QString> readTree(QXmlStreamReader& reader, Core::IVfs& vfs)
             return std::unexpected(QStringLiteral("%1 (%2)").arg(data.error(), path->toString()));
         }
 
-        const std::expected<void, Core::VfsError> created = vfs.createFile(*path, *data);
+        std::vector<std::byte> byteVector;
+        byteVector.resize(data->size());
+        std::memcpy(byteVector.data(), data->constData(), data->size());
+
+        const std::expected<void, Core::VfsError> created = vfs.createFile(*path, byteVector);
         if (!created)
         {
             return std::unexpected(QStringLiteral("Cannot create file %1: %2")

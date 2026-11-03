@@ -1,10 +1,10 @@
 #pragma once
 
+#include <cstddef>
 #include <memory>
-
-#include <QString>
-#include <QStringList>
-#include <QtTypes>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "core/commands_v2/registry.h"
 #include "core/envprovider.h"
@@ -30,21 +30,21 @@ public:
         Script,
     };
 
-    ExecutionResult submit(const QString& line, IOutput& out, Source source = Source::Interactive);
+    ExecutionResult submit(const std::string& line, IOutput& out, Source source = Source::Interactive);
 
-    [[nodiscard]] qsizetype historySize() const { return m_history.size(); }
+    [[nodiscard]] std::size_t historySize() const { return m_history.size(); }
 
-    [[nodiscard]] QString historyAt(qsizetype index) const { return m_history.value(index); }
+    [[nodiscard]] std::string_view historyAt(std::size_t index) const { return m_history.at(index); }
 
-    [[nodiscard]] QString prompt() const
+    [[nodiscard]] std::string prompt() const
     {
-        return QStringLiteral("[%1 %2]$ ").arg(m_identity.fancyName(), m_cwd.currentDir().topmostName());
+        return std::format("[{} {}]$ ", m_identity.fancyName(), m_cwd.currentDir().topmostName());
     }
 
-    [[nodiscard]] QString title() const { return m_identity.fancyName(); }
+    [[nodiscard]] std::string title() const { return m_identity.fancyName(); }
 
 private:
-    void addHistory(const QString& line);
+    void addHistory(std::string_view line);
 
     UserIdentity m_identity;
 
@@ -54,7 +54,7 @@ private:
 
     CommandRegistry m_registry;
 
-    QStringList m_history;
+    std::vector<std::string> m_history;
 
     int m_lastStatus{};
 
@@ -63,16 +63,17 @@ private:
     public:
         ShellAwareProvider(const IEnvProvider& base, const Shell& shell) : m_base(base), m_shell(shell) {}
 
-        [[nodiscard]] QString getEnv(const QString& name, const QString& defaultValue = {}) const override
+        [[nodiscard]] std::string getEnv(std::string_view name,
+                                         const std::string& defaultValue = {}) const override
         {
-            if (name == u"PWD")
+            if (name == "PWD")
             {
                 return m_shell.m_cwd.currentDir().toString();
             }
 
-            if (name == u"status")
+            if (name == "status")
             {
-                return QString::number(m_shell.m_lastStatus);
+                return std::to_string(m_shell.m_lastStatus);
             }
 
             return m_base.getEnv(name, defaultValue);
