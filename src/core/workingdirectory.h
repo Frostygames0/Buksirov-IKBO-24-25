@@ -1,6 +1,11 @@
 #pragma once
 
+#include <expected>
+#include <string_view>
+
 #include "core/vfs/path.h"
+#include "core/vfs/types.h"
+
 
 namespace EmulatorMirea::Core
 {

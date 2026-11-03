@@ -34,6 +34,7 @@ Checks:
   - -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access
   - performance-*
   - -performance-enum-size
+  - -performance-unnecessary-value-param
   - bugprone-*
   - -bugprone-easily-swappable-parameters
   - -bugprone-unhandled-exception-at-new

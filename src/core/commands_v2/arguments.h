@@ -2,14 +2,20 @@
 
 #include <any>
 #include <cassert>
+#include <cctype>
 #include <charconv>
 #include <concepts>
+#include <cstddef>
 #include <expected>
 #include <format>
-#include <iostream>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
+#include <system_error>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace EmulatorMirea::Core
@@ -45,11 +51,11 @@ struct IsOptional<std::optional<T>> : std::true_type
 };
 
 template <class T>
-concept ValueType = std::same_as<T, std::string> || std::same_as<T, std::string_view> ||
-                    (std::integral<T> && !std::same_as<T, bool> && !std::same_as<T, char>) ||
-                    std::floating_point<T>;
+concept AcceptableArgValueType = std::same_as<T, std::string> || std::same_as<T, std::string_view> ||
+                                 (std::integral<T> && !std::same_as<T, bool> && !std::same_as<T, char>) ||
+                                 std::floating_point<T>;
 
-template <ValueType T>
+template <AcceptableArgValueType T>
 std::expected<T, std::string> convert(std::string_view text, std::string_view name)
 {
     if constexpr (std::same_as<T, std::string_view>)
@@ -436,7 +442,7 @@ public:
         return std::move(*this).template add<bool>(std::move(spec));
     }
 
-    template <Detail::ValueType T = std::string>
+    template <Detail::AcceptableArgValueType T = std::string>
     [[nodiscard]] ArgumentBuilder<Args..., std::optional<T>> option(char shortName,
                                                                     std::string longName,
                                                                     std::string description) &&
@@ -450,7 +456,7 @@ public:
         return std::move(*this).template add<std::optional<T>>(std::move(spec));
     }
 
-    template <Detail::ValueType T = std::string>
+    template <Detail::AcceptableArgValueType T = std::string>
     [[nodiscard]] ArgumentBuilder<Args..., T> positional(std::string name,
                                                          std::string description,
                                                          T&& defaultValue) &&
@@ -466,7 +472,7 @@ public:
         return std::move(*this).template add<T>(std::move(spec));
     }
 
-    template <Detail::ValueType T = std::string>
+    template <Detail::AcceptableArgValueType T = std::string>
     [[nodiscard]] ArgumentBuilder<Args..., T> positional(std::string name, std::string description) &&
     {
         ArgumentSpec spec{

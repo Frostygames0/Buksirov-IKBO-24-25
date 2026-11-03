@@ -1,7 +1,9 @@
 #include "interpreter.h"
 
+#include <string>
 #include <string_view>
 #include <span>
+#include <vector>
 
 #include "core/commands_v2/command.h"
 #include "core/commands_v2/registry.h"

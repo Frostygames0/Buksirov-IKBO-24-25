@@ -1,10 +1,14 @@
 #include "memoryvfs.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <expected>
 #include <queue>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "core/vfs/path.h"
 #include "core/vfs/types.h"
@@ -390,7 +394,7 @@ MemoryVfs::NodeId MemoryVfs::allocNode(Node node)
 
     // otherwise allocate new one
     m_nodes.push_back(std::move(node));
-    return m_nodes.size() - 1;
+    return static_cast<std::ptrdiff_t>(m_nodes.size() - 1);
 }
 
 } // namespace EmulatorMirea::Core

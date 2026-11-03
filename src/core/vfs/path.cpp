@@ -1,6 +1,7 @@
 #include "path.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <expected>
 #include <optional>
 #include <string>

@@ -1,13 +1,16 @@
 #include "shell.h"
 
-#include <utility>
-#include <string_view>
+#include <cstddef>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
 
 #include "core/envprovider.h"
 #include "core/executioncontext.h"
 #include "core/executionresult.h"
 #include "core/interpreter.h"
+#include "core/useridentity.h"
 
 namespace EmulatorMirea::Core
 {
@@ -56,13 +59,13 @@ std::string_view trim(std::string_view sv)
 {
     const char* spaces = " \t\n\r\f\v";
 
-    size_t start = sv.find_first_not_of(spaces);
+    std::size_t start = sv.find_first_not_of(spaces);
     if (start == std::string_view::npos)
     {
         return "";
     }
 
-    size_t end = sv.find_last_not_of(spaces);
+    std::size_t end = sv.find_last_not_of(spaces);
 
     return sv.substr(start, end - start + 1);
 }

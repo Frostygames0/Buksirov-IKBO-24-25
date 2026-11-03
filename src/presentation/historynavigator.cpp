@@ -1,9 +1,12 @@
 #include "historynavigator.h"
 
+#include <cstddef>
+
 #include <QString>
 #include <QtTypes>
 
 #include "core/shell.h"
+
 
 namespace EmulatorMirea::Presentation
 {

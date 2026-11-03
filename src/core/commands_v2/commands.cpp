@@ -1,5 +1,8 @@
 #include "commands.h"
 
+#include <format>
+#include <string>
+
 #include "core/commands_v2/arguments.h"
 #include "core/commands_v2/builder.h"
 #include "core/commands_v2/command.h"
@@ -17,7 +20,7 @@ namespace EmulatorMirea::Core::Commands
 namespace
 {
 
-constexpr Command createExit()
+Command createExit()
 {
     return CommandBuilder{}
         .name("exit")
@@ -26,11 +29,11 @@ constexpr Command createExit()
         .build([](const ExecutionContext&, int code) { return ExecutionResult::exit(code); });
 }
 
-constexpr Command createList()
+Command createList()
 {
     return CommandBuilder{}
         .name("ls")
-        .description("lists all files")
+        .description("lists all files/directories at path")
         .args(ArgumentBuilder{}.positional("path", "path to list", {}).buildSet())
         .build([](const ExecutionContext& ctx, const std::string& pathStr) {
             auto resolved = ctx.cwd.resolve(pathStr);
@@ -64,7 +67,7 @@ constexpr Command createList()
         });
 }
 
-constexpr Command createChangeDirectory()
+Command createChangeDirectory()
 {
     return CommandBuilder{}
         .name("cd")
@@ -89,7 +92,7 @@ constexpr Command createChangeDirectory()
         });
 }
 
-constexpr Command createClear()
+Command createClear()
 {
     return CommandBuilder{}
         .name("clear")
@@ -100,19 +103,19 @@ constexpr Command createClear()
         });
 }
 
-constexpr Command createEcho()
+Command createEcho()
 {
     return CommandBuilder{}
-        .name("clear")
+        .name("echo")
         .description("echoes the input")
-        .args(ArgumentBuilder{}.positional("input", "the input to echo", {}).buildSet())
+        .args(ArgumentBuilder{}.positional("input", "input to echo", {}).buildSet())
         .build([](const ExecutionContext& ctx, const std::string& input) {
             ctx.out.writeLine(input);
             return ExecutionResult::withStatus(ExitCode::Success);
         });
 }
 
-constexpr Command createHelp()
+Command createHelp()
 {
     return CommandBuilder{}
         .name("help")
@@ -128,7 +131,7 @@ constexpr Command createHelp()
         });
 }
 
-constexpr Command createRemove()
+Command createRemove()
 {
     return CommandBuilder{}
         .name("rm")
@@ -138,18 +141,21 @@ constexpr Command createRemove()
             auto path = ctx.cwd.resolve(pathStr);
             if (!path)
             {
+                ctx.writeLine(std::format("path \"{}\" is not valid", pathStr));
                 return ExecutionResult::withStatus(ExitCode::GeneralError);
             }
 
             auto stat = ctx.vfs.stat(*path);
             if (!stat)
             {
+                ctx.writeLine(std::format("\"{}\" doesn't exist", pathStr));
                 return ExecutionResult::withStatus(ExitCode::GeneralError);
             }
-
             auto res = ctx.vfs.remove(*path, recurive ? VfsRemoveMode::Recursive : VfsRemoveMode::Single);
             if (!res)
             {
+                ctx.writeLine(std::format(
+                    "failed to remove at \"{}\": {}", pathStr, vfsErrorCodeToStr(res.error().code)));
                 return ExecutionResult::withStatus(ExitCode::GeneralError);
             }
 
