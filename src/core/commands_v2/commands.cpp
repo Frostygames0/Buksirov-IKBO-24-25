@@ -24,7 +24,7 @@ Command createExit()
 {
     return CommandBuilder{}
         .name("exit")
-        .description("exits the terminal with provided exit code")
+        .description("exits the terminal with the provided exit code")
         .args(ArgumentBuilder{}.positional<int>("exit_code", "Exit code", 0).buildSet())
         .build([](const ExecutionContext&, int code) { return ExecutionResult::exit(code); });
 }
@@ -33,10 +33,8 @@ Command createList()
 {
     return CommandBuilder{}
         .name("ls")
-        .description("lists all files/directories at path")
-        .args(ArgumentBuilder{}
-                  .positional<std::string>("path", "path of the file/directory to list", {})
-                  .buildSet())
+        .description("lists all files/directories at the specified path")
+        .args(ArgumentBuilder{}.positional<std::string>("path", "a path to list", {}).buildSet())
         .build([](const ExecutionContext& ctx, const std::string& pathStr) {
             auto resolved = ctx.cwd.resolve(pathStr);
             if (!resolved)
@@ -74,7 +72,7 @@ Command createChangeDirectory()
     return CommandBuilder{}
         .name("cd")
         .description("changes the current working directory")
-        .args(ArgumentBuilder{}.positional<std::string>("dir", "directory to change to", {}).buildSet())
+        .args(ArgumentBuilder{}.positional<std::string>("dir", "a path to the directory", {}).buildSet())
         .build([](const ExecutionContext& ctx, const std::string& pathStr) {
             auto resolved = ctx.cwd.resolve(pathStr);
             if (!resolved)
@@ -121,9 +119,9 @@ Command createHelp()
 {
     return CommandBuilder{}
         .name("help")
-        .description("outputs the list of all commands")
+        .description("outputs the list of all available commands")
         .build([](const ExecutionContext& ctx) {
-            ctx.writeLine("List of available commands:");
+            ctx.writeLine("All available commands:");
             for (const CommandRegistry::Info& info : ctx.commandRegistry.allCommandsInfo())
             {
                 ctx.writeLine(info.toString());
@@ -137,10 +135,10 @@ Command createRemove()
 {
     return CommandBuilder{}
         .name("rm")
-        .description("removes")
+        .description("removes files/directory at the specified path")
         .args(ArgumentBuilder{}
                   .flag('r', "recursive", "removes everything at the path recursively")
-                  .positional<std::string>("path", "path of the fire/directory to remove")
+                  .positional<std::string>("path", "a path to the file/directory to remove")
                   .buildSet())
         .build([](const ExecutionContext& ctx, bool recurive, const std::string& pathStr) {
             auto path = ctx.cwd.resolve(pathStr);
