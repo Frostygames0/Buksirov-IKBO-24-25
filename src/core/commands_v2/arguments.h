@@ -456,7 +456,7 @@ public:
         return std::move(*this).template add<std::optional<T>>(std::move(spec));
     }
 
-    template <Detail::AcceptableArgValueType T = std::string>
+    template <Detail::AcceptableArgValueType T>
     [[nodiscard]] ArgumentBuilder<Args..., T> positional(std::string name,
                                                          std::string description,
                                                          T&& defaultValue) &&
@@ -472,7 +472,7 @@ public:
         return std::move(*this).template add<T>(std::move(spec));
     }
 
-    template <Detail::AcceptableArgValueType T = std::string>
+    template <Detail::AcceptableArgValueType T>
     [[nodiscard]] ArgumentBuilder<Args..., T> positional(std::string name, std::string description) &&
     {
         ArgumentSpec spec{

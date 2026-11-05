@@ -34,7 +34,9 @@ Command createList()
     return CommandBuilder{}
         .name("ls")
         .description("lists all files/directories at path")
-        .args(ArgumentBuilder{}.positional("path", "path to list", {}).buildSet())
+        .args(ArgumentBuilder{}
+                  .positional<std::string>("path", "path of the file/directory to list", {})
+                  .buildSet())
         .build([](const ExecutionContext& ctx, const std::string& pathStr) {
             auto resolved = ctx.cwd.resolve(pathStr);
             if (!resolved)
@@ -72,7 +74,7 @@ Command createChangeDirectory()
     return CommandBuilder{}
         .name("cd")
         .description("changes the current working directory")
-        .args(ArgumentBuilder{}.positional("dir", "directory to change to", {}).buildSet())
+        .args(ArgumentBuilder{}.positional<std::string>("dir", "directory to change to", {}).buildSet())
         .build([](const ExecutionContext& ctx, const std::string& pathStr) {
             auto resolved = ctx.cwd.resolve(pathStr);
             if (!resolved)
@@ -108,7 +110,7 @@ Command createEcho()
     return CommandBuilder{}
         .name("echo")
         .description("echoes the input")
-        .args(ArgumentBuilder{}.positional("input", "input to echo", {}).buildSet())
+        .args(ArgumentBuilder{}.positional<std::string>("input", "input to echo", {}).buildSet())
         .build([](const ExecutionContext& ctx, const std::string& input) {
             ctx.out.writeLine(input);
             return ExecutionResult::withStatus(ExitCode::Success);
@@ -136,7 +138,10 @@ Command createRemove()
     return CommandBuilder{}
         .name("rm")
         .description("removes")
-        .args(ArgumentBuilder{}.flag('r', "recursive", "").positional("path", "to remove").buildSet())
+        .args(ArgumentBuilder{}
+                  .flag('r', "recursive", "removes everything at the path recursively")
+                  .positional<std::string>("path", "path of the fire/directory to remove")
+                  .buildSet())
         .build([](const ExecutionContext& ctx, bool recurive, const std::string& pathStr) {
             auto path = ctx.cwd.resolve(pathStr);
             if (!path)
