@@ -84,7 +84,7 @@ Command createChangeDirectory()
             auto res = ctx.cwd.set(*resolved);
             if (!res)
             {
-                ctx.writeLine("path " + res.error().toString(pathStr));
+                ctx.writeLine("error setting cwd as " + res.error().toString(pathStr));
                 return ExecutionResult::withStatus(ExitCode::GeneralError);
             }
 
@@ -157,8 +157,7 @@ Command createRemove()
             auto res = ctx.vfs.remove(*path, recurive ? VfsRemoveMode::Recursive : VfsRemoveMode::Single);
             if (!res)
             {
-                ctx.writeLine(std::format(
-                    "failed to remove at \"{}\": {}", pathStr, vfsErrorCodeToStr(res.error().code)));
+                ctx.writeLine(std::format("failed to remove at ", pathStr, res.error().toString(pathStr)));
                 return ExecutionResult::withStatus(ExitCode::GeneralError);
             }
 

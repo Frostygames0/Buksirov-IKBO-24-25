@@ -4,6 +4,7 @@
 #include <functional>
 #include <span>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -36,6 +37,7 @@ public:
 
     template <class... Us>
     [[nodiscard]] CommandBuilder<Us...> args(ArgumentSet<Us...> args) &&
+        requires(sizeof...(Args) == 0)
     {
         return CommandBuilder<Us...>(std::move(m_name), std::move(m_description), std::move(args));
     }
@@ -51,8 +53,14 @@ public:
         Command::Handler handler = [argSet = std::move(m_args), f = std::forward<F>(func)](
                                        std::span<const std::string> unparsedArgs,
                                        const ExecutionContext& ctx) mutable -> ExecutionResult {
+            // TODO: Move help into argument parsing
             for (const std::string& arg : unparsedArgs)
             {
+                if (arg == "--")
+                {
+                    break;
+                }
+
                 if (arg == "--help" || arg == "-h")
                 {
                     // TODO Improve Help
@@ -68,18 +76,11 @@ public:
                 return ExecutionResult::withStatus(ExitCode::Misuse);
             }
 
-            if constexpr (sizeof...(Args) == 0)
-            {
-                return std::invoke(f, ctx);
-            }
-            else
-            {
-                return std::apply(
-                    [&](Args&&... values) -> ExecutionResult {
-                        return std::invoke(f, ctx, std::forward<Args>(values)...);
-                    },
-                    std::move(*parsed));
-            }
+            return std::apply(
+                [&](Args&&... values) -> ExecutionResult {
+                    return std::invoke(f, ctx, std::forward<Args>(values)...);
+                },
+                std::move(*parsed));
         };
 
         return Command{std::move(m_name), std::move(m_description), std::move(handler)};

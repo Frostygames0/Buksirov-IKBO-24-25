@@ -129,7 +129,7 @@ struct [[nodiscard]] VfsError
             case VfsOperand::None:
                 break;
         }
-        return std::format("{}\"{}\" -- {}", operandText, path, error);
+        return std::format("{} \"{}\": {}", operandText, path, error);
     }
 };
 
