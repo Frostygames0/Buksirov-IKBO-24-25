@@ -31,7 +31,7 @@ private:
     void moveCursorToEnd();
     [[nodiscard]] QString currentInput() const;
 
-    int m_promptPos = 0;
+    int m_promptPos{};
 };
 
 } // namespace EmulatorMirea::Ui

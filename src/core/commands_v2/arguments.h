@@ -31,7 +31,7 @@ struct ArgumentSpec
     };
 
     Kind kind = Kind::Flag;
-    char shortName = 0;
+    char shortName = '\0';
     std::string longName;
     std::string description;
     std::any defaultValue;
@@ -79,8 +79,8 @@ std::expected<T, std::string> convert(std::string_view text, std::string_view na
         }
         if (ec != std::errc{} || ptr != last)
         {
-            return std::unexpected(std::format(
-                "invalid {} for <{}>: {}", (std::integral<T> ? "integer" : "number"), name, text));
+            return std::unexpected(
+                std::format("invalid {} for <{}>: {}", (std::integral<T> ? "integer" : "number"), name, text));
         }
         return result;
     }
@@ -92,18 +92,17 @@ template <class... Args>
 class ArgumentSet
 {
 public:
-    ArgumentSet()
+    explicit ArgumentSet()
         requires(sizeof...(Args) == 0)
     = default;
 
     [[nodiscard]] const std::vector<ArgumentSpec>& specs() const { return m_specs; }
 
-    [[nodiscard]] std::expected<std::tuple<Args...>, std::string> parse(
-        std::span<const std::string> args) const
+    [[nodiscard]] std::expected<std::tuple<Args...>, std::string> parse(std::span<const std::string> args) const
     {
         RawSet raw(m_specs.size());
         const std::vector<std::size_t> positionals = positionalIndices();
-        std::size_t nextPositional = 0;
+        std::size_t nextPositional{};
         bool optionsDone = false;
 
         Cursor cursor{args};
@@ -206,13 +205,13 @@ private:
 
     private:
         std::span<const std::string> m_tokens;
-        std::size_t m_pos = 0;
+        std::size_t m_pos{};
     };
 
     [[nodiscard]] std::vector<std::size_t> positionalIndices() const
     {
         std::vector<std::size_t> result;
-        for (std::size_t i = 0; i < m_specs.size(); ++i)
+        for (std::size_t i{}; i < m_specs.size(); ++i)
         {
             if (m_specs[i].kind == ArgumentSpec::Kind::Positional)
             {
@@ -224,7 +223,7 @@ private:
 
     [[nodiscard]] std::optional<std::size_t> findShort(char c) const
     {
-        for (std::size_t i = 0; i < m_specs.size(); ++i)
+        for (std::size_t i{}; i < m_specs.size(); ++i)
         {
             const ArgumentSpec& s = m_specs[i];
             if (s.kind != ArgumentSpec::Kind::Positional && s.shortName != 0 && s.shortName == c)
@@ -241,7 +240,7 @@ private:
         {
             return std::nullopt;
         }
-        for (std::size_t i = 0; i < m_specs.size(); ++i)
+        for (std::size_t i{}; i < m_specs.size(); ++i)
         {
             const ArgumentSpec& s = m_specs[i];
             if (s.kind != ArgumentSpec::Kind::Positional && s.longName == name)
@@ -255,8 +254,7 @@ private:
     [[nodiscard]] bool isNegativeNumber(std::string_view tok) const
     {
         return tok.size() > 1 && tok[0] == '-' &&
-               ((std::isdigit(static_cast<unsigned char>(tok[1])) != 0) || tok[1] == '.') &&
-               !findShort(tok[1]);
+               ((std::isdigit(static_cast<unsigned char>(tok[1])) != 0) || tok[1] == '.') && !findShort(tok[1]);
     }
 
     [[nodiscard]] static bool isLongToken(std::string_view tok) { return tok.starts_with("--"); }
@@ -320,11 +318,9 @@ private:
         return {};
     }
 
-    std::expected<void, std::string> parseShortCluster(std::string_view tok,
-                                                       Cursor& cursor,
-                                                       RawSet& raw) const
+    std::expected<void, std::string> parseShortCluster(std::string_view tok, Cursor& cursor, RawSet& raw) const
     {
-        for (std::size_t k = 1; k < tok.size(); ++k)
+        for (std::size_t k{1}; k < tok.size(); ++k)
         {
             const auto idx = findShort(tok[k]);
             if (!idx)
@@ -367,9 +363,7 @@ private:
     }
 
     template <class T>
-    static T extractFromRaw(const std::optional<std::string_view>& raw,
-                            const ArgumentSpec& spec,
-                            std::string& error)
+    static T extractFromRaw(const std::optional<std::string_view>& raw, const ArgumentSpec& spec, std::string& error)
     {
         if constexpr (std::same_as<T, bool>)
         {
@@ -427,11 +421,11 @@ template <class... Args>
 class ArgumentBuilder
 {
 public:
-    ArgumentBuilder() = default;
+    explicit ArgumentBuilder()
+        requires(sizeof...(Args) == 0)
+    = default;
 
-    [[nodiscard]] ArgumentBuilder<Args..., bool> flag(char shortName,
-                                                      std::string longName,
-                                                      std::string description) &&
+    [[nodiscard]] ArgumentBuilder<Args..., bool> flag(char shortName, std::string longName, std::string description) &&
     {
         ArgumentSpec spec{
             .kind = ArgumentSpec::Kind::Flag,
@@ -457,13 +451,11 @@ public:
     }
 
     template <Detail::AcceptableArgValueType T>
-    [[nodiscard]] ArgumentBuilder<Args..., T> positional(std::string name,
-                                                         std::string description,
-                                                         T&& defaultValue) &&
+    [[nodiscard]] ArgumentBuilder<Args..., T> positional(std::string name, std::string description, T&& defaultValue) &&
     {
         ArgumentSpec spec{
             .kind = ArgumentSpec::Kind::Positional,
-            .shortName = 0,
+            .shortName = '\0',
             .longName = std::move(name),
             .description = std::move(description),
             .defaultValue = std::forward<T>(defaultValue),
@@ -477,7 +469,7 @@ public:
     {
         ArgumentSpec spec{
             .kind = ArgumentSpec::Kind::Positional,
-            .shortName = 0,
+            .shortName = '\0',
             .longName = std::move(name),
             .description = std::move(description),
         };
@@ -500,9 +492,8 @@ private:
     template <class T>
     ArgumentBuilder<Args..., T> add(ArgumentSpec spec) &&
     {
-        assert(
-            (spec.kind == ArgumentSpec::Kind::Positional || spec.shortName != 0 || !spec.longName.empty()) &&
-            "flags/options need a short or long name");
+        assert((spec.kind == ArgumentSpec::Kind::Positional || spec.shortName != 0 || !spec.longName.empty()) &&
+               "flags/options need a short or long name");
         for ([[maybe_unused]] const ArgumentSpec& s : m_specs)
         {
             assert(!sameShortName(s, spec) && "duplicate short name");
@@ -519,8 +510,7 @@ private:
 
     static bool sameLongName(const ArgumentSpec& a, const ArgumentSpec& b)
     {
-        const bool bothNamed = a.kind != ArgumentSpec::Kind::Positional &&
-                               b.kind != ArgumentSpec::Kind::Positional;
+        const bool bothNamed = a.kind != ArgumentSpec::Kind::Positional && b.kind != ArgumentSpec::Kind::Positional;
         return bothNamed && !a.longName.empty() && a.longName == b.longName;
     }
 };

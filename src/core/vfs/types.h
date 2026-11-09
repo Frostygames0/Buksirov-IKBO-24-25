@@ -41,9 +41,7 @@ struct VfsEntry
     VfsEncoding encoding = VfsEncoding::None;
 
     std::string name;
-    std::size_t size = 0;
-
-    friend bool operator==(const VfsEntry&, const VfsEntry&) = default;
+    std::size_t size{};
 
     [[nodiscard]] bool isDir() const { return type == VfsEntryType::Dir; }
 
@@ -53,6 +51,8 @@ struct VfsEntry
     {
         return std::format("{}: {} -- {} bytes", vfsEntryTypeToString(type), name, size);
     }
+
+    bool operator==(const VfsEntry&) const = default;
 };
 
 enum class VfsErrorCode
@@ -124,13 +124,17 @@ struct [[nodiscard]] VfsError
         {
             case VfsOperand::From:
                 operandText = "source";
+                break;
             case VfsOperand::To:
                 operandText = "destination";
+                break;
             case VfsOperand::None:
                 break;
         }
         return std::format("{} \"{}\": {}", operandText, path, error);
     }
+
+    bool operator==(const VfsError&) const = default;
 };
 
 enum class VfsRemoveMode

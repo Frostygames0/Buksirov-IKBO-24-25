@@ -1,6 +1,5 @@
 #include "shell.h"
 
-#include <cstddef>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -14,6 +13,33 @@
 
 namespace EmulatorMirea::Core
 {
+namespace
+{
+class ShellAwareProvider final : public IEnvProvider
+{
+public:
+    ShellAwareProvider(const IEnvProvider& base, const Shell& shell) : m_base(base), m_shell(shell) {}
+
+    [[nodiscard]] std::string getEnv(std::string_view name, const std::string& defaultValue = {}) const override
+    {
+        if (name == "PWD")
+        {
+            return m_shell.cwd().currentDir().toString();
+        }
+
+        if (name == "status")
+        {
+            return std::to_string(m_shell.lastStatus());
+        }
+
+        return m_base.getEnv(name, defaultValue);
+    }
+
+private:
+    const IEnvProvider& m_base;
+    const Shell& m_shell;
+};
+} // namespace
 
 Shell::Shell(UserIdentity identity,
              std::unique_ptr<IEnvProvider> envProvider,
@@ -30,7 +56,7 @@ ExecutionResult Shell::submit(const std::string& line, IOutput& out, Source sour
 {
     if (source == Source::Interactive)
     {
-        addHistory(line);
+        m_history.add(line);
     }
 
     ShellAwareProvider decoratedProvider{*m_envProvider, *this};
@@ -44,44 +70,13 @@ ExecutionResult Shell::submit(const std::string& line, IOutput& out, Source sour
         .commandRegistry = m_registry,
     };
 
-    auto res = Interpreter::execute(m_registry, line, ctx);
-    if (res.status != ExitCode::None)
+    const auto res = Interpreter::execute(m_registry, line, ctx);
+    if (res.executionSucceeded())
     {
-        m_lastStatus = res.status;
+        m_lastStatus = *res.status;
     }
 
     return res;
-}
-
-namespace
-{
-std::string_view trim(std::string_view sv)
-{
-    const char* spaces = " \t\n\r\f\v";
-
-    std::size_t start = sv.find_first_not_of(spaces);
-    if (start == std::string_view::npos)
-    {
-        return "";
-    }
-
-    std::size_t end = sv.find_last_not_of(spaces);
-
-    return sv.substr(start, end - start + 1);
-}
-} // namespace
-
-void Shell::addHistory(std::string_view line)
-{
-    if (trim(line).empty())
-    {
-        return;
-    }
-
-    if (m_history.empty() || m_history.back() != line)
-    {
-        m_history.emplace_back(line);
-    }
 }
 
 } // namespace EmulatorMirea::Core

@@ -9,6 +9,7 @@
 #include <QFontDatabase>
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QSysInfo>
 #include <QTimer>
 
@@ -44,13 +45,11 @@ Config parseFromArgs(const QCoreApplication& app)
 
     parser.addOption({
         {QStringLiteral("v"), QStringLiteral("vfs")},
-        QStringLiteral("Путь к локации VFS."),
-        QStringLiteral("путь")
+        QStringLiteral("Путь к локации VFS."), QStringLiteral("путь")
     });
     parser.addOption({
         {QStringLiteral("s"), QStringLiteral("script")},
-        QStringLiteral("Путь к скрипту"),
-        QStringLiteral("путь")
+        QStringLiteral("Путь к скрипту"), QStringLiteral("путь")
     });
 
     parser.process(app);
@@ -99,8 +98,7 @@ QStringList readScript(const QString& scriptPath, QStringList& diagnostics)
         return {};
     }
 
-    diagnostics << QStringLiteral("info: Loaded startup script from path '%1'")
-                       .arg(QDir::cleanPath(scriptPath));
+    diagnostics << QStringLiteral("info: Loaded startup script from path '%1'").arg(QDir::cleanPath(scriptPath));
     return *res;
 }
 
@@ -145,13 +143,13 @@ void wireUIandPresenter(Ui::MainWindow& window, Presentation::TerminalPresenter&
 
 int main(int argc, char* argv[])
 {
-    QApplication a(argc, argv); // NOLINT
+    QApplication a(argc, argv);
     QApplication::setApplicationName(QStringLiteral("EmulatorMirea"));
     QApplication::setOrganizationName(QStringLiteral("Ivan"));
 
     QFontDatabase::addApplicationFont(QStringLiteral(":/fonts/JetBrainsMono-Regular.ttf"));
 
-    Config cfg = parseFromArgs(a);
+    const Config cfg = parseFromArgs(a);
 
     QStringList errorsToPassThrough;
 
@@ -162,9 +160,8 @@ int main(int argc, char* argv[])
     QStringList scriptToLaunch = readScript(cfg.scriptPath, errorsToPassThrough);
 
     window.show();
-    QTimer::singleShot(0, &presenter, [&] {
-        presenter.runStartup({.banner = errorsToPassThrough, .script = scriptToLaunch});
-    });
+    QTimer::singleShot(
+        0, &presenter, [&] { presenter.runStartup({.banner = errorsToPassThrough, .script = scriptToLaunch}); });
 
     return QApplication::exec();
 }

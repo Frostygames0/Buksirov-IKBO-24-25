@@ -16,8 +16,8 @@ class VfsPath
 public:
     explicit VfsPath() = default;
 
-    static std::expected<VfsPath, VfsErrorCode> fromString(std::string_view line);
-    static std::expected<VfsPath, VfsErrorCode> resolve(const VfsPath& cwd, std::string_view line);
+    [[nodiscard]] static std::expected<VfsPath, VfsErrorCode> fromString(std::string_view line);
+    [[nodiscard]] static std::expected<VfsPath, VfsErrorCode> resolve(const VfsPath& cwd, std::string_view line);
 
     [[nodiscard]] VfsPath parent() const;
 
@@ -30,7 +30,7 @@ public:
     [[nodiscard]] const std::vector<std::string>& parts() const;
     [[nodiscard]] std::string toString() const;
 
-    friend bool operator==(const VfsPath&, const VfsPath&) = default;
+    bool operator==(const VfsPath&) const = default;
 
 private:
     std::vector<std::string> m_parts;

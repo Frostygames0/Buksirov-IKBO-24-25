@@ -1,7 +1,7 @@
 ---
 BasedOnStyle: Microsoft
 # Breaks & Braces
-ColumnLimit: 110
+ColumnLimit: 120
 InsertBraces: true
 AccessModifierOffset: -4
 PenaltyBreakAssignment: 1000

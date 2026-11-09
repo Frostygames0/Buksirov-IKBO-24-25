@@ -46,7 +46,7 @@ signals:
 
 private:
     Core::Shell m_shell;
-    HistoryNavigator m_navigator{m_shell};
+    HistoryNavigator m_navigator{m_shell.history()};
 
     class SignalWrappedOut final : public Core::IOutput
     {
@@ -55,10 +55,7 @@ private:
 
         void write(const std::string& line) override { emit m_session.output(QString::fromStdString(line)); }
 
-        void writeLine(const std::string& line) override
-        {
-            emit m_session.outputLine(QString::fromStdString(line));
-        }
+        void writeLine(const std::string& line) override { emit m_session.outputLine(QString::fromStdString(line)); }
 
         void clear() override { emit m_session.cleared(); };
 

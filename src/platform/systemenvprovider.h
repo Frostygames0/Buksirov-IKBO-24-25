@@ -17,8 +17,7 @@ class SystemEnvProvider : public IEnvProvider
 public:
     explicit SystemEnvProvider(const UserIdentity& identity);
 
-    [[nodiscard]] std::string getEnv(std::string_view name,
-                                     const std::string& defaultValue = {}) const override;
+    [[nodiscard]] std::string getEnv(std::string_view name, const std::string& defaultValue = {}) const override;
 
 private:
     QProcessEnvironment m_env;

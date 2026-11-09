@@ -36,14 +36,14 @@ Command createList()
         .description("lists all files/directories at the specified path")
         .args(ArgumentBuilder{}.positional<std::string>("path", "a path to list", {}).buildSet())
         .build([](const ExecutionContext& ctx, const std::string& pathStr) {
-            auto resolved = ctx.cwd.resolve(pathStr);
+            const auto resolved = ctx.cwd.resolve(pathStr);
             if (!resolved)
             {
                 ctx.writeLine("path " + resolved.error().toString(pathStr));
                 return ExecutionResult::withStatus(ExitCode::GeneralError);
             }
 
-            auto stat = ctx.vfs.stat(*resolved);
+            const auto stat = ctx.vfs.stat(*resolved);
             if (!stat)
             {
                 ctx.writeLine("path " + stat.error().toString(pathStr));
@@ -57,7 +57,7 @@ Command createList()
                 return ExecutionResult::withStatus(ExitCode::Success);
             }
 
-            auto entries = ctx.vfs.list(*resolved);
+            const auto entries = ctx.vfs.list(*resolved);
             for (const VfsEntry& entry : *entries)
             {
                 ctx.writeLine(entry.toString());
@@ -74,14 +74,14 @@ Command createChangeDirectory()
         .description("changes the current working directory")
         .args(ArgumentBuilder{}.positional<std::string>("dir", "a path to the directory", {}).buildSet())
         .build([](const ExecutionContext& ctx, const std::string& pathStr) {
-            auto resolved = ctx.cwd.resolve(pathStr);
+            const auto resolved = ctx.cwd.resolve(pathStr);
             if (!resolved)
             {
                 ctx.writeLine("path " + resolved.error().toString(pathStr));
                 return ExecutionResult::withStatus(ExitCode::GeneralError);
             }
 
-            auto res = ctx.cwd.set(*resolved);
+            const auto res = ctx.cwd.set(*resolved);
             if (!res)
             {
                 ctx.writeLine("error setting cwd as " + res.error().toString(pathStr));
@@ -110,7 +110,7 @@ Command createEcho()
         .description("echoes the input")
         .args(ArgumentBuilder{}.positional<std::string>("input", "input to echo", {}).buildSet())
         .build([](const ExecutionContext& ctx, const std::string& input) {
-            ctx.out.writeLine(input);
+            ctx.writeLine(input);
             return ExecutionResult::withStatus(ExitCode::Success);
         });
 }
@@ -141,20 +141,22 @@ Command createRemove()
                   .positional<std::string>("path", "a path to the file/directory to remove")
                   .buildSet())
         .build([](const ExecutionContext& ctx, bool recurive, const std::string& pathStr) {
-            auto path = ctx.cwd.resolve(pathStr);
+            const auto path = ctx.cwd.resolve(pathStr);
             if (!path)
             {
                 ctx.writeLine(std::format("path \"{}\" is not valid", pathStr));
                 return ExecutionResult::withStatus(ExitCode::GeneralError);
             }
 
-            auto stat = ctx.vfs.stat(*path);
+            const auto stat = ctx.vfs.stat(*path);
             if (!stat)
             {
                 ctx.writeLine(std::format("\"{}\" doesn't exist", pathStr));
                 return ExecutionResult::withStatus(ExitCode::GeneralError);
             }
-            auto res = ctx.vfs.remove(*path, recurive ? VfsRemoveMode::Recursive : VfsRemoveMode::Single);
+
+            VfsRemoveMode mode = recurive ? VfsRemoveMode::Recursive : VfsRemoveMode::Single;
+            const auto res = ctx.vfs.remove(*path, mode);
             if (!res)
             {
                 ctx.writeLine(std::format("failed to remove at ", pathStr, res.error().toString(pathStr)));

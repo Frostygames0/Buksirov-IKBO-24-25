@@ -18,8 +18,7 @@ public:
 
     [[nodiscard]] virtual std::expected<VfsEntry, VfsError> stat(const VfsPath& path) const = 0;
     [[nodiscard]] virtual std::expected<std::vector<VfsEntry>, VfsError> list(const VfsPath& path) const = 0;
-    [[nodiscard]] virtual std::expected<std::vector<std::byte>, VfsError> readFile(
-        const VfsPath& path) const = 0;
+    [[nodiscard]] virtual std::expected<std::vector<std::byte>, VfsError> readFile(const VfsPath& path) const = 0;
 
     virtual std::expected<void, VfsError> createFile(const VfsPath& path,
                                                      std::vector<std::byte> data,

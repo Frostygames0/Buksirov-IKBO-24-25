@@ -19,7 +19,7 @@ template <class... Args>
 class CommandBuilder
 {
 public:
-    CommandBuilder()
+    explicit CommandBuilder()
         requires(sizeof...(Args) == 0)
     = default;
 
@@ -45,14 +45,13 @@ public:
     template <class F>
         requires std::copy_constructible<std::decay_t<F>> &&
                  std::invocable<std::decay_t<F>&, const ExecutionContext&, Args&&...> &&
-                 std::convertible_to<
-                     std::invoke_result_t<std::decay_t<F>&, const ExecutionContext&, Args&&...>,
-                     ExecutionResult>
+                 std::convertible_to<std::invoke_result_t<std::decay_t<F>&, const ExecutionContext&, Args&&...>,
+                                     ExecutionResult>
     [[nodiscard]] Command build(F&& func) &&
     {
-        Command::Handler handler = [argSet = std::move(m_args), f = std::forward<F>(func)](
-                                       std::span<const std::string> unparsedArgs,
-                                       const ExecutionContext& ctx) mutable -> ExecutionResult {
+        Command::Handler handler = [argSet = std::move(m_args),
+                                    f = std::forward<F>(func)](std::span<const std::string> unparsedArgs,
+                                                               const ExecutionContext& ctx) mutable -> ExecutionResult {
             // TODO: Move help into argument parsing
             for (const std::string& arg : unparsedArgs)
             {
@@ -77,9 +76,7 @@ public:
             }
 
             return std::apply(
-                [&](Args&&... values) -> ExecutionResult {
-                    return std::invoke(f, ctx, std::forward<Args>(values)...);
-                },
+                [&](Args&&... values) -> ExecutionResult { return std::invoke(f, ctx, std::forward<Args>(values)...); },
                 std::move(*parsed));
         };
 

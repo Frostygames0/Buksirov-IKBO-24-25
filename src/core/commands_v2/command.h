@@ -15,8 +15,7 @@ class Command
 public:
     using Handler = std::function<ExecutionResult(std::span<const std::string>, const ExecutionContext&)>;
 
-    [[nodiscard]] ExecutionResult execute(std::span<const std::string> args,
-                                          const ExecutionContext& ctx) const
+    [[nodiscard]] ExecutionResult execute(std::span<const std::string> args, const ExecutionContext& ctx) const
     {
         return m_handler(args, ctx);
     }

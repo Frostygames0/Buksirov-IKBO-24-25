@@ -11,8 +11,7 @@
 namespace EmulatorMirea::Core
 {
 
-SystemEnvProvider::SystemEnvProvider(const UserIdentity& identity)
-    : m_env(QProcessEnvironment::systemEnvironment())
+SystemEnvProvider::SystemEnvProvider(const UserIdentity& identity) : m_env(QProcessEnvironment::systemEnvironment())
 {
     m_env.insert(QStringLiteral("USER"), QString::fromStdString(identity.userName));
     m_env.insert(QStringLiteral("USERNAME"), QString::fromStdString(identity.userName));

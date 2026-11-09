@@ -5,6 +5,8 @@
 #include <QString>
 #include <QtTypes>
 
+#include "core/history.h"
+
 namespace EmulatorMirea::Core
 {
 class Shell;
@@ -16,7 +18,7 @@ namespace EmulatorMirea::Presentation
 class HistoryNavigator
 {
 public:
-    explicit HistoryNavigator(const Core::Shell& shell) : m_shell(shell) {}
+    explicit HistoryNavigator(const Core::History& history) : m_history(history) {}
 
     QString up(const QString& current);
     QString down(const QString& current);
@@ -24,8 +26,8 @@ public:
     void reset();
 
 private:
-    const Core::Shell& m_shell;
-    std::size_t m_index = 0;
+    const Core::History& m_history;
+    std::size_t m_index{};
     QString m_scratch;
 };
 

@@ -17,6 +17,7 @@ class CommandRegistry;
 struct ExecutionContext
 {
     UserIdentity identity;
+
     IEnvProvider& envProvider;
     IOutput& out;
     IVfs& vfs;

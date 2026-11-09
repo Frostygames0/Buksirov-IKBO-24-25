@@ -2,9 +2,9 @@
 
 #include <cctype>
 #include <cstddef>
+#include <string>
 #include <string_view>
 #include <vector>
-#include <string>
 
 #include "core/envprovider.h"
 
@@ -13,14 +13,14 @@ namespace EmulatorMirea::Core::LineParser
 
 namespace
 {
-bool isDoubleQuoteEscapable(char c)
+bool isDoubleQuoteEscapable(char c) noexcept
 {
     return c == '"' || c == '\\' || c == '$';
 }
 
 bool isNameStart(char c)
 {
-    return (std::isalpha(static_cast<unsigned char>(c)) != 0) || c == u'_';
+    return (std::isalpha(static_cast<unsigned char>(c)) != 0) || c == '_';
 }
 
 bool isNameChar(char c)
@@ -68,7 +68,7 @@ std::vector<std::string> parse(std::string_view in, const IEnvProvider& env)
     std::string word;
     bool inToken = false;
     bool quoted = false; // token used quotes, so an empty value is kept
-    char quote = 0;
+    char quote = '\0';
 
     auto finishToken = [&] {
         // An unquoted token that expanded to nothing disappears; "" stays.
@@ -81,7 +81,7 @@ std::vector<std::string> parse(std::string_view in, const IEnvProvider& env)
         quoted = false;
     };
 
-    for (std::size_t i = 0; i < in.size(); ++i)
+    for (std::size_t i{}; i < in.size(); ++i)
     {
         const char c = in[i];
         const bool hasNext = i + 1 < in.size();
@@ -91,7 +91,7 @@ std::vector<std::string> parse(std::string_view in, const IEnvProvider& env)
         {
             if (c == quote)
             {
-                quote = 0;
+                quote = '\0';
             }
             else
             {
@@ -103,7 +103,7 @@ std::vector<std::string> parse(std::string_view in, const IEnvProvider& env)
         {
             if (c == quote)
             {
-                quote = 0;
+                quote = '\0';
             }
             else if (c == '\\' && hasNext && isDoubleQuoteEscapable(in[i + 1]))
             {

@@ -6,7 +6,6 @@
 #include "core/vfs/path.h"
 #include "core/vfs/types.h"
 
-
 namespace EmulatorMirea::Core
 {
 

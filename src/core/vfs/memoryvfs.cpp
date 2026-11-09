@@ -52,6 +52,7 @@ std::expected<std::vector<VfsEntry>, VfsError> MemoryVfs::list(const VfsPath& pa
     {
         result.push_back(makeEntryFromNode(m_nodes[child]));
     }
+    
     return result;
 }
 
@@ -72,9 +73,10 @@ std::expected<std::vector<std::byte>, VfsError> MemoryVfs::readFile(const VfsPat
     return *file;
 }
 
-std::expected<void, VfsError> MemoryVfs::createFile(const VfsPath& path,
-                                                    std::vector<std::byte> data,
-                                                    VfsEncoding encoding)
+std::expected<void, VfsError> MemoryVfs::createFile(
+    const VfsPath& path,
+    std::vector<std::byte> data,
+    VfsEncoding /*encoding*/) // TODO Implement encoding storage, or not?
 {
     const std::expected<Slot, VfsErrorCode> slot = resolveFreeSlot(path);
     if (!slot)
@@ -394,7 +396,7 @@ MemoryVfs::NodeId MemoryVfs::allocNode(Node node)
 
     // otherwise allocate new one
     m_nodes.push_back(std::move(node));
-    return static_cast<std::ptrdiff_t>(m_nodes.size() - 1);
+    return static_cast<std::ptrdiff_t>(m_nodes.size()) - 1;
 }
 
 } // namespace EmulatorMirea::Core

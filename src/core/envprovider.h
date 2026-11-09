@@ -13,8 +13,7 @@ class IEnvProvider
 public:
     virtual ~IEnvProvider() = default;
 
-    [[nodiscard]] virtual std::string getEnv(std::string_view name,
-                                             const std::string& defaultValue = {}) const = 0;
+    [[nodiscard]] virtual std::string getEnv(std::string_view name, const std::string& defaultValue = {}) const = 0;
 };
 
 } // namespace EmulatorMirea::Core

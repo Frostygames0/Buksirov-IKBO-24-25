@@ -10,7 +10,7 @@ namespace EmulatorMirea::Core
 
 std::expected<void, VfsError> WorkingDirectory::set(const VfsPath& absolute)
 {
-    auto stat = m_vfs.stat(absolute);
+    const auto stat = m_vfs.stat(absolute);
     if (!stat)
     {
         return std::unexpected(stat.error());

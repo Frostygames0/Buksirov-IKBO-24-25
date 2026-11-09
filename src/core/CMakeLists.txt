@@ -20,8 +20,8 @@ add_library(emulator_core STATIC
     shell.h                shell.cpp
 
     output.h
+    history.cpp
+    stringutils.h
 )
 
-target_include_directories(emulator_core
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..
-)
+target_link_libraries(emulator_core PUBLIC emulator_interface)

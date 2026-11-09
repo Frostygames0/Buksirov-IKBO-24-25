@@ -8,7 +8,7 @@
 namespace EmulatorMirea::Core
 {
 
-class ExecutionContext;
+struct ExecutionContext;
 class CommandRegistry;
 
 namespace Interpreter

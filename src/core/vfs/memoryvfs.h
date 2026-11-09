@@ -19,8 +19,7 @@ public:
 
     [[nodiscard]] std::expected<VfsEntry, VfsError> stat(const VfsPath& path) const override;
     [[nodiscard]] std::expected<std::vector<VfsEntry>, VfsError> list(const VfsPath& path) const override;
-    [[nodiscard]] std::expected<std::vector<std::byte>, VfsError> readFile(
-        const VfsPath& path) const override;
+    [[nodiscard]] std::expected<std::vector<std::byte>, VfsError> readFile(const VfsPath& path) const override;
 
     std::expected<void, VfsError> createFile(const VfsPath& path,
                                              std::vector<std::byte> data,

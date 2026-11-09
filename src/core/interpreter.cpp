@@ -1,8 +1,8 @@
 #include "interpreter.h"
 
+#include <span>
 #include <string>
 #include <string_view>
-#include <span>
 #include <vector>
 
 #include "core/commands_v2/command.h"
@@ -10,7 +10,6 @@
 #include "core/executioncontext.h"
 #include "core/executionresult.h"
 #include "core/lineparser.h"
-#include "core/output.h"
 
 namespace EmulatorMirea::Core::Interpreter
 {
@@ -21,7 +20,7 @@ ExecutionResult execute(CommandRegistry& registry, std::string_view input, const
 
     if (tokens.empty())
     {
-        return ExecutionResult::withStatus(ExitCode::None);
+        return ExecutionResult{};
     }
 
     const std::string& name = tokens.front();
@@ -29,7 +28,7 @@ ExecutionResult execute(CommandRegistry& registry, std::string_view input, const
     const Command* cmd = registry.getCommand(name);
     if (cmd == nullptr)
     {
-        ctx.out.writeLine(name + ": Command not found.");
+        ctx.writeLine(name + ": Command not found.");
         return ExecutionResult::withStatus(ExitCode::CommandNotFound);
     }
 
