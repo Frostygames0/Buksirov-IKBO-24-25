@@ -12,7 +12,7 @@ namespace EmulatorMirea::Core::StringUtils
 
 template <std::ranges::range R>
     requires std::convertible_to<std::ranges::range_value_t<R>, std::string_view>
-[[nodiscard]] inline std::string joinStrings(const R& parts, std::string_view delim)
+[[nodiscard]] constexpr std::string joinStrings(const R& parts, std::string_view delim)
 {
     if (parts.empty())
     {
@@ -39,7 +39,7 @@ template <std::ranges::range R>
     return result;
 }
 
-[[nodiscard]] inline std::vector<std::string_view> split(std::string_view str, char delim)
+[[nodiscard]] constexpr std::vector<std::string_view> split(std::string_view str, char delim)
 {
     std::vector<std::string_view> result;
     std::size_t start{};
@@ -66,9 +66,9 @@ template <std::ranges::range R>
     return result;
 }
 
-inline std::string_view trim(std::string_view sv)
+constexpr std::string_view trim(std::string_view sv)
 {
-    const char* spaces = " \t\n\r\f\v";
+    constexpr const char* spaces = " \t\n\r\f\v";
 
     std::size_t start = sv.find_first_not_of(spaces);
     if (start == std::string_view::npos)

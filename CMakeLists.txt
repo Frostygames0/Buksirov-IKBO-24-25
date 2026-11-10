@@ -11,11 +11,20 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Flags for all sub-projects
 add_library(emulator_interface INTERFACE)
+target_include_directories(emulator_interface INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_compile_options(emulator_interface INTERFACE 
+    # General
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX /permissive->
     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:-Wall -Wextra -Wpedantic -Wno-missing-field-initializers -Wshadow -Wnon-virtual-dtor>
+
+    # Debug
+    $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:Debug>>:/Od /Ob0 /Zi /RTC1>
+    $<$<AND:$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>,$<CONFIG:Debug>>:-O0 -g>
+
+    # Release
+    $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:Release>>:/O2 /Oi /Gy>
+    $<$<AND:$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>,$<CONFIG:Release>>:-O2>
 )
-target_include_directories(emulator_interface INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Flags for sub-projects that use Qt
 add_library(emulator_qt_interface INTERFACE)
@@ -58,12 +67,20 @@ install(TARGETS emulator_app
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
+if (WIN32)
+    set(DEPLOY_TOOL_OPTIONS 
+        --no-opengl-sw 
+        --no-system-d3d-compiler 
+        --skip-plugin-types generic,iconengines,networkinformation,tls,styles,imageformats 
+        --exclude-plugins qsvg)
+endif()
+
 qt_generate_deploy_app_script(
     TARGET emulator_app
     OUTPUT_SCRIPT deploy_script
     NO_UNSUPPORTED_PLATFORM_ERROR
     NO_TRANSLATIONS
-    DEPLOY_TOOL_OPTIONS --no-opengl-sw --no-system-d3d-compiler
+    DEPLOY_TOOL_OPTIONS ${DEPLOY_TOOL_OPTIONS}
 )
 
 install(SCRIPT ${deploy_script})
