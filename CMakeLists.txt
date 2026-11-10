@@ -9,6 +9,13 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported)
+
+if(ipo_supported)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+endif()
+
 # Flags for all sub-projects
 add_library(emulator_interface INTERFACE)
 target_include_directories(emulator_interface INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/src)
